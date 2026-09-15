@@ -159,12 +159,15 @@ docker compose down       # arrêter
    appliquée à une vraie base** (pas de Docker dans l'environnement où c'est
    parti) : lance `docker compose up -d` puis `pnpm prisma:deploy` et
    `pnpm prisma:seed` en premier sur ton PC.
-2. Modules paiements/escrow/wallet + matching IA (⟵ on est ici)
-3. Frontend web Next.js (PWA + dashboard admin)
-4. Maquettes UI des écrans clés
-5. Docker prod + CI/CD GitHub Actions
-6. Seed de démo + documentation complète
-7. App mobile Expo (réutilise l'API + types partagés)
+2. ~~**Frontend web** — inscription, connexion, liste/détail missions,
+   publication~~ ✅ fait (`apps/web/`, Next.js 14, i18n FR/EN, build vérifié).
+   Pas de PWA/dashboard admin, pas de paiements (tranches ultérieures).
+3. Modules paiements/escrow/wallet + matching IA (⟵ on est ici)
+4. PWA + dashboard admin
+5. Maquettes UI des écrans clés
+6. Docker prod + CI/CD GitHub Actions
+7. Seed de démo + documentation complète
+8. App mobile Expo (réutilise l'API + types partagés)
 
 ---
 

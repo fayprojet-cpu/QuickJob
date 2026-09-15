@@ -23,7 +23,7 @@ backend → web (PWA + admin) → mobile**.
 | 2 | Schéma base de données (Prisma) | ✅ `prisma/schema.prisma` + `docs/02-data-model.md` |
 | 3 | Structure du monorepo | ✅ `docs/03-monorepo-structure.md` |
 | 4 | Backend NestJS (auth → users → jobs) | ✅ voir `apps/api/` — payments/escrow/matching restent à faire |
-| 5 | Frontend web (Next.js, PWA, admin) | ⏳ |
+| 5 | Frontend web (Next.js, PWA, admin) | ✅ voir `apps/web/` — inscription/connexion/missions ; PWA, admin et paiements restent à faire |
 | 6 | Maquettes UI | ⏳ |
 | 7 | Docker & déploiement | ⏳ |
 | 8 | Documentation complète | ⏳ |
@@ -55,6 +55,24 @@ Nest est fixé en 11.x (12.x publie des modules ESM purs, incompatibles avec
 Jest/ts-jest en CommonJS) et Prisma en 6.19.x (Prisma 7 a supprimé
 `datasource.url` dans le schema au profit d'un `prisma.config.ts` avec
 adapters — migration non faite ici pour ne pas toucher au schéma déjà validé).
+
+## Frontend web (`apps/web`)
+
+Next.js 14 (App Router), i18n FR/EN (`next-intl`), Tailwind (palette orange
+`#FF5722`, mobile-first). Écrans : accueil, inscription, connexion, liste des
+missions (filtres + pagination, SSR), détail d'une mission, publication d'une
+mission (réservé aux comptes recruteur).
+
+```bash
+cp apps/web/.env.example apps/web/.env.local
+pnpm --filter @quickjob/web dev
+```
+
+Auth gérée côté client (Zustand persisté + refresh automatique du token) car
+Next 14 ne peut pas lire le `localStorage` côté serveur ; les pages missions
+(liste/détail) sont rendues côté serveur, la publication est un formulaire
+client. Aucune décimale de devise n'est codée en dur : le formatage monétaire
+s'appuie sur `Intl.NumberFormat`. Les paiements sont une tranche ultérieure.
 
 ## Stack (imposée)
 
