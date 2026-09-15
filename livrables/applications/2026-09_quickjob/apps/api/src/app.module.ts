@@ -9,6 +9,7 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './infra/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { UsersModule } from './modules/users/users.module';
 
@@ -25,6 +26,7 @@ import { UsersModule } from './modules/users/users.module';
     AuthModule,
     UsersModule,
     JobsModule,
+    CategoriesModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
