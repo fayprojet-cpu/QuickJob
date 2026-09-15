@@ -39,6 +39,7 @@ out/
 .cache/
 .turbo/
 .parcel-cache/
+*.tsbuildinfo
 
 # --- Fichiers d'éditeur / IDE ---
 .vscode/
