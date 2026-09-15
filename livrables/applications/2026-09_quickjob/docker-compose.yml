@@ -1,0 +1,66 @@
+# Infra locale de développement — QuickJob
+# Démarrage : docker compose up -d
+# Postgres est livré avec PostGIS (recherche géo par rayon).
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: quickjob-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-quickjob}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quickjob}
+      POSTGRES_DB: ${POSTGRES_DB:-quickjob}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-quickjob}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: quickjob-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Stockage objet compatible S3 pour le dev (photos, documents KYC).
+  minio:
+    image: minio/minio:latest
+    container_name: quickjob-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-quickjob}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-quickjob-secret}
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio_data:/data
+
+  # Explorateur de base de données (pratique en dev).
+  adminer:
+    image: adminer:latest
+    container_name: quickjob-adminer
+    restart: unless-stopped
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
