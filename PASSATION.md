@@ -154,8 +154,12 @@ docker compose down       # arrêter
 
 ## 7. Prochaines tranches (feuille de route courte)
 
-1. **Backend core** — auth, users, jobs (⟵ on est ici)
-2. Modules paiements/escrow/wallet + matching IA
+1. ~~**Backend core** — auth, users, jobs~~ ✅ fait (`apps/api/`, 19 tests
+   Jest, build + typecheck OK). Migration Prisma générée mais **jamais
+   appliquée à une vraie base** (pas de Docker dans l'environnement où c'est
+   parti) : lance `docker compose up -d` puis `pnpm prisma:deploy` et
+   `pnpm prisma:seed` en premier sur ton PC.
+2. Modules paiements/escrow/wallet + matching IA (⟵ on est ici)
 3. Frontend web Next.js (PWA + dashboard admin)
 4. Maquettes UI des écrans clés
 5. Docker prod + CI/CD GitHub Actions
