@@ -1,0 +1,69 @@
+# ─────────────────────────────────────────────────────────────
+# .gitignore — workspace QuickJob
+# Objectif : ne JAMAIS versionner de secrets, de dépendances,
+# ni de fichiers générés localement.
+# ─────────────────────────────────────────────────────────────
+
+# --- Secrets & variables d'environnement ---
+.env
+.env.*
+!.env.example
+*.key
+*key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.secret
+secrets/
+
+# --- Dépendances ---
+node_modules/
+.pnp
+.pnp.*
+jspm_packages/
+vendor/
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+
+# --- Dossiers de build / sortie ---
+dist/
+build/
+.next/
+out/
+.nuxt/
+.output/
+.cache/
+.turbo/
+.parcel-cache/
+
+# --- Fichiers d'éditeur / IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# --- Système d'exploitation ---
+.DS_Store
+.DS_Store?
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# --- Logs & fichiers temporaires ---
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+tmp/
+temp/
+*.tmp
+*.bak
