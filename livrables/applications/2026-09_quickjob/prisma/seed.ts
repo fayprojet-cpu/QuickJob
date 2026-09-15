@@ -79,11 +79,22 @@ async function seedSystemConfig(): Promise<void> {
     { key: 'kyc_required', value: false },
   ];
   for (const config of globalConfigs) {
-    await prisma.systemConfig.upsert({
-      where: { countryCode_key: { countryCode: null, key: config.key } },
-      update: { value: config.value as never },
-      create: { countryCode: null, key: config.key, value: config.value as never },
+    // Le champ composite `@@unique([countryCode, key])` n'accepte pas `null`
+    // dans le raccourci `where` de Prisma (les valeurs NULL ne participent
+    // pas à l'égalité SQL) : on résout donc l'upsert manuellement.
+    const existing = await prisma.systemConfig.findFirst({
+      where: { countryCode: null, key: config.key },
     });
+    if (existing) {
+      await prisma.systemConfig.update({
+        where: { id: existing.id },
+        data: { value: config.value as never },
+      });
+    } else {
+      await prisma.systemConfig.create({
+        data: { countryCode: null, key: config.key, value: config.value as never },
+      });
+    }
   }
 }
 
