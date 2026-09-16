@@ -1,10 +1,16 @@
-# Blueprint Render — connecte ce repo sur render.com, Render détecte ce
-# fichier automatiquement ("New +" → "Blueprint"). Les variables marquées
-# `sync: false` sont à saisir dans le dashboard Render (jamais commitées ici).
+# Blueprint Render. Ce fichier N'EST PAS à la racine du dépôt Git (le dépôt
+# contient d'autres projets sous livrables/) : dans le dashboard Render,
+# "New +" → "Blueprint" → champ "Blueprint Path" → saisir
+# "livrables/applications/2026-09_quickjob/render.yaml".
+# `rootDir` ancre dockerfilePath/dockerContext sur le dossier du projet
+# quickjob (chemins relatifs à rootDir, pas à la racine du dépôt).
+# Les variables marquées `sync: false` sont à saisir dans le dashboard Render
+# (jamais commitées ici).
 services:
   - type: web
     name: quickjob-api
     runtime: docker
+    rootDir: livrables/applications/2026-09_quickjob
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: .
     plan: free
