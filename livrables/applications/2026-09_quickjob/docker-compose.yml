@@ -37,7 +37,8 @@ services:
 
   # Stockage objet compatible S3 pour le dev (photos, documents KYC).
   minio:
-    image: minio/minio:latest
+    # MinIO a retiré ses images de Docker Hub ; elles vivent maintenant sur quay.io.
+    image: quay.io/minio/minio:latest
     container_name: quickjob-minio
     restart: unless-stopped
     command: server /data --console-address ":9001"

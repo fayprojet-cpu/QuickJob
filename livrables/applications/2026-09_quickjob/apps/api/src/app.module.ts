@@ -17,6 +17,9 @@ import { UsersModule } from './modules/users/users.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      // Le .env vit à la racine du projet quickjob (livrables/.../2026-09_quickjob/.env),
+      // pas dans apps/api : les scripts pnpm s'exécutent avec cwd = apps/api.
+      envFilePath: '../../.env',
       validate: validateEnv,
     }),
     ThrottlerModule.forRoot({

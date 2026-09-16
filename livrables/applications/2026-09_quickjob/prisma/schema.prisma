@@ -36,6 +36,9 @@ generator client {
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
+  // Connexion directe (hors pooler PgBouncer) requise par `prisma migrate` :
+  // le mode transaction du pooler ne supporte pas les advisory locks/DDL.
+  directUrl  = env("DIRECT_URL")
   extensions = [pgcrypto, postgis(schema: "public")]
 }
 

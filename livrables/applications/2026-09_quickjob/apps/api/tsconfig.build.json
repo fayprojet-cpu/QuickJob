@@ -1,4 +1,10 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // `nest build` supprime dist/ à chaque run (deleteOutDir) ; le cache
+    // incrémental doit être désactivé ici sinon tsc peut croire les fichiers
+    // déjà à jour et ne rien réémettre après la suppression du dossier.
+    "incremental": false
+  },
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }
