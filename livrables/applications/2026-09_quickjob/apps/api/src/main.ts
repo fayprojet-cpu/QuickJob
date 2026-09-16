@@ -34,8 +34,10 @@ async function bootstrap(): Promise<void> {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);
 
-  const port = configService.get('API_PORT', { infer: true });
-  await app.listen(port);
+  // Render/Railway imposent leur propre port via la variable PORT (standard
+  // Heroku-like buildpacks) ; API_PORT reste la valeur par défaut en local.
+  const port = Number(process.env.PORT) || configService.get('API_PORT', { infer: true });
+  await app.listen(port, '0.0.0.0');
 }
 
 bootstrap();

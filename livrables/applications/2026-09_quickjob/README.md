@@ -25,7 +25,7 @@ backend → web (PWA + admin) → mobile**.
 | 4 | Backend NestJS (auth → users → jobs) | ✅ voir `apps/api/` — payments/escrow/matching restent à faire |
 | 5 | Frontend web (Next.js, PWA, admin) | ✅ voir `apps/web/` — inscription/connexion/missions ; PWA, admin et paiements restent à faire |
 | 6 | Maquettes UI | ⏳ |
-| 7 | Docker & déploiement | ⏳ |
+| 7 | Docker & déploiement | 🟡 `apps/api/Dockerfile` + `render.yaml` prêts, section "Déploiement" ci-dessous — pas encore déployé en ligne |
 | 8 | Documentation complète | ⏳ |
 | 9 | Données de seed | ✅ `prisma/seed.ts` (référentiels minimaux, idempotent) |
 | 10 | Roadmap & plan de lancement | ⏳ |
@@ -89,6 +89,73 @@ docker compose up -d        # Postgres 16 + Redis 7 + MinIO + Adminer
 
 > ⚠️ Les vraies clés d'API vont dans le `.env` **racine du workspace**
 > (déjà ignoré par Git). Ne jamais committer de secret.
+
+## Déploiement (production)
+
+API sur **Render** ou **Railway** (Docker), web sur **Vercel**, base sur
+**Supabase**. Déployer l'API en premier (le web a besoin de son URL).
+
+### 1. Base de données — Supabase
+
+Déjà fait pour l'environnement de démo actuel (projet "Travail rapide").
+Pour un nouveau projet Supabase : Project Settings → Database → copier le
+**pooler de session** (port 5432, PAS la "Direct connection" — son hostname
+`db.<ref>.supabase.co` ne résout qu'en IPv6, souvent injoignable depuis les
+plateformes de déploiement/CI). Utiliser cette même URL pooler pour
+`DATABASE_URL` **et** `DIRECT_URL`.
+
+### 2. API — Render ou Railway
+
+Un `Dockerfile` multi-stage (`apps/api/Dockerfile`) construit `packages/config`
+puis `apps/api` via `pnpm deploy` (sort un `node_modules` autonome, sans les
+symlinks du store pnpm — seule méthode fiable pour un package pris dans un
+monorepo pnpm). Au démarrage du conteneur : `prisma migrate deploy` puis
+`node dist/main.js`. Écoute sur `process.env.PORT` (imposé par ces
+plateformes) avec repli sur `API_PORT` en local.
+
+**Render** : "New +" → "Blueprint" → sélectionner ce repo → Render détecte
+`render.yaml` à la racine du projet automatiquement. Remplir les variables
+marquées "à saisir" dans le dashboard (voir liste ci-dessous).
+
+**Railway** : "New Project" → "Deploy from GitHub repo" → sélectionner ce
+repo → dans Settings du service : **Root Directory** =
+`livrables/applications/2026-09_quickjob`, **Dockerfile Path** =
+`apps/api/Dockerfile`. Ajouter les variables d'environnement manuellement
+(Railway n'a pas d'équivalent `render.yaml`).
+
+Variables d'environnement à définir sur la plateforme choisie :
+
+| Variable | Valeur |
+|---|---|
+| `NODE_ENV` | `production` |
+| `DATABASE_URL` | pooler Supabase (session, port 5432) |
+| `DIRECT_URL` | identique à `DATABASE_URL` |
+| `JWT_ACCESS_SECRET` | secret aléatoire dédié prod (≥32 car.) |
+| `JWT_REFRESH_SECRET` | secret aléatoire dédié prod (≥32 car., différent du précédent) |
+| `JWT_ACCESS_TTL` | `15m` |
+| `JWT_REFRESH_TTL` | `7d` |
+| `WEB_URL` | URL Vercel du site (étape 3 — à mettre à jour après coup) |
+| `API_URL` | URL publique de ce service API une fois déployé |
+
+> Ne jamais réutiliser les secrets JWT du `.env` de dev en production.
+> `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`
+> en génère un nouveau à chaque appel.
+
+### 3. Web — Vercel
+
+"Add New" → "Project" → importer ce repo → **Root Directory** =
+`livrables/applications/2026-09_quickjob/apps/web` (Vercel détecte Next.js
+automatiquement). Variable d'environnement :
+
+| Variable | Valeur |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | URL de l'API déployée à l'étape 2 |
+
+### 4. Boucler CORS
+
+Une fois le web déployé, retourner dans les variables d'env de l'API et
+mettre à jour `WEB_URL` avec l'URL Vercel finale (CORS n'autorise qu'une
+seule origine), puis redéployer/redémarrer le service API.
 
 ## À valider avant la tranche backend
 

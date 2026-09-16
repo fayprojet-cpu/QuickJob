@@ -12,6 +12,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { UsersModule } from './modules/users/users.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UsersModule } from './modules/users/users.module';
     UsersModule,
     JobsModule,
     CategoriesModule,
+    HealthModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
