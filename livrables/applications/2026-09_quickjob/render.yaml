@@ -18,10 +18,19 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DATABASE_URL
+      # DATABASE_URL/DIRECT_URL sont reconstruites dans docker-entrypoint.sh à
+      # partir de ces morceaux (voir ce fichier pour le pourquoi : Render
+      # altère la chaîne complète en transit, pas ces valeurs simples).
+      - key: DB_HOST
         sync: false
-      - key: DIRECT_URL
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_USER
         sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        value: postgres
       - key: JWT_ACCESS_SECRET
         sync: false
       - key: JWT_REFRESH_SECRET
