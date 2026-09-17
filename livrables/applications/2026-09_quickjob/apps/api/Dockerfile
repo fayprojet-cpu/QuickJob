@@ -23,13 +23,14 @@ ENV NODE_ENV=production
 RUN addgroup -S quickjob && adduser -S quickjob -G quickjob
 COPY --from=build /app/deploy /app
 COPY --from=build /app/prisma /app/prisma
+COPY apps/api/docker-entrypoint.sh /app/docker-entrypoint.sh
 # Régénère le client Prisma une fois la mise en page finale de l'image en
 # place : le client généré pendant `pnpm deploy` (étape build) référence des
 # chemins internes qui ne correspondent plus après la copie inter-stage,
 # ce qui produisait des enums undefined (`UserRole.WORKER` etc.) au démarrage.
 RUN npx prisma generate --schema ./prisma/schema.prisma
-RUN chown -R quickjob:quickjob /app
+RUN chmod +x /app/docker-entrypoint.sh && chown -R quickjob:quickjob /app
 USER quickjob
 
 EXPOSE 4000
-CMD ["sh", "-c", "npx prisma migrate deploy --schema ./prisma/schema.prisma && node dist/main.js"]
+CMD ["/app/docker-entrypoint.sh"]
