@@ -78,9 +78,25 @@ export class ApplicationsService {
       throw new BadRequestException(`This application has already been decided (${application.status})`);
     }
 
-    return this.prisma.application.update({
+    const updateApplication = this.prisma.application.update({
       where: { id },
       data: { status, decidedAt: new Date() },
     });
+
+    // Accepter un candidat démarre la mission (PUBLISHED -> IN_PROGRESS), dans la
+    // même transaction. updateMany conditionnel : sans effet si elle est déjà en
+    // cours (cas de plusieurs travailleurs recherchés).
+    if (status === ApplicationStatus.ACCEPTED) {
+      const [updated] = await this.prisma.$transaction([
+        updateApplication,
+        this.prisma.job.updateMany({
+          where: { id: application.jobId, status: JobStatus.PUBLISHED },
+          data: { status: JobStatus.IN_PROGRESS },
+        }),
+      ]);
+      return updated;
+    }
+
+    return updateApplication;
   }
 }

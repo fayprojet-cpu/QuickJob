@@ -6,7 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { fetchMineJobs, publishJob } from '@/features/jobs/api';
+import { completeJob, fetchMineJobs, publishJob } from '@/features/jobs/api';
 import { formatMoney } from '@/lib/money';
 
 export function MineJobsList() {
@@ -22,6 +22,13 @@ export function MineJobsList() {
 
   const publishMutation = useMutation({
     mutationFn: (id: string) => publishJob(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobs', 'mine'] });
+    },
+  });
+
+  const completeMutation = useMutation({
+    mutationFn: (id: string) => completeJob(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobs', 'mine'] });
     },
@@ -98,6 +105,30 @@ export function MineJobsList() {
               >
                 {tMine('draftBadge')}
               </Button>
+            ) : null}
+            {job.status === 'IN_PROGRESS' ? (
+              <>
+                <Link href={`/jobs/${job.id}/applications`} className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    {tApplications('viewApplications')}
+                  </Button>
+                </Link>
+                <Button
+                  size="sm"
+                  className="flex-1"
+                  isLoading={completeMutation.isPending && completeMutation.variables === job.id}
+                  onClick={() => completeMutation.mutate(job.id)}
+                >
+                  {tMine('markCompleted')}
+                </Button>
+              </>
+            ) : null}
+            {job.status === 'COMPLETED' ? (
+              <Link href={`/jobs/${job.id}/applications`} className="w-full">
+                <Button variant="outline" size="sm" className="w-full">
+                  {tApplications('viewApplications')}
+                </Button>
+              </Link>
             ) : null}
           </div>
         </Card>

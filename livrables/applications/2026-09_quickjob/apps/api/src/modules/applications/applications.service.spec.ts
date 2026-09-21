@@ -10,8 +10,10 @@ import { ApplicationsService } from './applications.service';
 
 function buildPrismaMock() {
   return {
+    $transaction: jest.fn((operations: unknown[]) => Promise.all(operations)),
     job: {
       findFirst: jest.fn(),
+      updateMany: jest.fn(),
     },
     application: {
       findUnique: jest.fn(),
@@ -105,6 +107,11 @@ describe('ApplicationsService', () => {
       expect(prisma.application.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({ where: { id: 'app-1', job: { recruiterId: 'recruiter-1' } } }),
       );
+      // Accepter démarre la mission (PUBLISHED -> IN_PROGRESS).
+      expect(prisma.job.updateMany).toHaveBeenCalledWith({
+        where: { id: 'job-1', status: JobStatus.PUBLISHED },
+        data: { status: JobStatus.IN_PROGRESS },
+      });
     });
 
     it('throws NotFoundException when the application does not belong to the recruiter', async () => {
@@ -138,6 +145,8 @@ describe('ApplicationsService', () => {
       const result = await service.reject('app-1', 'recruiter-1');
 
       expect(result.status).toBe(ApplicationStatus.REJECTED);
+      // Refuser ne démarre PAS la mission.
+      expect(prisma.job.updateMany).not.toHaveBeenCalled();
     });
   });
 });

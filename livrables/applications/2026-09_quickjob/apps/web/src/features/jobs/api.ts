@@ -37,6 +37,10 @@ export function publishJob(id: string): Promise<Job> {
   return authApiFetch<Job>(`/jobs/${id}/publish`, { method: 'POST' });
 }
 
+export function completeJob(id: string): Promise<Job> {
+  return authApiFetch<Job>(`/jobs/${id}/complete`, { method: 'PATCH' });
+}
+
 export function fetchMineJobs(query: QueryJobsInput = {}): Promise<PaginatedResult<Job>> {
   return authApiFetch<PaginatedResult<Job>>(
     `/jobs/mine${toQueryString({ page: query.page, limit: query.limit })}`,

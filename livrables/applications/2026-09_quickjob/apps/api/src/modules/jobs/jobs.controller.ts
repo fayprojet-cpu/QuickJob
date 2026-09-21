@@ -95,6 +95,18 @@ export class JobsController {
 
   @ApiBearerAuth()
   @Roles(UserRole.RECRUITER)
+  @Patch(':id/complete')
+  @ApiOperation({ summary: 'Marque une mission IN_PROGRESS comme terminée (COMPLETED)' })
+  @ApiOkResponse({ type: JobResponseDto })
+  complete(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<JobResponseDto> {
+    return this.jobsService.complete(id, user.id);
+  }
+
+  @ApiBearerAuth()
+  @Roles(UserRole.RECRUITER)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Annule (PUBLISHED) ou supprime (DRAFT) une mission' })

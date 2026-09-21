@@ -206,6 +206,7 @@
       "empty": "You haven't posted any job yet.",
       "emptyCta": "Post a job",
       "draftBadge": "Publish",
+      "markCompleted": "Mark completed",
       "loginPrompt": "Log in with a recruiter account to see your jobs."
     }
   },

@@ -118,6 +118,18 @@ export class JobsService {
     throw new BadRequestException(`A job with status ${job.status} cannot be cancelled`);
   }
 
+  /** Le recruteur marque une mission EN COURS comme TERMINÉE. */
+  async complete(id: string, recruiterId: string): Promise<Job> {
+    const job = await this.getOwnedJob(id, recruiterId);
+    if (job.status !== JobStatus.IN_PROGRESS) {
+      throw new BadRequestException('Only a job in progress can be marked as completed');
+    }
+    return this.prisma.job.update({
+      where: { id: job.id },
+      data: { status: JobStatus.COMPLETED },
+    });
+  }
+
   private async paginate(
     where: Prisma.JobWhereInput,
     query: QueryJobsDto,

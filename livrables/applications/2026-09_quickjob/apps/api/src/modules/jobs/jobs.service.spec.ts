@@ -174,6 +174,39 @@ describe('JobsService', () => {
     });
   });
 
+  describe('complete', () => {
+    it('marks an IN_PROGRESS job as COMPLETED', async () => {
+      (prisma.job.findFirst as jest.Mock).mockResolvedValue({
+        ...baseJob,
+        status: JobStatus.IN_PROGRESS,
+      });
+      (prisma.job.update as jest.Mock).mockResolvedValue({
+        ...baseJob,
+        status: JobStatus.COMPLETED,
+      });
+
+      const result = await service.complete('job-1', 'recruiter-1');
+
+      expect(result.status).toBe(JobStatus.COMPLETED);
+      expect(prisma.job.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ status: JobStatus.COMPLETED }),
+        }),
+      );
+    });
+
+    it('refuses to complete a job that is not in progress', async () => {
+      (prisma.job.findFirst as jest.Mock).mockResolvedValue({
+        ...baseJob,
+        status: JobStatus.PUBLISHED,
+      });
+
+      await expect(service.complete('job-1', 'recruiter-1')).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
+    });
+  });
+
   describe('cancel', () => {
     it('hard-deletes a DRAFT job', async () => {
       (prisma.job.findFirst as jest.Mock).mockResolvedValue(baseJob);

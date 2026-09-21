@@ -206,6 +206,7 @@
       "empty": "Tu n'as pas encore publié de mission.",
       "emptyCta": "Publier une mission",
       "draftBadge": "Publier",
+      "markCompleted": "Marquer terminée",
       "loginPrompt": "Connecte-toi avec un compte recruteur pour voir tes missions."
     }
   },
