@@ -7,6 +7,7 @@ import { routing } from '@/i18n/routing';
 import { QueryProvider } from '@/lib/query-provider';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { BottomNav } from '@/components/layout/bottom-nav';
 import '../globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -49,6 +50,7 @@ export default async function LocaleLayout({
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
+            <BottomNav />
           </QueryProvider>
         </NextIntlClientProvider>
       </body>

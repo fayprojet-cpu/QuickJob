@@ -25,7 +25,10 @@
     "modeWorker": "Worker",
     "modeRecruiter": "Recruiter",
     "activateWorker": "Activate worker mode",
-    "activateRecruiter": "Activate recruiter mode"
+    "activateRecruiter": "Activate recruiter mode",
+    "lookingForWork": "I'm looking for work",
+    "hiring": "I'm hiring",
+    "modeSwitchAria": "Switch mode"
   },
   "home": {
     "heroTitle": "Find work today.\nGet paid today.",
