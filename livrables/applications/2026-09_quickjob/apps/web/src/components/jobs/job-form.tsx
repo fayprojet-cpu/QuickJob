@@ -35,6 +35,7 @@ export function JobForm() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [negotiable, setNegotiable] = useState(false);
   const [salaryAmount, setSalaryAmount] = useState('');
   const [salaryCurrency, setSalaryCurrency] = useState(user?.currency ?? 'EUR');
   const [salaryType, setSalaryType] = useState<SalaryType>('FIXED');
@@ -58,9 +59,13 @@ export function JobForm() {
         title,
         description,
         categoryId,
-        salaryAmount: toMinorUnits(salaryAmount, salaryCurrency, locale) ?? '',
-        salaryCurrency: salaryCurrency.toUpperCase(),
-        salaryType,
+        ...(negotiable
+          ? {}
+          : {
+              salaryAmount: toMinorUnits(salaryAmount, salaryCurrency, locale) ?? '',
+              salaryCurrency: salaryCurrency.toUpperCase(),
+              salaryType,
+            }),
         urgency,
         workersNeeded: Number(workersNeeded),
         city: city || undefined,
@@ -137,51 +142,67 @@ export function JobForm() {
         </Select>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label htmlFor="salaryAmount">{t('salaryAmount')}</Label>
-          <Input
-            id="salaryAmount"
-            required
-            inputMode="decimal"
-            placeholder="1000"
-            value={salaryAmount}
-            onChange={(event) => setSalaryAmount(event.target.value)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="salaryCurrency">{t('salaryCurrency')}</Label>
-          <Select
-            id="salaryCurrency"
-            required
-            value={salaryCurrency}
-            onChange={(event) => setSalaryCurrency(event.target.value)}
-          >
-            {currencyOptions.map((option) => (
-              <option key={option.code} value={option.code}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-        </div>
-      </div>
-      <p className="-mt-2 text-xs text-neutral-500">{t('salaryAmountHint')}</p>
+      <label className="flex items-center gap-2 text-sm text-neutral-700">
+        <input
+          type="checkbox"
+          checked={negotiable}
+          onChange={(event) => setNegotiable(event.target.checked)}
+          className="h-4 w-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500"
+        />
+        {t('negotiableLabel')}
+      </label>
+
+      {!negotiable ? (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="salaryAmount">{t('salaryAmount')}</Label>
+              <Input
+                id="salaryAmount"
+                required
+                inputMode="decimal"
+                placeholder="1000"
+                value={salaryAmount}
+                onChange={(event) => setSalaryAmount(event.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="salaryCurrency">{t('salaryCurrency')}</Label>
+              <Select
+                id="salaryCurrency"
+                required
+                value={salaryCurrency}
+                onChange={(event) => setSalaryCurrency(event.target.value)}
+              >
+                {currencyOptions.map((option) => (
+                  <option key={option.code} value={option.code}>
+                    {option.label}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          </div>
+          <p className="-mt-2 text-xs text-neutral-500">{t('salaryAmountHint')}</p>
+        </>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label htmlFor="salaryType">{t('salaryType')}</Label>
-          <Select
-            id="salaryType"
-            value={salaryType}
-            onChange={(event) => setSalaryType(event.target.value as SalaryType)}
-          >
-            {SALARY_TYPES.map((value) => (
-              <option key={value} value={value}>
-                {tJobs(`salaryType.${value}`)}
-              </option>
-            ))}
-          </Select>
-        </div>
+        {!negotiable ? (
+          <div>
+            <Label htmlFor="salaryType">{t('salaryType')}</Label>
+            <Select
+              id="salaryType"
+              value={salaryType}
+              onChange={(event) => setSalaryType(event.target.value as SalaryType)}
+            >
+              {SALARY_TYPES.map((value) => (
+                <option key={value} value={value}>
+                  {tJobs(`salaryType.${value}`)}
+                </option>
+              ))}
+            </Select>
+          </div>
+        ) : null}
         <div>
           <Label htmlFor="urgency">{t('urgencyLabel')}</Label>
           <Select

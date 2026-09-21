@@ -67,8 +67,9 @@ export interface Job {
   categoryId: string;
   title: string;
   description: string;
-  salaryAmount: string;
-  salaryCurrency: string;
+  /** Absent = rémunération à négocier. */
+  salaryAmount: string | null;
+  salaryCurrency: string | null;
   salaryType: SalaryType;
   durationMinutes: number | null;
   startAt: string | null;
@@ -108,8 +109,9 @@ export interface CreateJobInput {
   title: string;
   description: string;
   categoryId: string;
-  salaryAmount: string;
-  salaryCurrency: string;
+  /** Absentes = rémunération à négocier. */
+  salaryAmount?: string;
+  salaryCurrency?: string;
   salaryType?: SalaryType;
   urgency?: JobUrgency;
   workersNeeded?: number;

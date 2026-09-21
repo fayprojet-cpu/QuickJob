@@ -13,10 +13,14 @@ export class JobResponseDto {
   @ApiProperty() title!: string;
   @ApiProperty() description!: string;
 
-  @ApiProperty({ type: String, description: 'Unités mineures (centimes)' })
-  salaryAmount!: bigint;
+  @ApiPropertyOptional({
+    type: String,
+    nullable: true,
+    description: 'Unités mineures (centimes). Absent = rémunération à négocier.',
+  })
+  salaryAmount!: bigint | null;
 
-  @ApiProperty() salaryCurrency!: string;
+  @ApiPropertyOptional({ nullable: true }) salaryCurrency!: string | null;
   @ApiProperty({ enum: SalaryType }) salaryType!: SalaryType;
   @ApiPropertyOptional({ nullable: true }) durationMinutes!: number | null;
   @ApiPropertyOptional({ nullable: true }) startAt!: Date | null;

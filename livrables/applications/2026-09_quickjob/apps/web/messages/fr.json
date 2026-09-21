@@ -172,6 +172,7 @@
     "category_moving": "Déménagement",
     "category_events": "Événementiel",
     "category_handyman": "Petit bricolage",
+    "negotiable": "À négocier",
     "new": {
       "title": "Publier une mission",
       "subtitle": "D'abord en brouillon — tu la relis et la publies à l'étape suivante.",
@@ -184,6 +185,7 @@
       "salaryAmountHint": "Le montant réel, ex. 1000. Choisis la devise à côté.",
       "salaryCurrency": "Devise",
       "salaryType": "Type de rémunération",
+      "negotiableLabel": "Rémunération à négocier",
       "urgencyLabel": "Urgence",
       "workersNeededLabel": "Personnes recherchées",
       "cityLabel": "Ville",

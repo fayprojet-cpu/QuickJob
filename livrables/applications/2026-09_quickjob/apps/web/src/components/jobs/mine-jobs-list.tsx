@@ -49,7 +49,9 @@ export function MineJobsList() {
 
   return (
     <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {jobs.map((job) => (
+      {jobs.map((job) => {
+        const { salaryAmount, salaryCurrency } = job;
+        return (
         <Card key={job.id} className="flex h-full flex-col gap-3 p-4">
           <div className="flex items-start justify-between gap-2">
             <h3 className="font-semibold text-neutral-900">{job.title}</h3>
@@ -61,8 +63,14 @@ export function MineJobsList() {
           <p className="line-clamp-2 text-sm text-neutral-600">{job.description}</p>
 
           <span className="text-sm font-semibold text-primary-600">
-            {formatMoney(job.salaryAmount, job.salaryCurrency, locale)}{' '}
-            <span className="font-normal text-neutral-500">{t(`salaryType.${job.salaryType}`)}</span>
+            {salaryAmount && salaryCurrency ? (
+              <>
+                {formatMoney(salaryAmount, salaryCurrency, locale)}{' '}
+                <span className="font-normal text-neutral-500">{t(`salaryType.${job.salaryType}`)}</span>
+              </>
+            ) : (
+              t('negotiable')
+            )}
           </span>
 
           <div className="mt-auto flex items-center gap-2 pt-2">
@@ -85,7 +93,8 @@ export function MineJobsList() {
             ) : null}
           </div>
         </Card>
-      ))}
+        );
+      })}
     </div>
   );
 }

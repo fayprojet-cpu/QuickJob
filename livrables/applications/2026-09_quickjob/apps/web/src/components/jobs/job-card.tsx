@@ -10,6 +10,7 @@ import type { Category, Job } from '@/types/api';
 export function JobCard({ job, category }: { job: Job; category?: Category }) {
   const t = useTranslations('jobs');
   const locale = useLocale();
+  const { salaryAmount, salaryCurrency } = job;
 
   return (
     <Link href={`/jobs/${job.id}`}>
@@ -31,8 +32,14 @@ export function JobCard({ job, category }: { job: Job; category?: Category }) {
 
         <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-2 text-sm">
           <span className="font-semibold text-primary-600">
-            {formatMoney(job.salaryAmount, job.salaryCurrency, locale)}{' '}
-            <span className="font-normal text-neutral-500">{t(`salaryType.${job.salaryType}`)}</span>
+            {salaryAmount && salaryCurrency ? (
+              <>
+                {formatMoney(salaryAmount, salaryCurrency, locale)}{' '}
+                <span className="font-normal text-neutral-500">{t(`salaryType.${job.salaryType}`)}</span>
+              </>
+            ) : (
+              t('negotiable')
+            )}
           </span>
 
           {job.city ? (

@@ -546,8 +546,8 @@ model Job {
   categoryId     String              @db.Uuid
   title          String
   description    String
-  salaryAmount   BigInt              // unités mineures
-  salaryCurrency String              // ISO 4217
+  salaryAmount   BigInt?             // unités mineures — absent = rémunération à négocier
+  salaryCurrency String?             // ISO 4217 — absent = rémunération à négocier
   salaryType     SalaryType          @default(FIXED)
   durationMinutes Int?
   startAt        DateTime?

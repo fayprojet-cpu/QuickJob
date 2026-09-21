@@ -172,6 +172,7 @@
     "category_moving": "Moving help",
     "category_events": "Events staffing",
     "category_handyman": "Handyman",
+    "negotiable": "Negotiable",
     "new": {
       "title": "Post a job",
       "subtitle": "Draft first — you'll review and publish it on the next step.",
@@ -184,6 +185,7 @@
       "salaryAmountHint": "The real amount, e.g. 1000. Pick the currency next to it.",
       "salaryCurrency": "Currency",
       "salaryType": "Pay type",
+      "negotiableLabel": "Negotiable pay",
       "urgencyLabel": "Urgency",
       "workersNeededLabel": "Workers needed",
       "cityLabel": "City",

@@ -31,6 +31,7 @@ export default async function JobDetailPage({
   const category = categories.find((item) => item.id === job.categoryId);
 
   const formatter = new Intl.DateTimeFormat(locale, { dateStyle: 'long' });
+  const { salaryAmount, salaryCurrency } = job;
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
@@ -53,10 +54,16 @@ export default async function JobDetailPage({
         ) : null}
 
         <p className="mt-4 text-2xl font-bold text-primary-600">
-          {formatMoney(job.salaryAmount, job.salaryCurrency, locale)}{' '}
-          <span className="text-base font-normal text-neutral-500">
-            {t(`salaryType.${job.salaryType}`)}
-          </span>
+          {salaryAmount && salaryCurrency ? (
+            <>
+              {formatMoney(salaryAmount, salaryCurrency, locale)}{' '}
+              <span className="text-base font-normal text-neutral-500">
+                {t(`salaryType.${job.salaryType}`)}
+              </span>
+            </>
+          ) : (
+            t('negotiable')
+          )}
         </p>
 
         <dl className="mt-6 grid grid-cols-1 gap-3 text-sm text-neutral-600 sm:grid-cols-2">

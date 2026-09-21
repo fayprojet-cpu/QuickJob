@@ -35,17 +35,20 @@ export class CreateJobDto {
   @IsUUID()
   categoryId!: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     example: '15000',
-    description: 'Montant en unités mineures (centimes), entier positif encodé en string',
+    description:
+      'Montant en unités mineures (centimes), entier positif encodé en string. Absent = rémunération à négocier.',
   })
+  @IsOptional()
   @Matches(POSITIVE_INTEGER_STRING, { message: 'salaryAmount must be a positive integer string' })
-  salaryAmount!: string;
+  salaryAmount?: string;
 
-  @ApiProperty({ example: 'EUR' })
+  @ApiPropertyOptional({ example: 'EUR', description: 'Absent = rémunération à négocier.' })
+  @IsOptional()
   @Matches(ISO_4217, { message: 'salaryCurrency must be a 3-letter ISO 4217 code' })
-  salaryCurrency!: string;
+  salaryCurrency?: string;
 
   @ApiPropertyOptional({ enum: SalaryType, default: SalaryType.FIXED })
   @IsOptional()

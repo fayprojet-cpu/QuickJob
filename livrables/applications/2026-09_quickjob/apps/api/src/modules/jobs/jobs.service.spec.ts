@@ -70,8 +70,35 @@ describe('JobsService', () => {
         expect.objectContaining({
           data: expect.objectContaining({
             salaryAmount: 15000n,
+            salaryCurrency: 'EUR',
             status: JobStatus.DRAFT,
             recruiterId: 'recruiter-1',
+          }),
+        }),
+      );
+    });
+
+    it('creates a job without remuneration ("à négocier") when salaryAmount/salaryCurrency are absent', async () => {
+      (prisma.job.create as jest.Mock).mockResolvedValue({
+        ...baseJob,
+        salaryAmount: null,
+        salaryCurrency: null,
+      });
+
+      const dto: CreateJobDto = {
+        title: 'Livraison de colis',
+        description: 'Livrer 10 colis dans le quartier',
+        categoryId: 'category-1',
+      };
+
+      await service.create('recruiter-1', dto);
+
+      expect(prisma.job.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            salaryAmount: null,
+            salaryCurrency: null,
+            status: JobStatus.DRAFT,
           }),
         }),
       );
