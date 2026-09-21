@@ -205,6 +205,14 @@ describe('JobsService', () => {
         BadRequestException,
       );
     });
+
+    it('throws NotFoundException when completed by a recruiter who does not own the job', async () => {
+      (prisma.job.findFirst as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.complete('job-1', 'someone-else')).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
   });
 
   describe('cancel', () => {
