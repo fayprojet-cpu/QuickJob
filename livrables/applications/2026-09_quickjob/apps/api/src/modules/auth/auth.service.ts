@@ -5,11 +5,18 @@ import { UserRole } from '@prisma/client';
 import { Env } from '@quickjob/config';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../../infra/prisma/prisma.service';
+import { MailService } from '../../infra/mail/mail.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { asJwtDuration, parseDurationMs } from './utils/parse-duration.util';
+import { generateResetToken, hashResetToken } from './utils/password-reset-token.util';
 import { generateRefreshToken, hashRefreshToken } from './utils/refresh-token.util';
 import { JwtPayload } from './strategies/jwt-payload.interface';
+
+/** Durée de validité d'un token de réinitialisation de mot de passe. */
+const PASSWORD_RESET_TTL_MS = 30 * 60 * 1000;
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -30,6 +37,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService<Env, true>,
+    private readonly mailService: MailService,
   ) {}
 
   async register(dto: RegisterDto, context: RequestContext = {}): Promise<TokenPair> {
@@ -113,6 +121,55 @@ export class AuthService {
       where: { userId, tokenHash, revokedAt: null },
       data: { revokedAt: new Date() },
     });
+  }
+
+  /**
+   * Ne révèle jamais si l'email existe (réponse identique côté contrôleur
+   * dans tous les cas). Si un compte correspond, un token est créé et un
+   * email envoyé ; sinon on ne fait rien, silencieusement.
+   */
+  async forgotPassword(dto: ForgotPasswordDto): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    if (!user || user.deletedAt) {
+      return;
+    }
+
+    const token = generateResetToken();
+    const tokenHash = hashResetToken(token);
+    const expiresAt = new Date(Date.now() + PASSWORD_RESET_TTL_MS);
+
+    await this.prisma.passwordResetToken.create({
+      data: { userId: user.id, tokenHash, expiresAt },
+    });
+
+    const resetUrl = `${this.configService.get('WEB_URL', { infer: true })}/reset-password?token=${token}`;
+    await this.mailService.sendPasswordResetEmail(dto.email, resetUrl, user.locale);
+  }
+
+  async resetPassword(dto: ResetPasswordDto): Promise<void> {
+    const tokenHash = hashResetToken(dto.token);
+    const resetToken = await this.prisma.passwordResetToken.findUnique({ where: { tokenHash } });
+
+    if (!resetToken || resetToken.usedAt || resetToken.expiresAt < new Date()) {
+      throw new UnauthorizedException('Invalid or expired reset token');
+    }
+
+    const passwordHash = await bcrypt.hash(dto.newPassword, BCRYPT_SALT_ROUNDS);
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: resetToken.userId },
+        data: { passwordHash },
+      }),
+      this.prisma.passwordResetToken.update({
+        where: { id: resetToken.id },
+        data: { usedAt: new Date() },
+      }),
+      this.prisma.refreshToken.updateMany({
+        where: { userId: resetToken.userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      }),
+    ]);
   }
 
   private async issueTokenPair(

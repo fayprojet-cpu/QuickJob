@@ -8,6 +8,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './infra/prisma/prisma.module';
+import { MailModule } from './infra/mail/mail.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { JobsModule } from './modules/jobs/jobs.module';
@@ -27,6 +28,7 @@ import { HealthModule } from './health/health.module';
       throttlers: [{ ttl: 60_000, limit: 100 }],
     }),
     PrismaModule,
+    MailModule,
     AuthModule,
     UsersModule,
     JobsModule,

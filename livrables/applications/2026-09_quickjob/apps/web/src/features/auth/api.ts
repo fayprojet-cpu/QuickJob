@@ -35,3 +35,17 @@ export function logoutUser(refreshToken: string): Promise<void> {
     body: JSON.stringify({ refreshToken }),
   });
 }
+
+export function forgotPassword(email: string): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+}
+
+export function resetPassword(input: { token: string; newPassword: string }): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>('/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}

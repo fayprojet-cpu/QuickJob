@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useLogin } from '@/features/auth/use-auth';
 import { ApiError } from '@/lib/api-error';
 import { Button } from '@/components/ui/button';
@@ -52,7 +52,12 @@ export function LoginForm() {
       </div>
 
       <div>
-        <Label htmlFor="password">{t('password')}</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">{t('password')}</Label>
+          <Link href="/forgot-password" className="mb-1.5 text-xs font-medium text-primary-600 hover:underline">
+            {t('forgotPasswordLink')}
+          </Link>
+        </div>
         <Input
           id="password"
           type="password"

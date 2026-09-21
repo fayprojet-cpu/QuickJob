@@ -43,3 +43,17 @@ services:
         sync: false
       - key: API_URL
         sync: false
+      # SMTP (mot de passe oublié) — voir docs/EMAIL-SETUP.md. Si absentes,
+      # l'API logge le lien de réinitialisation au lieu de l'envoyer.
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: MAIL_FROM
+        sync: false

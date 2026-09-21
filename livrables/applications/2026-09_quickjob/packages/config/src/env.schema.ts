@@ -23,6 +23,16 @@ export const envSchema = z
     JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters'),
     JWT_ACCESS_TTL: z.string().regex(DURATION_FORMAT, 'expected format like "15m" or "7d"').default('15m'),
     JWT_REFRESH_TTL: z.string().regex(DURATION_FORMAT, 'expected format like "15m" or "7d"').default('7d'),
+
+    // SMTP optionnel : absent en dev -> MailService bascule sur un envoi
+    // "console" (log le lien au lieu d'un vrai email), pratique sans
+    // fournisseur SMTP local. Présent -> envoi réel (Gmail, Brevo, etc.).
+    SMTP_HOST: z.string().optional(),
+    SMTP_PORT: z.coerce.number().int().positive().optional(),
+    SMTP_SECURE: z.enum(['true', 'false']).optional(),
+    SMTP_USER: z.string().optional(),
+    SMTP_PASSWORD: z.string().optional(),
+    MAIL_FROM: z.string().optional(),
   })
   .loose();
 

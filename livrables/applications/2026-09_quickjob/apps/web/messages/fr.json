@@ -105,7 +105,19 @@
     "countryCode": "Code pays",
     "countryCodeHint": "ISO 3166-1 alpha-2, ex. FR, CI, US (optionnel)",
     "invalidCredentials": "Email ou mot de passe incorrect",
-    "emailTaken": "Un compte existe déjà avec cet email"
+    "emailTaken": "Un compte existe déjà avec cet email",
+    "forgotPasswordLink": "Mot de passe oublié ?",
+    "forgotPasswordTitle": "Mot de passe oublié",
+    "forgotPasswordSubmit": "Envoyer le lien de réinitialisation",
+    "forgotPasswordSuccess": "Si un compte existe avec cet email, un lien de réinitialisation vient d'être envoyé.",
+    "resetPasswordTitle": "Réinitialiser le mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "resetPasswordSubmit": "Réinitialiser le mot de passe",
+    "resetPasswordSuccess": "Ton mot de passe a été mis à jour. Redirection vers la connexion…",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "invalidOrExpiredToken": "Ce lien est invalide ou a expiré. Demande un nouveau lien de réinitialisation.",
+    "backToLogin": "Retour à la connexion"
   },
   "jobs": {
     "title": "Missions",

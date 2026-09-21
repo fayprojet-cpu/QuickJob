@@ -309,6 +309,7 @@ model User {
   // Relations
   oauthAccounts           OAuthAccount[]
   refreshTokens           RefreshToken[]
+  passwordResetTokens     PasswordResetToken[]
   otpCodes                OtpCode[]
   twoFactor               TwoFactor?
   workerProfile           WorkerProfile?
@@ -375,6 +376,20 @@ model RefreshToken {
 
   @@index([userId])
   @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique // on ne stocke jamais le token en clair
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 model OtpCode {

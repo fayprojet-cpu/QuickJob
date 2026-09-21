@@ -3,7 +3,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth-store';
 import type { LoginInput, RegisterInput } from '@/types/api';
-import { fetchMeWithToken, loginUser, logoutUser, registerUser } from './api';
+import { fetchMeWithToken, forgotPassword, loginUser, logoutUser, registerUser, resetPassword } from './api';
 
 export function useRegister() {
   const setSession = useAuthStore((state) => state.setSession);
@@ -28,6 +28,18 @@ export function useLogin() {
       return { tokens, user };
     },
     onSuccess: ({ tokens, user }) => setSession(tokens, user),
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (email: string) => forgotPassword(email),
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: (input: { token: string; newPassword: string }) => resetPassword(input),
   });
 }
 
