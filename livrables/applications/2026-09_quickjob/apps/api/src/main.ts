@@ -30,13 +30,39 @@ for (const key of ['DATABASE_URL', 'DIRECT_URL'] as const) {
   }
 }
 
+/**
+ * Origines autorisées par CORS. On accepte :
+ *  - l'URL web configurée (WEB_URL, la prod) ;
+ *  - toute URL de déploiement Vercel (*.vercel.app) — Vercel génère une URL de
+ *    prévisualisation différente à chaque déploiement, sinon elles seraient
+ *    bloquées ;
+ *  - localhost (développement).
+ * L'auth utilise des jetons Bearer (pas de cookie de session), donc élargir les
+ * origines n'expose pas la session d'un utilisateur.
+ */
+function buildCorsOriginChecker(webUrl: string | undefined) {
+  const explicit = new Set([webUrl].filter(Boolean) as string[]);
+  const vercelHost = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i;
+  const localhost = /^http:\/\/localhost(:\d+)?$/i;
+  return (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void,
+  ): void => {
+    if (!origin || explicit.has(origin) || vercelHost.test(origin) || localhost.test(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(null, false);
+  };
+}
+
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService<Env, true>);
 
   app.use(helmet());
   app.enableCors({
-    origin: configService.get('WEB_URL', { infer: true }),
+    origin: buildCorsOriginChecker(configService.get('WEB_URL', { infer: true })),
     credentials: true,
   });
 
