@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAddRole } from '@/features/users/use-users';
 import { getDefaultMode } from '@/lib/mode';
@@ -9,8 +10,25 @@ import type { SelfServiceRole } from '@/types/api';
 
 const MODES: SelfServiceRole[] = ['WORKER', 'RECRUITER'];
 
-export function ModeSwitcher({ className }: { className?: string }) {
+/**
+ * Page d'accueil de chaque mode. On y navigue à la bascule pour que le contenu
+ * affiché corresponde toujours au mode choisi (sinon on reste, par ex., sur
+ * « Publier une mission » même après être passé en mode Travailleur).
+ */
+const MODE_HOME: Record<SelfServiceRole, string> = {
+  WORKER: '/jobs',
+  RECRUITER: '/jobs/mine',
+};
+
+export function ModeSwitcher({
+  className,
+  onSwitch,
+}: {
+  className?: string;
+  onSwitch?: () => void;
+}) {
   const t = useTranslations('nav');
+  const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const activeMode = useAuthStore((state) => state.activeMode);
   const setActiveMode = useAuthStore((state) => state.setActiveMode);
@@ -22,11 +40,18 @@ export function ModeSwitcher({ className }: { className?: string }) {
 
   const currentMode = activeMode ?? getDefaultMode(user.roles);
 
+  function goToMode(mode: SelfServiceRole) {
+    onSwitch?.();
+    router.push(MODE_HOME[mode]);
+  }
+
   function handleClick(mode: SelfServiceRole) {
     if (user!.roles.includes(mode)) {
       setActiveMode(mode);
+      goToMode(mode);
     } else {
-      addRole.mutate(mode);
+      // useAddRole met déjà à jour les rôles + le mode actif ; on navigue ensuite.
+      addRole.mutate(mode, { onSuccess: () => goToMode(mode) });
     }
   }
 

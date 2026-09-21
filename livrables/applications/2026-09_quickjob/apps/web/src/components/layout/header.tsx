@@ -147,7 +147,7 @@ export function Header() {
 
             {user ? (
               <div className="mt-1">
-                <ModeSwitcher className="w-full justify-center" />
+                <ModeSwitcher className="w-full justify-center" onSwitch={closeMobile} />
               </div>
             ) : null}
 
