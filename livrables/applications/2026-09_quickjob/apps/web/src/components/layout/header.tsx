@@ -107,6 +107,13 @@ export function Header() {
         </button>
       </div>
 
+      {/* Bascule de mode toujours visible sur mobile — sans ouvrir le menu ☰ */}
+      {user ? (
+        <div className="border-t border-neutral-200 bg-white px-4 py-2 sm:hidden">
+          <ModeSwitcher className="w-full justify-center" />
+        </div>
+      ) : null}
+
       {/* Panneau de navigation mobile */}
       {mobileOpen ? (
         <nav className="border-t border-neutral-200 bg-white px-4 py-3 sm:hidden">
@@ -143,12 +150,6 @@ export function Header() {
                   </Link>
                 ) : null}
               </>
-            ) : null}
-
-            {user ? (
-              <div className="mt-1">
-                <ModeSwitcher className="w-full justify-center" onSwitch={closeMobile} />
-              </div>
             ) : null}
 
             {user ? (
