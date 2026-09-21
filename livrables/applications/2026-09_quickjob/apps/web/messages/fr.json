@@ -179,7 +179,7 @@
       "categoryLabel": "Catégorie",
       "categoryPlaceholder": "Choisir une catégorie",
       "salaryAmount": "Montant",
-      "salaryAmountHint": "En unité mineure de la devise, ex. 15000 = 150,00 €",
+      "salaryAmountHint": "Le montant réel, ex. 1000. Choisis la devise à côté.",
       "salaryCurrency": "Devise",
       "salaryType": "Type de rémunération",
       "urgencyLabel": "Urgence",

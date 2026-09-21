@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useMemo, useState, type FormEvent } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { createJob, fetchCategories, publishJob } from '@/features/jobs/api';
 import { categoryTranslationKey } from '@/features/jobs/category-label';
+import { toMinorUnits } from '@/lib/money';
+import { CURRENCY_CODES, currencyLabel } from '@/lib/currencies';
 import { ApiError } from '@/lib/api-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +26,7 @@ export function JobForm() {
   const tJobs = useTranslations('jobs');
   const tCommon = useTranslations('common');
   const tErrors = useTranslations('errors');
+  const locale = useLocale();
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
 
@@ -42,13 +45,20 @@ export function JobForm() {
   const [publishNow, setPublishNow] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const currencyOptions = useMemo(() => {
+    const codes = CURRENCY_CODES.includes(salaryCurrency)
+      ? CURRENCY_CODES
+      : [salaryCurrency, ...CURRENCY_CODES];
+    return codes.map((code) => ({ code, label: currencyLabel(code, locale) }));
+  }, [locale, salaryCurrency]);
+
   const submitMutation = useMutation({
     mutationFn: async () => {
       const job = await createJob({
         title,
         description,
         categoryId,
-        salaryAmount,
+        salaryAmount: toMinorUnits(salaryAmount, salaryCurrency, locale) ?? '',
         salaryCurrency: salaryCurrency.toUpperCase(),
         salaryType,
         urgency,
@@ -133,23 +143,26 @@ export function JobForm() {
           <Input
             id="salaryAmount"
             required
-            inputMode="numeric"
-            pattern="[1-9][0-9]*"
-            placeholder="15000"
+            inputMode="decimal"
+            placeholder="1000"
             value={salaryAmount}
             onChange={(event) => setSalaryAmount(event.target.value)}
           />
         </div>
         <div>
           <Label htmlFor="salaryCurrency">{t('salaryCurrency')}</Label>
-          <Input
+          <Select
             id="salaryCurrency"
             required
-            maxLength={3}
-            placeholder="EUR"
             value={salaryCurrency}
             onChange={(event) => setSalaryCurrency(event.target.value)}
-          />
+          >
+            {currencyOptions.map((option) => (
+              <option key={option.code} value={option.code}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
         </div>
       </div>
       <p className="-mt-2 text-xs text-neutral-500">{t('salaryAmountHint')}</p>

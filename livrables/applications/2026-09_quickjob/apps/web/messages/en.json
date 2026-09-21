@@ -179,7 +179,7 @@
       "categoryLabel": "Category",
       "categoryPlaceholder": "Select a category",
       "salaryAmount": "Pay amount",
-      "salaryAmountHint": "In your currency's smallest unit, e.g. 15000 = €150.00",
+      "salaryAmountHint": "The real amount, e.g. 1000. Pick the currency next to it.",
       "salaryCurrency": "Currency",
       "salaryType": "Pay type",
       "urgencyLabel": "Urgency",
