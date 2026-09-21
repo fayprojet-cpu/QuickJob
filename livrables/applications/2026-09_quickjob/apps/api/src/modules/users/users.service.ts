@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 import { PrismaService } from '../../infra/prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user.response.dto';
@@ -48,6 +48,33 @@ export class UsersService {
       select: SAFE_USER_SELECT,
     });
     return this.toResponseDto(user);
+  }
+
+  /**
+   * Ajoute un rôle self-service (WORKER/RECRUITER) au compte connecté —
+   * idempotent : ne duplique rien si le rôle est déjà présent. C'est le
+   * mécanisme qui permet à un même compte de devenir à la fois travailleur
+   * et recruteur ("bascule de mode" côté web).
+   */
+  async addRole(id: string, role: UserRole): Promise<UserResponseDto> {
+    const user = await this.prisma.user.findFirst({
+      where: { id, deletedAt: null },
+      select: { roles: true },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.roles.includes(role)) {
+      return this.findSafeById(id);
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id },
+      data: { roles: { push: role } },
+      select: SAFE_USER_SELECT,
+    });
+    return this.toResponseDto(updated);
   }
 
   private toResponseDto(user: SafeUser): UserResponseDto {

@@ -5,6 +5,8 @@
  */
 
 export type UserRole = 'WORKER' | 'RECRUITER' | 'ADMIN' | 'SUPER_ADMIN';
+/** Rôles qu'un compte peut s'auto-attribuer — jamais ADMIN/SUPER_ADMIN. */
+export type SelfServiceRole = 'WORKER' | 'RECRUITER';
 export type UserStatus = 'ACTIVE' | 'SUSPENDED' | 'BANNED' | 'DELETED';
 
 export type SalaryType = 'FIXED' | 'HOURLY' | 'DAILY';

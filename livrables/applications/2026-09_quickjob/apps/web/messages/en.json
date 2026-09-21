@@ -20,7 +20,12 @@
     "logout": "Log out",
     "myAccount": "My account",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "myJobs": "My jobs",
+    "modeWorker": "Worker",
+    "modeRecruiter": "Recruiter",
+    "activateWorker": "Activate worker mode",
+    "activateRecruiter": "Activate recruiter mode"
   },
   "home": {
     "heroTitle": "Find work today.\nGet paid today.",
@@ -117,7 +122,8 @@
     "resetPasswordSuccess": "Your password has been updated. Redirecting to login…",
     "passwordMismatch": "Passwords don't match",
     "invalidOrExpiredToken": "This link is invalid or has expired. Request a new reset link.",
-    "backToLogin": "Back to login"
+    "backToLogin": "Back to login",
+    "registerRoleNote": "You can activate the other role later from your account, no need to create a second account."
   },
   "jobs": {
     "title": "Jobs",
@@ -184,7 +190,16 @@
       "forbiddenTitle": "Recruiters only",
       "forbiddenBody": "You need a recruiter account to post a job.",
       "signInPrompt": "Log in or create a recruiter account to continue.",
-      "viewJob": "View job"
+      "viewJob": "View job",
+      "activateRecruiterBody": "Activate recruiter mode on your account to post a job — no need to create another account.",
+      "activateRecruiterButton": "Activate recruiter mode"
+    },
+    "mine": {
+      "title": "My jobs",
+      "empty": "You haven't posted any job yet.",
+      "emptyCta": "Post a job",
+      "draftBadge": "Publish",
+      "loginPrompt": "Log in with a recruiter account to see your jobs."
     }
   },
   "about": {

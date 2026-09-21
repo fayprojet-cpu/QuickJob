@@ -73,6 +73,7 @@ export function RegisterForm() {
             </button>
           ))}
         </div>
+        <p className="mt-1.5 text-xs text-neutral-500">{t('registerRoleNote')}</p>
       </div>
 
       <div>

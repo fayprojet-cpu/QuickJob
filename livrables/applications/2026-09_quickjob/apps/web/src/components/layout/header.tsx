@@ -8,12 +8,17 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useLogout } from '@/features/auth/use-auth';
 import { Button } from '@/components/ui/button';
 import { LocaleSwitcher } from './locale-switcher';
+import { ModeSwitcher } from './mode-switcher';
+import { getDefaultMode } from '@/lib/mode';
 
 export function Header() {
   const t = useTranslations('nav');
   const user = useAuthStore((state) => state.user);
+  const activeMode = useAuthStore((state) => state.activeMode);
   const logout = useLogout();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const currentMode = activeMode ?? (user ? getDefaultMode(user.roles) : null);
+  const isRecruiterMode = currentMode === 'RECRUITER';
 
   function closeMobile() {
     setMobileOpen(false);
@@ -46,12 +51,26 @@ export function Header() {
             {t('about')}
           </Link>
 
-          <Link href="/jobs/new">
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <Plus className="h-4 w-4" aria-hidden />
-              {t('postJob')}
-            </Button>
-          </Link>
+          {!user || isRecruiterMode ? (
+            <>
+              <Link href="/jobs/new">
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  <Plus className="h-4 w-4" aria-hidden />
+                  {t('postJob')}
+                </Button>
+              </Link>
+              {user ? (
+                <Link
+                  href="/jobs/mine"
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+                >
+                  {t('myJobs')}
+                </Link>
+              ) : null}
+            </>
+          ) : null}
+
+          {user ? <ModeSwitcher /> : null}
 
           {user ? (
             <button
@@ -106,12 +125,31 @@ export function Header() {
             >
               {t('about')}
             </Link>
-            <Link href="/jobs/new" onClick={closeMobile}>
-              <Button variant="outline" className="mt-1 w-full justify-center gap-1.5">
-                <Plus className="h-4 w-4" aria-hidden />
-                {t('postJob')}
-              </Button>
-            </Link>
+            {!user || isRecruiterMode ? (
+              <>
+                <Link href="/jobs/new" onClick={closeMobile}>
+                  <Button variant="outline" className="mt-1 w-full justify-center gap-1.5">
+                    <Plus className="h-4 w-4" aria-hidden />
+                    {t('postJob')}
+                  </Button>
+                </Link>
+                {user ? (
+                  <Link
+                    href="/jobs/mine"
+                    onClick={closeMobile}
+                    className="rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+                  >
+                    {t('myJobs')}
+                  </Link>
+                ) : null}
+              </>
+            ) : null}
+
+            {user ? (
+              <div className="mt-1">
+                <ModeSwitcher className="w-full justify-center" />
+              </div>
+            ) : null}
 
             {user ? (
               <button

@@ -68,4 +68,42 @@ describe('UsersService', () => {
       );
     });
   });
+
+  describe('addRole', () => {
+    it('appends a role the user does not have yet', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue({ roles: [UserRole.WORKER] });
+      (prisma.user.update as jest.Mock).mockResolvedValue({
+        ...baseUser,
+        roles: [UserRole.WORKER, UserRole.RECRUITER],
+      });
+
+      const result = await service.addRole('user-1', UserRole.RECRUITER);
+
+      expect(prisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: { roles: { push: UserRole.RECRUITER } },
+        }),
+      );
+      expect(result.roles).toEqual([UserRole.WORKER, UserRole.RECRUITER]);
+    });
+
+    it('is idempotent when the role is already present', async () => {
+      (prisma.user.findFirst as jest.Mock)
+        .mockResolvedValueOnce({ roles: [UserRole.WORKER] })
+        .mockResolvedValueOnce(baseUser);
+
+      await service.addRole('user-1', UserRole.WORKER);
+
+      expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('throws NotFoundException for a missing user', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.addRole('ghost', UserRole.RECRUITER)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+  });
 });

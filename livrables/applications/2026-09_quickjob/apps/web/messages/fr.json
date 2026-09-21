@@ -20,7 +20,12 @@
     "logout": "Déconnexion",
     "myAccount": "Mon compte",
     "openMenu": "Ouvrir le menu",
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "myJobs": "Mes missions",
+    "modeWorker": "Travailleur",
+    "modeRecruiter": "Recruteur",
+    "activateWorker": "Activer le mode travailleur",
+    "activateRecruiter": "Activer le mode recruteur"
   },
   "home": {
     "heroTitle": "Trouve un travail aujourd'hui.\nSois payé aujourd'hui.",
@@ -117,7 +122,8 @@
     "resetPasswordSuccess": "Ton mot de passe a été mis à jour. Redirection vers la connexion…",
     "passwordMismatch": "Les mots de passe ne correspondent pas",
     "invalidOrExpiredToken": "Ce lien est invalide ou a expiré. Demande un nouveau lien de réinitialisation.",
-    "backToLogin": "Retour à la connexion"
+    "backToLogin": "Retour à la connexion",
+    "registerRoleNote": "Tu pourras activer l'autre rôle plus tard depuis ton compte, sans recréer de compte."
   },
   "jobs": {
     "title": "Missions",
@@ -184,7 +190,16 @@
       "forbiddenTitle": "Réservé aux recruteurs",
       "forbiddenBody": "Il te faut un compte recruteur pour publier une mission.",
       "signInPrompt": "Connecte-toi ou crée un compte recruteur pour continuer.",
-      "viewJob": "Voir la mission"
+      "viewJob": "Voir la mission",
+      "activateRecruiterBody": "Active le mode recruteur sur ton compte pour publier une mission — pas besoin de créer un autre compte.",
+      "activateRecruiterButton": "Activer le mode recruteur"
+    },
+    "mine": {
+      "title": "Mes missions",
+      "empty": "Tu n'as pas encore publié de mission.",
+      "emptyCta": "Publier une mission",
+      "draftBadge": "Publier",
+      "loginPrompt": "Connecte-toi avec un compte recruteur pour voir tes missions."
     }
   },
   "about": {
