@@ -22,6 +22,7 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "myJobs": "My jobs",
+    "myApplications": "My applications",
     "modeWorker": "Worker",
     "modeRecruiter": "Recruiter",
     "activateWorker": "Activate worker mode",
@@ -226,6 +227,14 @@
     "accept": "Accept",
     "reject": "Reject",
     "decideError": "Couldn't process this application. Try again.",
+    "mine": {
+      "title": "My applications",
+      "empty": "You haven't applied to any job yet.",
+      "emptyCta": "Browse jobs",
+      "loginPrompt": "Log in with a worker account to see your applications.",
+      "appliedOn": "Applied on {date}",
+      "missionFallback": "Job"
+    },
     "status": {
       "PENDING": "Pending",
       "ACCEPTED": "Accepted",

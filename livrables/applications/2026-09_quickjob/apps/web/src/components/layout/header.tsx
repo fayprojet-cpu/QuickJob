@@ -70,6 +70,15 @@ export function Header() {
             </>
           ) : null}
 
+          {user && !isRecruiterMode ? (
+            <Link
+              href="/applications"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+            >
+              {t('myApplications')}
+            </Link>
+          ) : null}
+
           {user ? <ModeSwitcher /> : null}
 
           {user ? (
@@ -143,6 +152,16 @@ export function Header() {
                   </Link>
                 ) : null}
               </>
+            ) : null}
+
+            {user && !isRecruiterMode ? (
+              <Link
+                href="/applications"
+                onClick={closeMobile}
+                className="rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+              >
+                {t('myApplications')}
+              </Link>
             ) : null}
 
             {user ? (

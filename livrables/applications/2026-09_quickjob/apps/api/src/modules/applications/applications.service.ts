@@ -56,6 +56,9 @@ export class ApplicationsService {
     return this.prisma.application.findMany({
       where: { workerId },
       orderBy: { createdAt: 'desc' },
+      include: {
+        job: { select: { id: true, title: true, city: true, countryCode: true } },
+      },
     });
   }
 

@@ -22,6 +22,7 @@
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
     "myJobs": "Mes missions",
+    "myApplications": "Mes candidatures",
     "modeWorker": "Travailleur",
     "modeRecruiter": "Recruteur",
     "activateWorker": "Activer le mode travailleur",
@@ -226,6 +227,14 @@
     "accept": "Accepter",
     "reject": "Refuser",
     "decideError": "Impossible de traiter cette candidature. Réessaie.",
+    "mine": {
+      "title": "Mes candidatures",
+      "empty": "Tu n'as pas encore postulé à une mission.",
+      "emptyCta": "Voir les missions",
+      "loginPrompt": "Connecte-toi avec un compte travailleur pour voir tes candidatures.",
+      "appliedOn": "Postulé le {date}",
+      "missionFallback": "Mission"
+    },
     "status": {
       "PENDING": "En attente",
       "ACCEPTED": "Acceptée",
