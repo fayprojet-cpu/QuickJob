@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { Search } from 'lucide-react';
 import { fetchCategories, fetchPublishedJobs } from '@/features/jobs/api';
 import { JobCard } from '@/components/jobs/job-card';
 import { JobFilters } from '@/components/jobs/job-filters';
@@ -31,6 +32,7 @@ export default async function JobsPage({
 
   const categoryById = new Map(categories.map((category) => [category.id, category]));
   const totalPages = Math.max(1, Math.ceil(jobsResult.total / jobsResult.limit));
+  const hasFilters = Boolean(searchParams.search || searchParams.city || searchParams.urgency);
 
   function buildHref(targetPage: number): string {
     const params = new URLSearchParams();
@@ -46,16 +48,25 @@ export default async function JobsPage({
     <div className="mx-auto max-w-5xl px-4 py-8">
       <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
 
-      <div className="mt-4">
-        <JobFilters
-          search={searchParams.search}
-          city={searchParams.city}
-          urgency={searchParams.urgency}
-        />
-      </div>
+      {/* Filtres repliables : les missions restent l'élément principal de la page. */}
+      <details className="mt-4 rounded-lg border border-neutral-200 bg-white" open={hasFilters}>
+        <summary className="flex cursor-pointer select-none items-center gap-2 px-4 py-3 text-sm font-medium text-neutral-700">
+          <Search className="h-4 w-4 text-neutral-400" aria-hidden />
+          {t('filterToggle')}
+        </summary>
+        <div className="border-t border-neutral-200 p-4">
+          <JobFilters
+            search={searchParams.search}
+            city={searchParams.city}
+            urgency={searchParams.urgency}
+          />
+        </div>
+      </details>
 
       {jobsResult.items.length === 0 ? (
-        <p className="mt-12 text-center text-neutral-500">{t('noResults')}</p>
+        <p className="mt-12 text-center text-neutral-500">
+          {hasFilters ? t('noResults') : t('noJobsYet')}
+        </p>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {jobsResult.items.map((job) => (

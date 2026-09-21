@@ -136,6 +136,8 @@
     "filterAny": "Toutes",
     "applyFilters": "Filtrer",
     "noResults": "Aucune mission ne correspond à ta recherche.",
+    "noJobsYet": "Aucune mission disponible pour le moment.",
+    "filterToggle": "Rechercher / filtrer",
     "postedOn": "Publiée le {date}",
     "salary": "Rémunération",
     "location": "Lieu",

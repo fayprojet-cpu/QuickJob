@@ -136,6 +136,8 @@
     "filterAny": "Any",
     "applyFilters": "Apply filters",
     "noResults": "No jobs match your search.",
+    "noJobsYet": "No jobs available right now.",
+    "filterToggle": "Search / filter",
     "postedOn": "Posted {date}",
     "salary": "Pay",
     "location": "Location",
