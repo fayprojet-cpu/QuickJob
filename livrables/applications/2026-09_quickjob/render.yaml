@@ -43,8 +43,13 @@ services:
         sync: false
       - key: API_URL
         sync: false
-      # SMTP (mot de passe oublié) — voir docs/EMAIL-SETUP.md. Si absentes,
-      # l'API logge le lien de réinitialisation au lieu de l'envoyer.
+      # Email (mot de passe oublié) — voir docs/EMAIL-SETUP.md.
+      # BREVO_API_KEY (API HTTP, port 443) est utilisée en priorité : Render
+      # bloque les connexions SMTP sortantes (port 587), donc SMTP_* seul ne
+      # fonctionne pas ici. Si tout est absent, l'API logge le lien au lieu
+      # de l'envoyer.
+      - key: BREVO_API_KEY
+        sync: false
       - key: SMTP_HOST
         sync: false
       - key: SMTP_PORT

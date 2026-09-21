@@ -4,21 +4,43 @@ import { Env } from '@quickjob/config';
 import * as nodemailer from 'nodemailer';
 import { buildPasswordResetEmail } from './password-reset-email.template';
 
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
+
+function parseFromAddress(raw: string): { name?: string; email: string } {
+  const match = raw.match(/^(.*)<(.+)>$/);
+  if (!match) {
+    return { email: raw.trim() };
+  }
+  const name = match[1].trim().replace(/^"|"$/g, '');
+  return { name: name || undefined, email: match[2].trim() };
+}
+
 /**
- * Envoi d'email par SMTP générique (Gmail, Brevo, tout fournisseur SMTP —
- * jamais de SDK propriétaire, juste host/port/identifiants). Si SMTP_HOST/
- * SMTP_USER/SMTP_PASSWORD sont absents (dev sans fournisseur configuré), on
- * bascule automatiquement sur un envoi "console" : le lien est loggé au lieu
- * d'être réellement envoyé, pour que le flux reste testable sans SMTP.
+ * Envoi d'email. Deux modes selon ce qui est configuré :
+ *  - BREVO_API_KEY présent : envoi via l'API HTTP de Brevo (port 443).
+ *    Nécessaire sur les hébergeurs (ex. Render) qui bloquent les connexions
+ *    SMTP sortantes — un envoi SMTP y reste bloqué ~2 min avant d'échouer
+ *    silencieusement, alors que l'API HTTP n'est jamais filtrée.
+ *  - Sinon, SMTP_HOST/SMTP_USER/SMTP_PASSWORD présents : SMTP générique
+ *    (Gmail, Brevo SMTP, tout fournisseur), pour le dev local par exemple.
+ *  - Sinon : mode "console" (le lien est loggé, pas d'envoi réel).
  */
 @Injectable()
 export class MailService implements OnModuleInit {
   private readonly logger = new Logger(MailService.name);
   private transporter: nodemailer.Transporter | null = null;
+  private brevoApiKey: string | null = null;
 
   constructor(private readonly configService: ConfigService<Env, true>) {}
 
   onModuleInit(): void {
+    const brevoApiKey = this.configService.get('BREVO_API_KEY', { infer: true });
+    if (brevoApiKey) {
+      this.brevoApiKey = brevoApiKey;
+      this.logger.log('MailService: envoi via l\'API HTTP Brevo activé');
+      return;
+    }
+
     const host = this.configService.get('SMTP_HOST', { infer: true });
     const user = this.configService.get('SMTP_USER', { infer: true });
     const password = this.configService.get('SMTP_PASSWORD', { infer: true });
@@ -42,13 +64,17 @@ export class MailService implements OnModuleInit {
 
   async sendPasswordResetEmail(to: string, resetUrl: string, locale: string): Promise<void> {
     const { subject, html, text } = buildPasswordResetEmail(resetUrl, locale);
+    const from = this.configService.get('MAIL_FROM', { infer: true }) ?? 'QuickJob <no-reply@quickjob.local>';
+
+    if (this.brevoApiKey) {
+      await this.sendViaBrevoApi(to, subject, html, text, from);
+      return;
+    }
 
     if (!this.transporter) {
       this.logger.warn(`[dev] Lien de réinitialisation pour ${to} : ${resetUrl}`);
       return;
     }
-
-    const from = this.configService.get('MAIL_FROM', { infer: true }) ?? 'QuickJob <no-reply@quickjob.local>';
 
     try {
       await this.transporter.sendMail({ from, to, subject, html, text });
@@ -56,6 +82,40 @@ export class MailService implements OnModuleInit {
       // On ne casse jamais le flux appelant (forgot-password reste 200) :
       // un échec d'envoi est loggé, pas propagé.
       this.logger.error(`Échec d'envoi de l'email de réinitialisation à ${to}`, error);
+    }
+  }
+
+  private async sendViaBrevoApi(
+    to: string,
+    subject: string,
+    html: string,
+    text: string,
+    from: string,
+  ): Promise<void> {
+    try {
+      const sender = parseFromAddress(from);
+      const response = await fetch(BREVO_API_URL, {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          'api-key': this.brevoApiKey as string,
+        },
+        body: JSON.stringify({
+          sender,
+          to: [{ email: to }],
+          subject,
+          htmlContent: html,
+          textContent: text,
+        }),
+      });
+
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`Brevo API a répondu ${response.status}: ${body}`);
+      }
+    } catch (error) {
+      this.logger.error(`Échec d'envoi (API Brevo) de l'email de réinitialisation à ${to}`, error);
     }
   }
 }

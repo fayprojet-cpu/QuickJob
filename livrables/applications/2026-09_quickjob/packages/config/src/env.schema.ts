@@ -33,6 +33,11 @@ export const envSchema = z
     SMTP_USER: z.string().optional(),
     SMTP_PASSWORD: z.string().optional(),
     MAIL_FROM: z.string().optional(),
+    // Envoi via l'API HTTP de Brevo (port 443) plutôt que SMTP (port 587) :
+    // certains hébergeurs (Render notamment) bloquent les connexions SMTP
+    // sortantes, ce qui fait échouer/traîner silencieusement l'envoi par
+    // SMTP. Si présent, prioritaire sur SMTP_*.
+    BREVO_API_KEY: z.string().optional(),
   })
   .loose();
 
