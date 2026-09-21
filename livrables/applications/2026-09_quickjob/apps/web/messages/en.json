@@ -209,6 +209,29 @@
       "loginPrompt": "Log in with a recruiter account to see your jobs."
     }
   },
+  "applications": {
+    "applyButton": "Apply",
+    "applySuccess": "Application sent!",
+    "applyError": "Couldn't send your application. Try again.",
+    "loginPrompt": "Log in with a worker account to apply to this job.",
+    "ownJobNotice": "You can't apply to your own job.",
+    "activateWorkerBody": "Activate worker mode on your account to apply — no need to create another account.",
+    "activateWorkerButton": "Activate worker mode",
+    "viewApplications": "View applications",
+    "title": "Applications received",
+    "backToJob": "Back to job",
+    "empty": "No applications yet.",
+    "coverLetterNone": "No cover message.",
+    "accept": "Accept",
+    "reject": "Reject",
+    "decideError": "Couldn't process this application. Try again.",
+    "status": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected",
+      "WITHDRAWN": "Withdrawn"
+    }
+  },
   "about": {
     "title": "About QuickJob",
     "intro": "QuickJob is a universal platform for temporary and informal work, built to work in any country, in any currency.",

@@ -8,6 +8,7 @@ import { fetchCategories, fetchJob } from '@/features/jobs/api';
 import { categoryTranslationKey } from '@/features/jobs/category-label';
 import { formatMoney } from '@/lib/money';
 import { ApiError } from '@/lib/api-error';
+import { ApplyButton } from '@/components/jobs/apply-button';
 
 export default async function JobDetailPage({
   params: { locale, id },
@@ -97,6 +98,8 @@ export default async function JobDetailPage({
           </p>
         </div>
       </Card>
+
+      <ApplyButton jobId={job.id} recruiterId={job.recruiterId} />
     </div>
   );
 }

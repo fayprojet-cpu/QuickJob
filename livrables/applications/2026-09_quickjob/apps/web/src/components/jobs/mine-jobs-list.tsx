@@ -12,6 +12,7 @@ import { formatMoney } from '@/lib/money';
 export function MineJobsList() {
   const t = useTranslations('jobs');
   const tMine = useTranslations('jobs.mine');
+  const tApplications = useTranslations('applications');
   const tCommon = useTranslations('common');
   const tErrors = useTranslations('errors');
   const locale = useLocale();
@@ -73,13 +74,20 @@ export function MineJobsList() {
             )}
           </span>
 
-          <div className="mt-auto flex items-center gap-2 pt-2">
+          <div className="mt-auto flex flex-wrap items-center gap-2 pt-2">
             {job.status === 'PUBLISHED' ? (
-              <Link href={`/jobs/${job.id}`} className="w-full">
-                <Button variant="outline" size="sm" className="w-full">
-                  {t('new.viewJob')}
-                </Button>
-              </Link>
+              <>
+                <Link href={`/jobs/${job.id}`} className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    {t('new.viewJob')}
+                  </Button>
+                </Link>
+                <Link href={`/jobs/${job.id}/applications`} className="flex-1">
+                  <Button size="sm" className="w-full">
+                    {tApplications('viewApplications')}
+                  </Button>
+                </Link>
+              </>
             ) : null}
             {job.status === 'DRAFT' ? (
               <Button

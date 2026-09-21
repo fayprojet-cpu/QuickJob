@@ -88,6 +88,21 @@ export interface Job {
   updatedAt: string;
 }
 
+export type ApplicationStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'WITHDRAWN';
+
+export interface Application {
+  id: string;
+  jobId: string;
+  workerId: string;
+  status: ApplicationStatus;
+  coverLetter: string | null;
+  decisionMessage: string | null;
+  createdAt: string;
+  decidedAt: string | null;
+  /** Présent uniquement sur la vue recruteur (GET /jobs/:jobId/applications). */
+  worker?: { id: string; email: string | null; phone: string | null };
+}
+
 export interface PaginatedResult<T> {
   items: T[];
   total: number;

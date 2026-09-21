@@ -209,6 +209,29 @@
       "loginPrompt": "Connecte-toi avec un compte recruteur pour voir tes missions."
     }
   },
+  "applications": {
+    "applyButton": "Postuler",
+    "applySuccess": "Candidature envoyée !",
+    "applyError": "Impossible d'envoyer ta candidature. Réessaie.",
+    "loginPrompt": "Connecte-toi avec un compte travailleur pour postuler à cette mission.",
+    "ownJobNotice": "Tu ne peux pas postuler à ta propre mission.",
+    "activateWorkerBody": "Active le mode travailleur sur ton compte pour postuler — pas besoin de créer un autre compte.",
+    "activateWorkerButton": "Activer le mode travailleur",
+    "viewApplications": "Voir les candidatures",
+    "title": "Candidatures reçues",
+    "backToJob": "Retour à la mission",
+    "empty": "Aucune candidature pour le moment.",
+    "coverLetterNone": "Pas de message de motivation.",
+    "accept": "Accepter",
+    "reject": "Refuser",
+    "decideError": "Impossible de traiter cette candidature. Réessaie.",
+    "status": {
+      "PENDING": "En attente",
+      "ACCEPTED": "Acceptée",
+      "REJECTED": "Refusée",
+      "WITHDRAWN": "Retirée"
+    }
+  },
   "about": {
     "title": "À propos de QuickJob",
     "intro": "QuickJob est une plateforme universelle de travail temporaire et informel, pensée pour fonctionner dans n'importe quel pays, dans n'importe quelle devise.",
