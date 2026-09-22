@@ -13,6 +13,7 @@ import { FedapayModule } from './infra/fedapay/fedapay.module';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { ConversationsModule } from './modules/conversations/conversations.module';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { UsersModule } from './modules/users/users.module';
@@ -39,6 +40,7 @@ import { HealthModule } from './health/health.module';
     ApplicationsModule,
     PaymentsModule,
     CategoriesModule,
+    ConversationsModule,
     HealthModule,
   ],
   providers: [

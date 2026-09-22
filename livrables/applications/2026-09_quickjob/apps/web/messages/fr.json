@@ -23,6 +23,7 @@
     "closeMenu": "Fermer le menu",
     "myJobs": "Mes missions",
     "myApplications": "Mes candidatures",
+    "messages": "Messages",
     "modeWorker": "Travailleur",
     "modeRecruiter": "Recruteur",
     "activateWorker": "Activer le mode travailleur",
@@ -229,6 +230,8 @@
     "accept": "Accepter",
     "reject": "Refuser",
     "decideError": "Impossible de traiter cette candidature. Réessaie.",
+    "chatWithRecruiter": "Discuter avec le recruteur",
+    "chatWithWorker": "Discuter avec le travailleur",
     "mine": {
       "title": "Mes candidatures",
       "empty": "Tu n'as pas encore postulé à une mission.",
@@ -260,6 +263,17 @@
     "contactBody": "Une question, un problème ? Écris-nous, notre équipe te répond rapidement.",
     "legalTitle": "Mentions légales",
     "legalBody": "QuickJob est un projet de démonstration. Les informations de cette page seront complétées avec les mentions légales officielles avant tout lancement commercial."
+  },
+  "messages": {
+    "title": "Messages",
+    "backToList": "Retour aux messages",
+    "loginPrompt": "Connecte-toi pour voir tes messages.",
+    "empty": "Aucune conversation pour le moment. Une conversation s'ouvre automatiquement dès qu'une candidature est acceptée.",
+    "noMessagesYet": "Aucun message pour le moment — lance la conversation !",
+    "unknownParticipant": "Utilisateur",
+    "placeholder": "Écris un message…",
+    "send": "Envoyer",
+    "sendError": "Impossible d'envoyer ce message. Réessaie."
   },
   "footer": {
     "tagline": "La plateforme universelle du travail temporaire.",

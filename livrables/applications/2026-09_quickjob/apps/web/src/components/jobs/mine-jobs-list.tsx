@@ -2,12 +2,14 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations, useLocale } from 'next-intl';
+import { MessageCircle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { completeJob, fetchMineJobs, publishJob } from '@/features/jobs/api';
+import { findConversationForJob, useMineConversations } from '@/features/conversations/use-conversations';
 import { formatMoney } from '@/lib/money';
 import type { JobStatus } from '@/types/api';
 
@@ -47,6 +49,7 @@ export function MineJobsList() {
   const queryClient = useQueryClient();
 
   const jobsQuery = useQuery({ queryKey: ['jobs', 'mine'], queryFn: () => fetchMineJobs() });
+  const conversationsQuery = useMineConversations();
 
   const publishMutation = useMutation({
     mutationFn: (id: string) => publishJob(id),
@@ -87,6 +90,7 @@ export function MineJobsList() {
     <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {jobs.map((job) => {
         const { salaryAmount, salaryCurrency } = job;
+        const conversation = findConversationForJob(conversationsQuery.data, job.id);
         return (
         <Card key={job.id} className="flex h-full flex-col gap-3 p-4">
           <div className="flex items-start justify-between gap-2">
@@ -141,6 +145,14 @@ export function MineJobsList() {
                     {tApplications('viewApplications')}
                   </Button>
                 </Link>
+                {conversation ? (
+                  <Link href={`/messages/${conversation.id}`} className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full gap-1.5">
+                      <MessageCircle className="h-4 w-4" aria-hidden />
+                      {tApplications('chatWithWorker')}
+                    </Button>
+                  </Link>
+                ) : null}
                 <Button
                   size="sm"
                   className="flex-1"

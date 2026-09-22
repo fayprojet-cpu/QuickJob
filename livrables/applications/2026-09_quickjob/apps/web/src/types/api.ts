@@ -135,3 +135,23 @@ export interface CreateJobInput {
   city?: string;
   countryCode?: string;
 }
+
+export type MessageType = 'TEXT' | 'IMAGE' | 'FILE' | 'LOCATION' | 'SYSTEM';
+
+export interface Message {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  type: MessageType;
+  body: string | null;
+  createdAt: string;
+}
+
+export interface ConversationSummary {
+  id: string;
+  jobId: string | null;
+  jobTitle: string | null;
+  otherParticipant: { id: string; email: string | null; displayName: string | null } | null;
+  lastMessage: { body: string | null; senderId: string; createdAt: string } | null;
+  unreadCount: number;
+}

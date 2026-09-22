@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Briefcase, LogOut, Menu, Plus, User, X } from 'lucide-react';
+import { Briefcase, LogOut, Menu, MessageCircle, Plus, User, X } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { useLogout } from '@/features/auth/use-auth';
+import { useMineConversations } from '@/features/conversations/use-conversations';
 import { Button } from '@/components/ui/button';
 import { LocaleSwitcher } from './locale-switcher';
 import { ModeSwitcher } from './mode-switcher';
@@ -19,6 +20,8 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const currentMode = activeMode ?? (user ? getDefaultMode(user.roles) : null);
   const isRecruiterMode = currentMode === 'RECRUITER';
+  const conversationsQuery = useMineConversations(Boolean(user));
+  const unreadCount = conversationsQuery.data?.reduce((sum, c) => sum + c.unreadCount, 0) ?? 0;
 
   function closeMobile() {
     setMobileOpen(false);
@@ -76,6 +79,21 @@ export function Header() {
               className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
             >
               {t('myApplications')}
+            </Link>
+          ) : null}
+
+          {user ? (
+            <Link
+              href="/messages"
+              className="relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+            >
+              <MessageCircle className="h-4 w-4" aria-hidden />
+              {t('messages')}
+              {unreadCount > 0 ? (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger-500 px-1 text-[10px] font-bold text-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              ) : null}
             </Link>
           ) : null}
 
@@ -161,6 +179,22 @@ export function Header() {
                 className="rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
               >
                 {t('myApplications')}
+              </Link>
+            ) : null}
+
+            {user ? (
+              <Link
+                href="/messages"
+                onClick={closeMobile}
+                className="flex items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+              >
+                <MessageCircle className="h-4 w-4" aria-hidden />
+                {t('messages')}
+                {unreadCount > 0 ? (
+                  <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-danger-500 px-1.5 text-[10px] font-bold text-white">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                ) : null}
               </Link>
             ) : null}
 

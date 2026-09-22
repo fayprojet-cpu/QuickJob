@@ -1,12 +1,14 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
+import { MessageCircle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMineApplications } from '@/features/applications/use-applications';
+import { findConversationForJob, useMineConversations } from '@/features/conversations/use-conversations';
 import type { ApplicationStatus } from '@/types/api';
 
 const STATUS_TONE: Record<ApplicationStatus, NonNullable<BadgeProps['tone']>> = {
@@ -40,6 +42,7 @@ export function MineApplicationsList() {
   const tErrors = useTranslations('errors');
   const locale = useLocale();
   const query = useMineApplications();
+  const conversationsQuery = useMineConversations();
 
   if (query.isLoading) {
     return <MineApplicationsSkeleton />;
@@ -65,29 +68,45 @@ export function MineApplicationsList() {
 
   return (
     <div className="mt-6 space-y-4">
-      {applications.map((application) => (
-        <Card key={application.id} className="p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="font-medium text-neutral-900">
-                {application.job?.title ?? tMine('missionFallback')}
-              </p>
-              {application.job?.city ? (
-                <p className="mt-1 text-sm text-neutral-500">
-                  {application.job.city}
-                  {application.job.countryCode ? `, ${application.job.countryCode}` : ''}
+      {applications.map((application) => {
+        const conversation =
+          application.status === 'ACCEPTED'
+            ? findConversationForJob(conversationsQuery.data, application.job?.id)
+            : null;
+
+        return (
+          <Card key={application.id} className="p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-medium text-neutral-900">
+                  {application.job?.title ?? tMine('missionFallback')}
                 </p>
-              ) : null}
-              <p className="mt-1 text-xs text-neutral-400">
-                {tMine('appliedOn', { date: dateFmt.format(new Date(application.createdAt)) })}
-              </p>
+                {application.job?.city ? (
+                  <p className="mt-1 text-sm text-neutral-500">
+                    {application.job.city}
+                    {application.job.countryCode ? `, ${application.job.countryCode}` : ''}
+                  </p>
+                ) : null}
+                <p className="mt-1 text-xs text-neutral-400">
+                  {tMine('appliedOn', { date: dateFmt.format(new Date(application.createdAt)) })}
+                </p>
+              </div>
+              <Badge tone={STATUS_TONE[application.status]} className="shrink-0">
+                {t(`status.${application.status}`)}
+              </Badge>
             </div>
-            <Badge tone={STATUS_TONE[application.status]} className="shrink-0">
-              {t(`status.${application.status}`)}
-            </Badge>
-          </div>
-        </Card>
-      ))}
+
+            {conversation ? (
+              <Link href={`/messages/${conversation.id}`} className="mt-3 inline-block">
+                <Button size="sm" variant="outline" className="gap-1.5">
+                  <MessageCircle className="h-4 w-4" aria-hidden />
+                  {t('chatWithRecruiter')}
+                </Button>
+              </Link>
+            ) : null}
+          </Card>
+        );
+      })}
     </div>
   );
 }

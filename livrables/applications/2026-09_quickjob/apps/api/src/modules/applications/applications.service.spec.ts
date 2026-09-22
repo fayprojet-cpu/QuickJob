@@ -16,8 +16,7 @@ const CONFIG_VALUES: Record<string, string> = {
 };
 
 function buildPrismaMock() {
-  return {
-    $transaction: jest.fn((operations: unknown[]) => Promise.all(operations)),
+  const prisma: Record<string, unknown> = {
     job: {
       findFirst: jest.fn(),
       updateMany: jest.fn(),
@@ -29,7 +28,18 @@ function buildPrismaMock() {
       create: jest.fn(),
       update: jest.fn(),
     },
-  } as unknown as PrismaService;
+    conversation: {
+      upsert: jest.fn().mockResolvedValue({ id: 'conversation-1', jobId: 'job-1' }),
+    },
+    conversationParticipant: {
+      upsert: jest.fn().mockResolvedValue({}),
+    },
+  };
+  // Supporte les deux styles Prisma : tableau d'opérations, ou callback (tx) => ...
+  prisma.$transaction = jest.fn((arg: unknown) =>
+    typeof arg === 'function' ? (arg as (tx: unknown) => Promise<unknown>)(prisma) : Promise.all(arg as unknown[]),
+  );
+  return prisma as unknown as PrismaService;
 }
 
 function buildMailServiceMock() {
@@ -152,6 +162,23 @@ describe('ApplicationsService', () => {
         where: { id: 'job-1', status: JobStatus.PUBLISHED },
         data: { status: JobStatus.IN_PROGRESS },
       });
+      // Ouvre (ou réutilise, idempotent) la conversation liée à la mission.
+      expect(prisma.conversation.upsert).toHaveBeenCalledWith({
+        where: { jobId: 'job-1' },
+        create: { jobId: 'job-1' },
+        update: {},
+      });
+      // Ajoute le recruteur et le travailleur comme participants.
+      expect(prisma.conversationParticipant.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { conversationId_userId: { conversationId: 'conversation-1', userId: 'recruiter-1' } },
+        }),
+      );
+      expect(prisma.conversationParticipant.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { conversationId_userId: { conversationId: 'conversation-1', userId: 'worker-1' } },
+        }),
+      );
       // Prévient le travailleur par email (fire-and-forget), accepted = true.
       expect(mailService.sendApplicationDecisionEmail).toHaveBeenCalledWith(
         'worker@example.com',

@@ -1,6 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { MessageCircle } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,6 +12,7 @@ import {
   useJobApplications,
   useRejectApplication,
 } from '@/features/applications/use-applications';
+import { findConversationForJob, useMineConversations } from '@/features/conversations/use-conversations';
 import type { ApplicationStatus } from '@/types/api';
 
 const STATUS_TONE: Record<ApplicationStatus, NonNullable<BadgeProps['tone']>> = {
@@ -43,6 +46,8 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
   const applicationsQuery = useJobApplications(jobId);
   const acceptMutation = useAcceptApplication(jobId);
   const rejectMutation = useRejectApplication(jobId);
+  const conversationsQuery = useMineConversations();
+  const conversation = findConversationForJob(conversationsQuery.data, jobId);
 
   if (applicationsQuery.isLoading) {
     return <ApplicationsSkeleton />;
@@ -97,6 +102,15 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
                   {t('reject')}
                 </Button>
               </div>
+            ) : null}
+
+            {application.status === 'ACCEPTED' && conversation ? (
+              <Link href={`/messages/${conversation.id}`} className="mt-3 inline-block">
+                <Button size="sm" variant="outline" className="gap-1.5">
+                  <MessageCircle className="h-4 w-4" aria-hidden />
+                  {t('chatWithWorker')}
+                </Button>
+              </Link>
             ) : null}
 
             {decideFailed ? <p className="mt-2 text-xs text-danger-600">{t('decideError')}</p> : null}

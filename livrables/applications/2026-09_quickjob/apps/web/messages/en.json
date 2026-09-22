@@ -23,6 +23,7 @@
     "closeMenu": "Close menu",
     "myJobs": "My jobs",
     "myApplications": "My applications",
+    "messages": "Messages",
     "modeWorker": "Worker",
     "modeRecruiter": "Recruiter",
     "activateWorker": "Activate worker mode",
@@ -229,6 +230,8 @@
     "accept": "Accept",
     "reject": "Reject",
     "decideError": "Couldn't process this application. Try again.",
+    "chatWithRecruiter": "Chat with the recruiter",
+    "chatWithWorker": "Chat with the worker",
     "mine": {
       "title": "My applications",
       "empty": "You haven't applied to any job yet.",
@@ -260,6 +263,17 @@
     "contactBody": "A question, an issue? Write to us, our team replies quickly.",
     "legalTitle": "Legal notice",
     "legalBody": "QuickJob is a demonstration project. The information on this page will be completed with official legal notices before any commercial launch."
+  },
+  "messages": {
+    "title": "Messages",
+    "backToList": "Back to messages",
+    "loginPrompt": "Log in to see your messages.",
+    "empty": "No conversations yet. A conversation opens automatically once an application is accepted.",
+    "noMessagesYet": "No messages yet — say hello!",
+    "unknownParticipant": "User",
+    "placeholder": "Write a message…",
+    "send": "Send",
+    "sendError": "Couldn't send this message. Try again."
   },
   "footer": {
     "tagline": "The universal platform for temporary work.",
