@@ -46,9 +46,11 @@ export const envSchema = z
     FEDAPAY_SECRET_KEY: z.string().optional(),
     FEDAPAY_ENVIRONMENT: z.enum(['sandbox', 'live']).default('sandbox'),
     // Rempli après coup : créé dans le tableau de bord FedaPay une fois
-    // l'URL de webhook (déployée) connue. Absent -> le webhook fait quand
-    // même confiance à FedaPay UNIQUEMENT pour l'identifiant de transaction,
-    // puis revérifie le vrai statut via l'API (jamais le payload brut).
+    // l'URL de webhook (déployée) connue. Actuellement PAS ENCORE lue par le
+    // code (schéma de signature FedaPay non confirmé) : le webhook ne fait
+    // jamais confiance au payload brut de toute façon, il revérifie toujours
+    // le vrai statut via l'API avec FEDAPAY_SECRET_KEY. Cette variable est
+    // donc inerte pour l'instant, pas un filet de sécurité manquant.
     FEDAPAY_WEBHOOK_SECRET: z.string().optional(),
   })
   .loose();

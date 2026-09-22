@@ -9,7 +9,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ApplicationStatus, EscrowStatus, PaymentProviderKey, PaymentPurpose, PaymentStatus } from '@prisma/client';
 import { Env } from '@quickjob/config';
-import { FedapayService } from '../../infra/fedapay/fedapay.service';
+import { currencyMinorUnitDecimals } from '../../common/utils/currency-decimals.util';
+import { FedapayService, FedapayTransaction } from '../../infra/fedapay/fedapay.service';
 import { PrismaService } from '../../infra/prisma/prisma.service';
 
 /** Statuts FedaPay observés qui signalent un paiement définitivement réussi/échoué. */
@@ -41,7 +42,7 @@ export class PaymentsService {
       include: {
         job: true,
         worker: { select: { email: true } },
-        escrow: true,
+        escrow: { include: { payment: true } },
       },
     });
     if (!application) {
@@ -62,6 +63,39 @@ export class PaymentsService {
     const amount = application.job.salaryAmount;
     const currency = application.job.salaryCurrency;
 
+    // Un paiement PENDING est déjà attaché à cet escrow (appel précédent à
+    // fund()) : on revérifie son vrai statut FedaPay au lieu d'en ouvrir un
+    // second en double, sinon le premier reste orphelin si le recruteur le
+    // paie quand même — voir revue de sécurité.
+    const existingPayment = application.escrow?.payment;
+    if (existingPayment?.providerRef && existingPayment.status === PaymentStatus.PENDING) {
+      let transaction: FedapayTransaction;
+      try {
+        transaction = await this.fedapay.retrieveTransaction(existingPayment.providerRef);
+      } catch (error) {
+        this.logger.error(
+          `Impossible de revérifier la transaction FedaPay existante ${existingPayment.providerRef}`,
+          error,
+        );
+        throw new BadGatewayException("FedaPay n'a pas pu vérifier le paiement en cours, réessaie dans un instant");
+      }
+
+      if (CAPTURED_STATUSES.has(transaction.status)) {
+        await this.capturePayment(existingPayment, application.escrow!.id, transaction);
+        throw new BadRequestException('Cette mission est déjà financée');
+      }
+
+      if (!FAILED_STATUSES.has(transaction.status)) {
+        const checkoutUrl = await this.fedapay.generateCheckoutUrl(existingPayment.providerRef);
+        return { checkoutUrl };
+      }
+
+      await this.prisma.payment.update({
+        where: { id: existingPayment.id },
+        data: { status: PaymentStatus.FAILED },
+      });
+    }
+
     const payment = await this.prisma.payment.create({
       data: {
         payerId: recruiterId,
@@ -76,7 +110,7 @@ export class PaymentsService {
     if (application.escrow) {
       await this.prisma.escrow.update({
         where: { id: application.escrow.id },
-        data: { paymentId: payment.id, status: EscrowStatus.PENDING },
+        data: { paymentId: payment.id, status: EscrowStatus.PENDING, amount, currency },
       });
     } else {
       await this.prisma.escrow.create({
@@ -151,21 +185,7 @@ export class PaymentsService {
     }
 
     if (CAPTURED_STATUSES.has(transaction.status) && payment.status !== PaymentStatus.CAPTURED) {
-      await this.prisma.$transaction([
-        this.prisma.payment.update({
-          where: { id: payment.id },
-          data: { status: PaymentStatus.CAPTURED },
-        }),
-        ...(payment.escrow
-          ? [
-              this.prisma.escrow.update({
-                where: { id: payment.escrow.id },
-                data: { status: EscrowStatus.HELD, fundedAt: new Date() },
-              }),
-            ]
-          : []),
-      ]);
-      this.logger.log(`Paiement ${payment.id} capturé (transaction FedaPay ${transactionId})`);
+      await this.capturePayment(payment, payment.escrow?.id ?? null, transaction);
       return;
     }
 
@@ -176,6 +196,55 @@ export class PaymentsService {
       });
       this.logger.warn(`Paiement ${payment.id} échoué (transaction FedaPay ${transactionId}: ${transaction.status})`);
     }
+  }
+
+  /**
+   * Marque un paiement CAPTURED et son escrow HELD — mais seulement si le
+   * montant/devise réellement capturés par FedaPay correspondent à ce que ce
+   * paiement attendait. Sans ça, un paiement créé pour un montant X pourrait
+   * être marqué payé sur la foi d'une transaction FedaPay Y sans rapport.
+   */
+  private async capturePayment(
+    payment: { id: string; amount: bigint; currency: string },
+    escrowId: string | null,
+    transaction: FedapayTransaction,
+  ): Promise<void> {
+    if (!this.transactionMatchesPayment(transaction, payment)) {
+      this.logger.error(
+        `Paiement ${payment.id}: le montant/devise FedaPay (${transaction.amount} ${transaction.currency ?? '?'}) ` +
+          `ne correspond pas à ce qui était attendu (${payment.amount} ${payment.currency}) — capture refusée, ` +
+          'vérification manuelle nécessaire',
+      );
+      return;
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.payment.update({
+        where: { id: payment.id },
+        data: { status: PaymentStatus.CAPTURED },
+      }),
+      ...(escrowId
+        ? [
+            this.prisma.escrow.update({
+              where: { id: escrowId },
+              data: { status: EscrowStatus.HELD, fundedAt: new Date() },
+            }),
+          ]
+        : []),
+    ]);
+    this.logger.log(`Paiement ${payment.id} capturé (transaction FedaPay ${transaction.id})`);
+  }
+
+  private transactionMatchesPayment(
+    transaction: FedapayTransaction,
+    payment: { amount: bigint; currency: string },
+  ): boolean {
+    if (transaction.currency && transaction.currency.toUpperCase() !== payment.currency.toUpperCase()) {
+      return false;
+    }
+    const decimals = currencyMinorUnitDecimals(payment.currency);
+    const expectedMajor = Number(payment.amount) / 10 ** decimals;
+    return Math.abs(transaction.amount - expectedMajor) < 0.01;
   }
 
   private extractTransactionId(payload: unknown): string | null {

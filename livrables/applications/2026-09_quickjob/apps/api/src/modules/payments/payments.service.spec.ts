@@ -32,6 +32,7 @@ function buildFedapayMock() {
   return {
     isConfigured: jest.fn().mockReturnValue(true),
     createTransactionWithCheckoutUrl: jest.fn(),
+    generateCheckoutUrl: jest.fn(),
     retrieveTransaction: jest.fn(),
   } as unknown as FedapayService;
 }
@@ -165,8 +166,94 @@ describe('PaymentsService', () => {
 
       expect(prisma.escrow.create).not.toHaveBeenCalled();
       expect(prisma.escrow.update).toHaveBeenCalledWith(
-        expect.objectContaining({ where: { id: 'escrow-1' }, data: { paymentId: 'payment-2', status: EscrowStatus.PENDING } }),
+        expect.objectContaining({
+          where: { id: 'escrow-1' },
+          data: { paymentId: 'payment-2', status: EscrowStatus.PENDING, amount: 15000n, currency: 'XOF' },
+        }),
       );
+    });
+
+    it('reuses the checkout URL of an already-pending FedaPay transaction instead of creating a duplicate', async () => {
+      (prisma.application.findFirst as jest.Mock).mockResolvedValue({
+        ...baseApplication,
+        escrow: {
+          id: 'escrow-1',
+          status: EscrowStatus.PENDING,
+          payment: { id: 'payment-1', providerRef: 'txn-1', status: PaymentStatus.PENDING, amount: 15000n, currency: 'XOF' },
+        },
+      });
+      (fedapay.retrieveTransaction as jest.Mock).mockResolvedValue({
+        id: 'txn-1',
+        status: 'pending',
+        amount: 15000,
+        currency: 'XOF',
+        reference: null,
+      });
+      (fedapay.generateCheckoutUrl as jest.Mock).mockResolvedValue('https://sandbox-api.fedapay.com/checkout/txn-1');
+
+      const result = await service.fundApplication('app-1', 'recruiter-1');
+
+      expect(result).toEqual({ checkoutUrl: 'https://sandbox-api.fedapay.com/checkout/txn-1' });
+      expect(fedapay.generateCheckoutUrl).toHaveBeenCalledWith('txn-1');
+      expect(prisma.payment.create).not.toHaveBeenCalled();
+      expect(fedapay.createTransactionWithCheckoutUrl).not.toHaveBeenCalled();
+    });
+
+    it('captures the payment and refuses to re-fund when FedaPay confirms the pending transaction was actually already approved', async () => {
+      (prisma.application.findFirst as jest.Mock).mockResolvedValue({
+        ...baseApplication,
+        escrow: {
+          id: 'escrow-1',
+          status: EscrowStatus.PENDING,
+          payment: { id: 'payment-1', providerRef: 'txn-1', status: PaymentStatus.PENDING, amount: 15000n, currency: 'XOF' },
+        },
+      });
+      (fedapay.retrieveTransaction as jest.Mock).mockResolvedValue({
+        id: 'txn-1',
+        status: 'approved',
+        amount: 15000,
+        currency: 'XOF',
+        reference: null,
+      });
+
+      await expect(service.fundApplication('app-1', 'recruiter-1')).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.payment.update).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: 'payment-1' }, data: { status: PaymentStatus.CAPTURED } }),
+      );
+      expect(prisma.escrow.update).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: 'escrow-1' }, data: expect.objectContaining({ status: EscrowStatus.HELD }) }),
+      );
+    });
+
+    it('marks the stale pending payment FAILED and opens a new transaction when FedaPay confirms it was declined', async () => {
+      (prisma.application.findFirst as jest.Mock).mockResolvedValue({
+        ...baseApplication,
+        escrow: {
+          id: 'escrow-1',
+          status: EscrowStatus.PENDING,
+          payment: { id: 'payment-1', providerRef: 'txn-1', status: PaymentStatus.PENDING, amount: 15000n, currency: 'XOF' },
+        },
+      });
+      (fedapay.retrieveTransaction as jest.Mock).mockResolvedValue({
+        id: 'txn-1',
+        status: 'declined',
+        amount: 15000,
+        currency: 'XOF',
+        reference: null,
+      });
+      (prisma.payment.create as jest.Mock).mockResolvedValue({ id: 'payment-2' });
+      (fedapay.createTransactionWithCheckoutUrl as jest.Mock).mockResolvedValue({
+        transactionId: 'txn-2',
+        checkoutUrl: 'https://sandbox-api.fedapay.com/checkout/txn-2',
+      });
+
+      const result = await service.fundApplication('app-1', 'recruiter-1');
+
+      expect(result).toEqual({ checkoutUrl: 'https://sandbox-api.fedapay.com/checkout/txn-2' });
+      expect(prisma.payment.update).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: 'payment-1' }, data: { status: PaymentStatus.FAILED } }),
+      );
+      expect(prisma.payment.create).toHaveBeenCalled();
     });
 
     it('marks the payment FAILED and rethrows when FedaPay rejects the transaction', async () => {
@@ -202,12 +289,15 @@ describe('PaymentsService', () => {
       (prisma.payment.findFirst as jest.Mock).mockResolvedValue({
         id: 'payment-1',
         status: PaymentStatus.PENDING,
+        amount: 15000n,
+        currency: 'XOF',
         escrow: { id: 'escrow-1' },
       });
       (fedapay.retrieveTransaction as jest.Mock).mockResolvedValue({
         id: 'txn-1',
         status: 'approved',
         amount: 15000,
+        currency: 'XOF',
         reference: 'ref-1',
       });
 
@@ -228,12 +318,15 @@ describe('PaymentsService', () => {
       (prisma.payment.findFirst as jest.Mock).mockResolvedValue({
         id: 'payment-1',
         status: PaymentStatus.PENDING,
+        amount: 15000n,
+        currency: 'XOF',
         escrow: { id: 'escrow-1' },
       });
       (fedapay.retrieveTransaction as jest.Mock).mockResolvedValue({
         id: 'txn-1',
         status: 'declined',
         amount: 15000,
+        currency: 'XOF',
         reference: null,
       });
 
@@ -255,6 +348,50 @@ describe('PaymentsService', () => {
         id: 'txn-1',
         status: 'approved',
         amount: 15000,
+        reference: null,
+      });
+
+      await service.handleFedapayWebhook({ id: 'txn-1' });
+
+      expect(prisma.payment.update).not.toHaveBeenCalled();
+      expect(prisma.escrow.update).not.toHaveBeenCalled();
+    });
+
+    it('refuses to capture when the FedaPay transaction amount does not match the expected payment amount', async () => {
+      (prisma.payment.findFirst as jest.Mock).mockResolvedValue({
+        id: 'payment-1',
+        status: PaymentStatus.PENDING,
+        amount: 15000n,
+        currency: 'XOF',
+        escrow: { id: 'escrow-1' },
+      });
+      (fedapay.retrieveTransaction as jest.Mock).mockResolvedValue({
+        id: 'txn-1',
+        status: 'approved',
+        amount: 500, // ne correspond pas aux 15000 attendus
+        currency: 'XOF',
+        reference: null,
+      });
+
+      await service.handleFedapayWebhook({ id: 'txn-1' });
+
+      expect(prisma.payment.update).not.toHaveBeenCalled();
+      expect(prisma.escrow.update).not.toHaveBeenCalled();
+    });
+
+    it('refuses to capture when the FedaPay transaction currency does not match the expected payment currency', async () => {
+      (prisma.payment.findFirst as jest.Mock).mockResolvedValue({
+        id: 'payment-1',
+        status: PaymentStatus.PENDING,
+        amount: 15000n,
+        currency: 'XOF',
+        escrow: { id: 'escrow-1' },
+      });
+      (fedapay.retrieveTransaction as jest.Mock).mockResolvedValue({
+        id: 'txn-1',
+        status: 'approved',
+        amount: 15000,
+        currency: 'EUR', // ne correspond pas à XOF attendu
         reference: null,
       });
 

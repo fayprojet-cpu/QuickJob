@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { UserRole } from '@prisma/client';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
@@ -16,6 +17,7 @@ export class ApplicationFundingController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Roles(UserRole.RECRUITER)
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post(':id/fund')
   @ApiOperation({ summary: 'Ouvre une transaction Mobile Money (FedaPay) pour financer le séquestre d\'une candidature acceptée' })
   @ApiOkResponse({ type: FundApplicationResponseDto })

@@ -10,6 +10,8 @@ export interface FedapayTransaction {
   id: string;
   status: string;
   amount: number;
+  /** ISO 4217, quand FedaPay le renvoie — absent sur certaines réponses. */
+  currency: string | null;
   reference: string | null;
 }
 
@@ -74,6 +76,16 @@ export class FedapayService {
       throw new Error(`FedaPay: impossible de lire l'identifiant de la transaction créée: ${JSON.stringify(transaction)}`);
     }
 
+    const checkoutUrl = await this.generateCheckoutUrl(transactionId);
+    return { transactionId, checkoutUrl };
+  }
+
+  /**
+   * Génère (ou régénère) le lien de paiement sécurisé d'une transaction déjà
+   * créée — utilisé pour renvoyer le recruteur vers le même paiement en
+   * cours au lieu d'ouvrir une nouvelle transaction FedaPay en double.
+   */
+  async generateCheckoutUrl(transactionId: string): Promise<string> {
     const tokenResponse = await this.request<Record<string, unknown>>(
       `/v1/transactions/${transactionId}/token`,
       { method: 'POST' },
@@ -84,8 +96,7 @@ export class FedapayService {
     if (!checkoutUrl) {
       throw new Error(`FedaPay: impossible de lire l'URL de paiement: ${JSON.stringify(tokenResponse)}`);
     }
-
-    return { transactionId, checkoutUrl };
+    return checkoutUrl;
   }
 
   /**
@@ -98,10 +109,13 @@ export class FedapayService {
       method: 'GET',
     });
     const source = (raw['v1/transaction'] as Record<string, unknown> | undefined) ?? raw;
+    const currency = source.currency as Record<string, unknown> | string | undefined;
     return {
       id: String(source.id ?? transactionId),
       status: String(source.status ?? 'unknown'),
       amount: Number(source.amount ?? 0),
+      currency:
+        typeof currency === 'string' ? currency : ((currency?.iso as string | undefined) ?? null),
       reference: (source.reference as string | undefined) ?? null,
     };
   }
