@@ -8,6 +8,7 @@ import { QueryProvider } from '@/lib/query-provider';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { BottomNav } from '@/components/layout/bottom-nav';
+import { CompleteProfileBanner } from '@/components/layout/complete-profile-banner';
 import '../globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -48,6 +49,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>
             <Header />
+            <CompleteProfileBanner />
             <main className="flex-1">{children}</main>
             <Footer />
             <BottomNav />

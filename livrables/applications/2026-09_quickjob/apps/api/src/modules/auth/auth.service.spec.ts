@@ -69,6 +69,7 @@ describe('AuthService', () => {
       (prisma.refreshToken.create as jest.Mock).mockResolvedValue({ id: 'rt-1' });
 
       const result = await service.register({
+        firstName: 'Jane',
         email: 'jane@example.com',
         password: 'S3cur3-Passphrase',
       });
@@ -77,7 +78,7 @@ describe('AuthService', () => {
       expect(result.refreshToken).toHaveLength(64);
       expect(prisma.user.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ email: 'jane@example.com', roles: [UserRole.WORKER] }),
+          data: expect.objectContaining({ firstName: 'Jane', email: 'jane@example.com', roles: [UserRole.WORKER] }),
         }),
       );
     });
@@ -86,7 +87,7 @@ describe('AuthService', () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue({ id: 'existing' });
 
       await expect(
-        service.register({ email: 'jane@example.com', password: 'S3cur3-Passphrase' }),
+        service.register({ firstName: 'Jane', email: 'jane@example.com', password: 'S3cur3-Passphrase' }),
       ).rejects.toBeInstanceOf(ConflictException);
     });
   });

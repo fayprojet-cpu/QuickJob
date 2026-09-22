@@ -102,6 +102,8 @@
     "liveTickerTitle": "Ça bouge en ce moment"
   },
   "auth": {
+    "firstName": "Prénom",
+    "completeProfilePrompt": "Ajoute ton prénom pour que les autres sachent à qui ils parlent.",
     "email": "Email",
     "password": "Mot de passe",
     "passwordHint": "8 caractères minimum",

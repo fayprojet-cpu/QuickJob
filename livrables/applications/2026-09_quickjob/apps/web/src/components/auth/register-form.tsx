@@ -20,6 +20,7 @@ export function RegisterForm() {
   const router = useRouter();
   const register = useRegister();
 
+  const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<Role>('WORKER');
@@ -31,6 +32,7 @@ export function RegisterForm() {
     setError(null);
     try {
       await register.mutateAsync({
+        firstName,
         email,
         password,
         roles: [role],
@@ -74,6 +76,19 @@ export function RegisterForm() {
           ))}
         </div>
         <p className="mt-1.5 text-xs text-neutral-500">{t('registerRoleNote')}</p>
+      </div>
+
+      <div>
+        <Label htmlFor="firstName">{t('firstName')}</Label>
+        <Input
+          id="firstName"
+          type="text"
+          required
+          maxLength={60}
+          autoComplete="given-name"
+          value={firstName}
+          onChange={(event) => setFirstName(event.target.value)}
+        />
       </div>
 
       <div>

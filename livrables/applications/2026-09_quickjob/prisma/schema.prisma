@@ -288,6 +288,10 @@ model User {
   email           String?    @unique
   phone           String?    @unique // format E.164, ex. "+2250700000000"
   passwordHash    String?
+  // Nullable : obligatoire à l'inscription pour les nouveaux comptes, mais
+  // absent pour les comptes créés avant l'ajout de ce champ — l'app leur
+  // demande de le renseigner plutôt que de casser leur session.
+  firstName       String?
   roles           UserRole[] @default([WORKER])
   status          UserStatus @default(ACTIVE)
 

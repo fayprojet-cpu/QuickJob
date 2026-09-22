@@ -19,6 +19,7 @@ describe('UsersService', () => {
   const baseUser = {
     id: 'user-1',
     email: 'jane@example.com',
+    firstName: 'Jane',
     phone: null,
     roles: [UserRole.WORKER],
     status: UserStatus.ACTIVE,

@@ -2,8 +2,8 @@
 
 import { useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth-store';
-import type { SelfServiceRole } from '@/types/api';
-import { addRole } from './api';
+import type { SelfServiceRole, UpdateUserInput } from '@/types/api';
+import { addRole, updateMe } from './api';
 
 /** Ajoute un rôle au compte connecté puis bascule dessus (mode actif). */
 export function useAddRole() {
@@ -15,6 +15,18 @@ export function useAddRole() {
     onSuccess: (user, role) => {
       setUser(user);
       setActiveMode(role);
+    },
+  });
+}
+
+/** Met à jour le profil du compte connecté (ex. prénom manquant). */
+export function useUpdateProfile() {
+  const setUser = useAuthStore((state) => state.setUser);
+
+  return useMutation({
+    mutationFn: (input: UpdateUserInput) => updateMe(input),
+    onSuccess: (user) => {
+      setUser(user);
     },
   });
 }

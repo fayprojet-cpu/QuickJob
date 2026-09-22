@@ -102,6 +102,8 @@
     "liveTickerTitle": "Happening right now"
   },
   "auth": {
+    "firstName": "First name",
+    "completeProfilePrompt": "Add your first name so others know who they're talking to.",
     "email": "Email",
     "password": "Password",
     "passwordHint": "At least 8 characters",

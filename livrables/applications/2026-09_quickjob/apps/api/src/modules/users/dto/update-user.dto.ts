@@ -1,10 +1,17 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsISO31661Alpha2, IsOptional, IsString, Matches } from 'class-validator';
+import { IsISO31661Alpha2, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 const E164_PHONE = /^\+[1-9]\d{6,14}$/;
 const ISO_4217 = /^[A-Z]{3}$/;
 
 export class UpdateUserDto {
+  @ApiPropertyOptional({ example: 'Jane' })
+  @IsOptional()
+  @IsString()
+  @MinLength(1, { message: 'First name cannot be empty' })
+  @MaxLength(60)
+  firstName?: string;
+
   @ApiPropertyOptional({ example: '+2250700000000', description: 'Format E.164' })
   @IsOptional()
   @Matches(E164_PHONE, { message: 'phone must be in E.164 format, e.g. +2250700000000' })

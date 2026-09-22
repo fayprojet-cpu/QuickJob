@@ -14,6 +14,12 @@ import {
 const SELF_SERVICE_ROLES = [UserRole.WORKER, UserRole.RECRUITER] as const;
 
 export class RegisterDto {
+  @ApiProperty({ example: 'Jane' })
+  @IsString()
+  @MinLength(1, { message: 'First name is required' })
+  @MaxLength(60)
+  firstName!: string;
+
   @ApiProperty({ example: 'jane.doe@example.com' })
   @IsEmail()
   email!: string;

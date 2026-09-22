@@ -29,6 +29,7 @@ export interface AuthTokens {
 export interface AuthUser {
   id: string;
   email: string | null;
+  firstName: string | null;
   phone: string | null;
   roles: UserRole[];
   status: UserStatus;
@@ -41,6 +42,7 @@ export interface AuthUser {
 }
 
 export interface RegisterInput {
+  firstName: string;
   email: string;
   password: string;
   roles?: Array<'WORKER' | 'RECRUITER'>;
@@ -100,7 +102,7 @@ export interface Application {
   createdAt: string;
   decidedAt: string | null;
   /** Présent uniquement sur la vue recruteur (GET /jobs/:jobId/applications). */
-  worker?: { id: string; email: string | null; phone: string | null };
+  worker?: { id: string; email: string | null; firstName: string | null; phone: string | null };
   /** Présent sur la vue travailleur (GET /applications/mine) : la mission liée. */
   job?: { id: string; title: string; city: string | null; countryCode: string | null };
 }
@@ -120,6 +122,10 @@ export interface QueryJobsInput {
   city?: string;
   urgency?: JobUrgency;
   search?: string;
+}
+
+export interface UpdateUserInput {
+  firstName?: string;
 }
 
 export interface CreateJobInput {

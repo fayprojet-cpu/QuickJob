@@ -7,6 +7,7 @@ import { UserResponseDto } from './dto/user.response.dto';
 const SAFE_USER_SELECT = {
   id: true,
   email: true,
+  firstName: true,
   phone: true,
   roles: true,
   status: true,
@@ -39,6 +40,7 @@ export class UsersService {
     const user = await this.prisma.user.update({
       where: { id },
       data: {
+        ...(dto.firstName !== undefined ? { firstName: dto.firstName } : {}),
         ...(dto.phone !== undefined ? { phone: dto.phone } : {}),
         ...(dto.locale !== undefined ? { locale: dto.locale } : {}),
         ...(dto.currency !== undefined ? { currency: dto.currency } : {}),

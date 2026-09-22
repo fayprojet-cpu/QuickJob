@@ -77,7 +77,10 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="font-medium text-neutral-900">
-                  {application.worker?.email ?? application.worker?.phone ?? application.workerId}
+                  {application.worker?.firstName ??
+                    application.worker?.email ??
+                    application.worker?.phone ??
+                    application.workerId}
                 </p>
                 <p className="mt-1 text-sm text-neutral-600">
                   {application.coverLetter || t('coverLetterNone')}
