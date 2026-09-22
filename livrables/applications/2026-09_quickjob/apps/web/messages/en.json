@@ -278,6 +278,18 @@
     "send": "Send",
     "sendError": "Couldn't send this message. Try again."
   },
+  "reviews": {
+    "rateLabel": "Pick a rating",
+    "starAria": "{count, plural, one {# star} other {# stars}}",
+    "commentPlaceholder": "A comment (optional)",
+    "submit": "Send",
+    "submitError": "Couldn't send the review. Try again.",
+    "noReviewsYet": "No reviews yet",
+    "reviewCount": "({count} reviews)",
+    "rateWorkerButton": "Rate the worker",
+    "rateRecruiterButton": "Rate the recruiter",
+    "thankYou": "Thanks, review sent"
+  },
   "footer": {
     "tagline": "The universal platform for temporary work.",
     "linksTitle": "Links",

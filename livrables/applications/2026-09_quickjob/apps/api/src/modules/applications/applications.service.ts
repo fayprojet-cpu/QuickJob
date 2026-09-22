@@ -81,7 +81,7 @@ export class ApplicationsService {
       where: { workerId },
       orderBy: { createdAt: 'desc' },
       include: {
-        job: { select: { id: true, title: true, city: true, countryCode: true } },
+        job: { select: { id: true, title: true, city: true, countryCode: true, status: true } },
       },
     });
   }

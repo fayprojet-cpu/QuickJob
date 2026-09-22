@@ -104,7 +104,7 @@ export interface Application {
   /** Présent uniquement sur la vue recruteur (GET /jobs/:jobId/applications). */
   worker?: { id: string; email: string | null; firstName: string | null; phone: string | null };
   /** Présent sur la vue travailleur (GET /applications/mine) : la mission liée. */
-  job?: { id: string; title: string; city: string | null; countryCode: string | null };
+  job?: { id: string; title: string; city: string | null; countryCode: string | null; status: JobStatus };
 }
 
 export interface PaginatedResult<T> {
@@ -160,4 +160,30 @@ export interface ConversationSummary {
   otherParticipant: { id: string; email: string | null; displayName: string | null } | null;
   lastMessage: { body: string | null; senderId: string; createdAt: string } | null;
   unreadCount: number;
+}
+
+export interface Review {
+  id: string;
+  rating: number;
+  comment: string | null;
+  authorFirstName: string | null;
+  createdAt: string;
+}
+
+export interface ReviewSummary {
+  /** Moyenne 1-5, null si aucun avis. */
+  average: number | null;
+  count: number;
+  items: Review[];
+}
+
+/** Un avis déjà déposé par le compte connecté — pour l'état des boutons "Noter". */
+export interface AuthoredReview {
+  jobId: string;
+  targetId: string;
+}
+
+export interface CreateReviewInput {
+  rating: number;
+  comment?: string;
 }

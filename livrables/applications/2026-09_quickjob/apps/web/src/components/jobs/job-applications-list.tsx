@@ -13,6 +13,7 @@ import {
   useRejectApplication,
 } from '@/features/applications/use-applications';
 import { findConversationForJob, useMineConversations } from '@/features/conversations/use-conversations';
+import { ReputationBadge } from '@/components/reviews/reputation-badge';
 import type { ApplicationStatus } from '@/types/api';
 
 const STATUS_TONE: Record<ApplicationStatus, NonNullable<BadgeProps['tone']>> = {
@@ -82,6 +83,7 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
                     application.worker?.phone ??
                     application.workerId}
                 </p>
+                <ReputationBadge userId={application.workerId} className="mt-0.5" />
                 <p className="mt-1 text-sm text-neutral-600">
                   {application.coverLetter || t('coverLetterNone')}
                 </p>

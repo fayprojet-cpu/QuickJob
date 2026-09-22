@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations, useLocale } from 'next-intl';
 import { MessageCircle } from 'lucide-react';
@@ -10,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { completeJob, fetchMineJobs, publishJob } from '@/features/jobs/api';
 import { findConversationForJob, useMineConversations } from '@/features/conversations/use-conversations';
+import { hasReviewedJob, useMineAuthoredReviews, useReviewWorkerForJob } from '@/features/reviews/use-reviews';
+import { RatingForm } from '@/components/reviews/rating-form';
 import { formatMoney } from '@/lib/money';
 import type { JobStatus } from '@/types/api';
 
@@ -44,12 +47,16 @@ export function MineJobsList() {
   const t = useTranslations('jobs');
   const tMine = useTranslations('jobs.mine');
   const tApplications = useTranslations('applications');
+  const tReviews = useTranslations('reviews');
   const tErrors = useTranslations('errors');
   const locale = useLocale();
   const queryClient = useQueryClient();
 
   const jobsQuery = useQuery({ queryKey: ['jobs', 'mine'], queryFn: () => fetchMineJobs() });
   const conversationsQuery = useMineConversations();
+  const authoredReviewsQuery = useMineAuthoredReviews();
+  const reviewWorkerMutation = useReviewWorkerForJob();
+  const [openRatingJobId, setOpenRatingJobId] = useState<string | null>(null);
 
   const publishMutation = useMutation({
     mutationFn: (id: string) => publishJob(id),
@@ -91,6 +98,10 @@ export function MineJobsList() {
       {jobs.map((job) => {
         const { salaryAmount, salaryCurrency } = job;
         const conversation = findConversationForJob(conversationsQuery.data, job.id);
+        const alreadyReviewed = hasReviewedJob(authoredReviewsQuery.data, job.id);
+        const isRatingThisJob = reviewWorkerMutation.isPending && reviewWorkerMutation.variables?.jobId === job.id;
+        const ratingFailedForThisJob =
+          reviewWorkerMutation.isError && reviewWorkerMutation.variables?.jobId === job.id;
         return (
         <Card key={job.id} className="flex h-full flex-col gap-3 p-4">
           <div className="flex items-start justify-between gap-2">
@@ -166,11 +177,41 @@ export function MineJobsList() {
               </div>
             ) : null}
             {job.status === 'COMPLETED' ? (
-              <Link href={`/jobs/${job.id}/applications`} className="w-full">
-                <Button variant="outline" size="sm" className="w-full">
-                  {tApplications('viewApplications')}
-                </Button>
-              </Link>
+              <div className="flex w-full flex-col gap-2">
+                <div className="flex gap-2">
+                  <Link href={`/jobs/${job.id}/applications`} className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      {tApplications('viewApplications')}
+                    </Button>
+                  </Link>
+                  {alreadyReviewed ? (
+                    <span className="flex flex-1 items-center justify-center text-xs text-neutral-500">
+                      {tReviews('thankYou')}
+                    </span>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => setOpenRatingJobId(openRatingJobId === job.id ? null : job.id)}
+                    >
+                      {tReviews('rateWorkerButton')}
+                    </Button>
+                  )}
+                </div>
+                {openRatingJobId === job.id && !alreadyReviewed ? (
+                  <RatingForm
+                    isPending={isRatingThisJob}
+                    isError={ratingFailedForThisJob}
+                    onSubmit={(input) =>
+                      reviewWorkerMutation.mutate(
+                        { jobId: job.id, input },
+                        { onSuccess: () => setOpenRatingJobId(null) },
+                      )
+                    }
+                  />
+                ) : null}
+              </div>
             ) : null}
           </div>
         </Card>

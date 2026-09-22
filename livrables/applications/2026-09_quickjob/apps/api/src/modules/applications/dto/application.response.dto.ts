@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ApplicationStatus } from '@prisma/client';
+import { ApplicationStatus, JobStatus } from '@prisma/client';
 
 export class ApplicationResponseDto {
   @ApiProperty({ format: 'uuid' }) id!: string;
@@ -19,5 +19,5 @@ export class ApplicationResponseDto {
   @ApiPropertyOptional({
     description: 'Présent sur GET /applications/mine (vue travailleur) : la mission liée.',
   })
-  job?: { id: string; title: string; city: string | null; countryCode: string | null };
+  job?: { id: string; title: string; city: string | null; countryCode: string | null; status: JobStatus };
 }

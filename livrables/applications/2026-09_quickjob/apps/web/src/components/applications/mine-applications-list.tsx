@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { MessageCircle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
@@ -9,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMineApplications } from '@/features/applications/use-applications';
 import { findConversationForJob, useMineConversations } from '@/features/conversations/use-conversations';
+import { hasReviewedJob, useMineAuthoredReviews, useReviewRecruiterForApplication } from '@/features/reviews/use-reviews';
+import { RatingForm } from '@/components/reviews/rating-form';
 import type { ApplicationStatus } from '@/types/api';
 
 const STATUS_TONE: Record<ApplicationStatus, NonNullable<BadgeProps['tone']>> = {
@@ -39,10 +42,14 @@ function MineApplicationsSkeleton() {
 export function MineApplicationsList() {
   const t = useTranslations('applications');
   const tMine = useTranslations('applications.mine');
+  const tReviews = useTranslations('reviews');
   const tErrors = useTranslations('errors');
   const locale = useLocale();
   const query = useMineApplications();
   const conversationsQuery = useMineConversations();
+  const authoredReviewsQuery = useMineAuthoredReviews();
+  const reviewRecruiterMutation = useReviewRecruiterForApplication();
+  const [openRatingAppId, setOpenRatingAppId] = useState<string | null>(null);
 
   if (query.isLoading) {
     return <MineApplicationsSkeleton />;
@@ -73,6 +80,12 @@ export function MineApplicationsList() {
           application.status === 'ACCEPTED'
             ? findConversationForJob(conversationsQuery.data, application.job?.id)
             : null;
+        const canReview = application.status === 'ACCEPTED' && application.job?.status === 'COMPLETED';
+        const alreadyReviewed = canReview && hasReviewedJob(authoredReviewsQuery.data, application.job?.id);
+        const isRatingThisApp =
+          reviewRecruiterMutation.isPending && reviewRecruiterMutation.variables?.applicationId === application.id;
+        const ratingFailedForThisApp =
+          reviewRecruiterMutation.isError && reviewRecruiterMutation.variables?.applicationId === application.id;
 
         return (
           <Card key={application.id} className="p-4">
@@ -96,13 +109,41 @@ export function MineApplicationsList() {
               </Badge>
             </div>
 
-            {conversation ? (
-              <Link href={`/messages/${conversation.id}`} className="mt-3 inline-block">
-                <Button size="sm" variant="outline" className="gap-1.5">
-                  <MessageCircle className="h-4 w-4" aria-hidden />
-                  {t('chatWithRecruiter')}
-                </Button>
-              </Link>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              {conversation ? (
+                <Link href={`/messages/${conversation.id}`}>
+                  <Button size="sm" variant="outline" className="gap-1.5">
+                    <MessageCircle className="h-4 w-4" aria-hidden />
+                    {t('chatWithRecruiter')}
+                  </Button>
+                </Link>
+              ) : null}
+              {canReview ? (
+                alreadyReviewed ? (
+                  <span className="text-xs text-neutral-500">{tReviews('thankYou')}</span>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setOpenRatingAppId(openRatingAppId === application.id ? null : application.id)}
+                  >
+                    {tReviews('rateRecruiterButton')}
+                  </Button>
+                )
+              ) : null}
+            </div>
+
+            {canReview && !alreadyReviewed && openRatingAppId === application.id ? (
+              <RatingForm
+                isPending={isRatingThisApp}
+                isError={ratingFailedForThisApp}
+                onSubmit={(input) =>
+                  reviewRecruiterMutation.mutate(
+                    { applicationId: application.id, input },
+                    { onSuccess: () => setOpenRatingAppId(null) },
+                  )
+                }
+              />
             ) : null}
           </Card>
         );

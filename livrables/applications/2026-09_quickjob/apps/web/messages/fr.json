@@ -278,6 +278,18 @@
     "send": "Envoyer",
     "sendError": "Impossible d'envoyer ce message. Réessaie."
   },
+  "reviews": {
+    "rateLabel": "Choisis une note",
+    "starAria": "{count, plural, one {# étoile} other {# étoiles}}",
+    "commentPlaceholder": "Un commentaire (optionnel)",
+    "submit": "Envoyer",
+    "submitError": "Impossible d'envoyer l'avis. Réessaie.",
+    "noReviewsYet": "Pas encore d'avis",
+    "reviewCount": "({count} avis)",
+    "rateWorkerButton": "Noter le travailleur",
+    "rateRecruiterButton": "Noter le recruteur",
+    "thankYou": "Merci, avis envoyé"
+  },
   "footer": {
     "tagline": "La plateforme universelle du travail temporaire.",
     "linksTitle": "Liens",

@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthStore } from '@/stores/auth-store';
 import { useConversationMessages, useMineConversations, useSendMessage } from '@/features/conversations/use-conversations';
 import { findConversationById, participantInitial, resolveParticipantName } from '@/features/conversations/format';
+import { ReputationBadge } from '@/components/reviews/reputation-badge';
 
 function ThreadSkeleton() {
   return (
@@ -72,6 +73,7 @@ export function ConversationThread({ conversationId }: { conversationId: string 
           {conversation?.jobTitle ? (
             <p className="truncate text-xs text-neutral-500">{conversation.jobTitle}</p>
           ) : null}
+          <ReputationBadge userId={conversation?.otherParticipant?.id} />
         </div>
       </div>
 
