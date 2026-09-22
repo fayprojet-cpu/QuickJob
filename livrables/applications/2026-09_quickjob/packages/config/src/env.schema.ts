@@ -38,6 +38,18 @@ export const envSchema = z
     // sortantes, ce qui fait échouer/traîner silencieusement l'envoi par
     // SMTP. Si présent, prioritaire sur SMTP_*.
     BREVO_API_KEY: z.string().optional(),
+
+    // Paiement Mobile Money (FedaPay) — séquestre des missions. Absent =
+    // PaymentsService refuse la création de transaction (503 explicite),
+    // sans jamais bloquer le démarrage de l'API.
+    FEDAPAY_PUBLIC_KEY: z.string().optional(),
+    FEDAPAY_SECRET_KEY: z.string().optional(),
+    FEDAPAY_ENVIRONMENT: z.enum(['sandbox', 'live']).default('sandbox'),
+    // Rempli après coup : créé dans le tableau de bord FedaPay une fois
+    // l'URL de webhook (déployée) connue. Absent -> le webhook fait quand
+    // même confiance à FedaPay UNIQUEMENT pour l'identifiant de transaction,
+    // puis revérifie le vrai statut via l'API (jamais le payload brut).
+    FEDAPAY_WEBHOOK_SECRET: z.string().optional(),
   })
   .loose();
 

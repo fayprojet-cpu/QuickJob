@@ -9,10 +9,12 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './infra/prisma/prisma.module';
 import { MailModule } from './infra/mail/mail.module';
+import { FedapayModule } from './infra/fedapay/fedapay.module';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { JobsModule } from './modules/jobs/jobs.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 import { UsersModule } from './modules/users/users.module';
 import { HealthModule } from './health/health.module';
 
@@ -30,10 +32,12 @@ import { HealthModule } from './health/health.module';
     }),
     PrismaModule,
     MailModule,
+    FedapayModule,
     AuthModule,
     UsersModule,
     JobsModule,
     ApplicationsModule,
+    PaymentsModule,
     CategoriesModule,
     HealthModule,
   ],
