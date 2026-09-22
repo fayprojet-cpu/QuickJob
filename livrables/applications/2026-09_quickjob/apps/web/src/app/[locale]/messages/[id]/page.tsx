@@ -18,8 +18,6 @@ export default function ConversationPage({ params }: { params: { id: string } })
         ← {t('backToList')}
       </Link>
 
-      <h1 className="mt-4 text-2xl font-bold text-neutral-900">{t('title')}</h1>
-
       {user ? (
         <ConversationThread conversationId={params.id} />
       ) : (

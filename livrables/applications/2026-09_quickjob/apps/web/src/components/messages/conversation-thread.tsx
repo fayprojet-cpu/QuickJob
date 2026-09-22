@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthStore } from '@/stores/auth-store';
-import { useConversationMessages, useSendMessage } from '@/features/conversations/use-conversations';
+import { useConversationMessages, useMineConversations, useSendMessage } from '@/features/conversations/use-conversations';
+import { findConversationById, participantInitial, resolveParticipantName } from '@/features/conversations/format';
 
 function ThreadSkeleton() {
   return (
@@ -26,11 +27,14 @@ export function ConversationThread({ conversationId }: { conversationId: string 
   const locale = useLocale();
   const userId = useAuthStore((state) => state.user?.id);
   const messagesQuery = useConversationMessages(conversationId);
+  const conversationsQuery = useMineConversations();
   const sendMutation = useSendMessage(conversationId);
   const [draft, setDraft] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const messages = messagesQuery.data?.items ?? [];
+  const conversation = findConversationById(conversationsQuery.data, conversationId);
+  const otherName = resolveParticipantName(conversation?.otherParticipant ?? null, t('unknownParticipant'));
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: 'end' });
@@ -55,8 +59,23 @@ export function ConversationThread({ conversationId }: { conversationId: string 
   const timeFmt = new Intl.DateTimeFormat(locale, { timeStyle: 'short' });
 
   return (
-    <div className="mt-4 flex h-[65vh] flex-col">
-      <div className="flex-1 space-y-3 overflow-y-auto pb-3 pr-1">
+    <div className="mt-4 flex h-[70vh] flex-col">
+      <div className="flex items-center gap-3 border-b border-neutral-200 pb-3">
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700"
+          aria-hidden
+        >
+          {participantInitial(otherName)}
+        </span>
+        <div className="min-w-0">
+          <p className="truncate font-semibold text-neutral-900">{otherName}</p>
+          {conversation?.jobTitle ? (
+            <p className="truncate text-xs text-neutral-500">{conversation.jobTitle}</p>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="flex-1 space-y-3 overflow-y-auto pb-3 pr-1 pt-3">
         {messages.length === 0 ? (
           <p className="mt-8 text-center text-sm text-neutral-400">{t('noMessagesYet')}</p>
         ) : (

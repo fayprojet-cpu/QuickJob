@@ -139,29 +139,31 @@ export function MineJobsList() {
               </Button>
             ) : null}
             {job.status === 'IN_PROGRESS' ? (
-              <>
-                <Link href={`/jobs/${job.id}/applications`} className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
-                    {tApplications('viewApplications')}
-                  </Button>
-                </Link>
-                {conversation ? (
-                  <Link href={`/messages/${conversation.id}`} className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full gap-1.5">
-                      <MessageCircle className="h-4 w-4" aria-hidden />
-                      {tApplications('chatWithWorker')}
+              <div className="flex w-full flex-col gap-2">
+                <div className="flex gap-2">
+                  <Link href={`/jobs/${job.id}/applications`} className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      {tApplications('viewApplications')}
                     </Button>
                   </Link>
-                ) : null}
+                  {conversation ? (
+                    <Link href={`/messages/${conversation.id}`} className="flex-1">
+                      <Button variant="outline" size="sm" className="w-full gap-1.5">
+                        <MessageCircle className="h-4 w-4 shrink-0" aria-hidden />
+                        {tMine('chat')}
+                      </Button>
+                    </Link>
+                  ) : null}
+                </div>
                 <Button
                   size="sm"
-                  className="flex-1"
+                  className="w-full"
                   isLoading={completeMutation.isPending && completeMutation.variables === job.id}
                   onClick={() => completeMutation.mutate(job.id)}
                 >
                   {tMine('markCompleted')}
                 </Button>
-              </>
+              </div>
             ) : null}
             {job.status === 'COMPLETED' ? (
               <Link href={`/jobs/${job.id}/applications`} className="w-full">

@@ -5,6 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMineConversations } from '@/features/conversations/use-conversations';
+import { participantInitial, resolveParticipantName } from '@/features/conversations/format';
 
 function ConversationsSkeleton() {
   return (
@@ -45,24 +46,35 @@ export function ConversationsList() {
   return (
     <div className="mt-6 space-y-3">
       {conversations.map((conversation) => {
-        const name =
-          conversation.otherParticipant?.displayName ??
-          conversation.otherParticipant?.email ??
-          t('unknownParticipant');
+        const name = resolveParticipantName(conversation.otherParticipant, t('unknownParticipant'));
         const hasUnread = conversation.unreadCount > 0;
 
         return (
           <Link key={conversation.id} href={`/messages/${conversation.id}`}>
             <Card
-              className={`flex items-center justify-between gap-3 p-4 transition hover:border-primary-200 hover:shadow-sm ${
+              className={`flex items-center gap-3 p-4 transition hover:border-primary-200 hover:shadow-sm ${
                 hasUnread ? 'border-primary-200 bg-primary-50/40' : ''
               }`}
             >
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="truncate font-medium text-neutral-900">{name}</p>
-                  {hasUnread ? (
-                    <span className="h-2 w-2 shrink-0 rounded-full bg-primary-500" aria-hidden />
+              <span
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700"
+                aria-hidden
+              >
+                {participantInitial(name)}
+              </span>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <p className="truncate font-medium text-neutral-900">{name}</p>
+                    {hasUnread ? (
+                      <span className="h-2 w-2 shrink-0 rounded-full bg-primary-500" aria-hidden />
+                    ) : null}
+                  </div>
+                  {conversation.lastMessage ? (
+                    <span className="shrink-0 text-xs text-neutral-400">
+                      {dateFmt.format(new Date(conversation.lastMessage.createdAt))}
+                    </span>
                   ) : null}
                 </div>
                 {conversation.jobTitle ? (
@@ -74,11 +86,6 @@ export function ConversationsList() {
                   <p className="mt-1 text-sm text-neutral-400">{t('noMessagesYet')}</p>
                 )}
               </div>
-              {conversation.lastMessage ? (
-                <span className="shrink-0 text-xs text-neutral-400">
-                  {dateFmt.format(new Date(conversation.lastMessage.createdAt))}
-                </span>
-              ) : null}
             </Card>
           </Link>
         );
