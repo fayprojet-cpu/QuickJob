@@ -10,4 +10,14 @@
   body {
     @apply bg-neutral-50 text-neutral-900;
   }
+
+  /* Les surfaces "par défaut du navigateur" font aussi partie du design. */
+  ::selection {
+    background-color: theme('colors.primary.500');
+    color: white;
+  }
+
+  a {
+    text-underline-offset: 3px;
+  }
 }

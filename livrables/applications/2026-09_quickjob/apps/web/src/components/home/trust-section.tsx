@@ -1,6 +1,5 @@
 import { getTranslations } from 'next-intl/server';
 import { ShieldCheck, BadgeCheck, Headset } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 
 export async function TrustSection() {
   const t = await getTranslations('home');
@@ -28,16 +27,16 @@ export async function TrustSection() {
         ))}
       </div>
 
-      <h2 className="mt-16 text-center text-2xl font-bold text-neutral-900">{t('trustTitle')}</h2>
-      <div className="mt-10 grid gap-6 sm:grid-cols-3">
-        {badges.map(({ icon: Icon, title, body }) => (
-          <Card key={title} className="p-6 text-center">
-            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-primary-100 text-primary-600">
-              <Icon className="h-5 w-5" aria-hidden />
+      <h2 className="text-balance mt-16 text-center text-2xl font-bold text-neutral-900">{t('trustTitle')}</h2>
+      <div className="mt-10 grid gap-8 divide-y divide-neutral-200 sm:grid-cols-3 sm:gap-6 sm:divide-y-0 sm:divide-x">
+        {badges.map(({ icon: Icon, title, body }, index) => (
+          <div key={title} className={index === 0 ? 'sm:pr-6' : 'pt-8 sm:pt-0 sm:px-6'}>
+            <div className="flex items-center gap-3">
+              <Icon className="h-5 w-5 shrink-0 text-primary-600" aria-hidden />
+              <h3 className="font-semibold text-neutral-900">{title}</h3>
             </div>
-            <h3 className="mt-4 font-semibold text-neutral-900">{title}</h3>
-            <p className="mt-2 text-sm text-neutral-600">{body}</p>
-          </Card>
+            <p className="mt-2 text-sm leading-relaxed text-neutral-600">{body}</p>
+          </div>
         ))}
       </div>
     </section>

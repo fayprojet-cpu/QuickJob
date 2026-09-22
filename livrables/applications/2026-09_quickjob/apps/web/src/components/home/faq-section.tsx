@@ -11,7 +11,7 @@ export async function FaqSection() {
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-16">
-      <h2 className="text-center text-2xl font-bold text-neutral-900">{t('faqTitle')}</h2>
+      <h2 className="text-balance text-center text-2xl font-bold text-neutral-900">{t('faqTitle')}</h2>
       <div className="mt-10">
         <Accordion items={items} />
       </div>

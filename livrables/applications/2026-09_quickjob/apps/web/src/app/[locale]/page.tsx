@@ -32,7 +32,7 @@ export default async function HomePage({
           className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-primary-200/40 blur-3xl sm:h-96 sm:w-96"
         />
         <div className="relative mx-auto max-w-3xl text-center">
-          <h1 className="whitespace-pre-line text-4xl font-extrabold tracking-tight text-neutral-900 sm:text-6xl">
+          <h1 className="text-balance whitespace-pre-line text-4xl font-extrabold tracking-tight text-neutral-900 sm:text-6xl">
             {t('heroTitle')}
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base text-neutral-600 sm:text-lg">
@@ -55,7 +55,7 @@ export default async function HomePage({
 
       {/* Comment ça marche */}
       <section id="how-it-works" className="mx-auto max-w-5xl scroll-mt-20 px-4 py-16">
-        <h2 className="text-center text-2xl font-bold text-neutral-900">{t('howItWorksTitle')}</h2>
+        <h2 className="text-balance text-center text-2xl font-bold text-neutral-900">{t('howItWorksTitle')}</h2>
         <div className="mt-10 grid gap-8 sm:grid-cols-3">
           {steps.map(({ icon: Icon, title, body }, index) => (
             <div key={title} className="relative text-center">
