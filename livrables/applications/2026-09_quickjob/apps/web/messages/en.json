@@ -214,6 +214,8 @@
       "draftBadge": "Publish",
       "markCompleted": "Mark completed",
       "chat": "Chat",
+      "noActiveJobs": "No active jobs right now.",
+      "historyToggle": "{count, plural, one {# completed job} other {# completed jobs}}",
       "loginPrompt": "Log in with a recruiter account to see your jobs."
     }
   },
@@ -289,6 +291,17 @@
     "rateWorkerButton": "Rate the worker",
     "rateRecruiterButton": "Rate the recruiter",
     "thankYou": "Thanks, review sent"
+  },
+  "profile": {
+    "unknownUser": "User",
+    "memberSince": "Member since {year}",
+    "reviewCount": "{count, plural, one {# review received} other {# reviews received}}",
+    "noReviewsYet": "No reviews yet",
+    "receivedReviews": "Reviews received",
+    "reviewBy": "Review from {name}",
+    "changePhoto": "Change photo",
+    "uploading": "Uploading…",
+    "uploadError": "Couldn't upload the photo (jpg, png or webp, 5 MB max)."
   },
   "footer": {
     "tagline": "The universal platform for temporary work.",

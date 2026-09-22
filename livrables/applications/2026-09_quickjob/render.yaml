@@ -73,3 +73,11 @@ services:
         sync: false
       - key: FEDAPAY_WEBHOOK_SECRET
         sync: false
+      # Photo de profil (Supabase Storage) — voir docs/AVATAR-SETUP.md. Si
+      # absent, POST /users/me/avatar répond 503 au lieu de planter le service.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: avatars

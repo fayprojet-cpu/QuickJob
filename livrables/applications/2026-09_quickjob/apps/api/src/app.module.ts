@@ -10,6 +10,7 @@ import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './infra/prisma/prisma.module';
 import { MailModule } from './infra/mail/mail.module';
 import { FedapayModule } from './infra/fedapay/fedapay.module';
+import { StorageModule } from './infra/storage/storage.module';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
@@ -35,6 +36,7 @@ import { HealthModule } from './health/health.module';
     PrismaModule,
     MailModule,
     FedapayModule,
+    StorageModule,
     AuthModule,
     UsersModule,
     JobsModule,

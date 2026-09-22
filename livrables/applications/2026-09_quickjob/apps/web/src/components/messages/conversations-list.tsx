@@ -4,8 +4,9 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar } from '@/components/ui/avatar';
 import { useMineConversations } from '@/features/conversations/use-conversations';
-import { participantInitial, resolveParticipantName } from '@/features/conversations/format';
+import { resolveParticipantName } from '@/features/conversations/format';
 
 function ConversationsSkeleton() {
   return (
@@ -56,12 +57,7 @@ export function ConversationsList() {
                 hasUnread ? 'border-primary-200 bg-primary-50/40' : ''
               }`}
             >
-              <span
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700"
-                aria-hidden
-              >
-                {participantInitial(name)}
-              </span>
+              <Avatar url={conversation.otherParticipant?.avatarUrl} name={name} />
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">

@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar } from '@/components/ui/avatar';
 import {
   useAcceptApplication,
   useJobApplications,
@@ -72,22 +73,25 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
         const decideFailed =
           (acceptMutation.isError && acceptMutation.variables === application.id) ||
           (rejectMutation.isError && rejectMutation.variables === application.id);
+        const workerName =
+          application.worker?.firstName ??
+          application.worker?.email ??
+          application.worker?.phone ??
+          application.workerId;
 
         return (
           <Card key={application.id} className="p-4">
             <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-medium text-neutral-900">
-                  {application.worker?.firstName ??
-                    application.worker?.email ??
-                    application.worker?.phone ??
-                    application.workerId}
-                </p>
-                <ReputationBadge userId={application.workerId} className="mt-0.5" />
-                <p className="mt-1 text-sm text-neutral-600">
-                  {application.coverLetter || t('coverLetterNone')}
-                </p>
-              </div>
+              <Link href={`/profile/${application.workerId}`} className="flex items-start gap-3">
+                <Avatar url={application.worker?.avatarUrl} name={workerName} />
+                <div>
+                  <p className="font-medium text-neutral-900 hover:underline">{workerName}</p>
+                  <ReputationBadge userId={application.workerId} className="mt-0.5" />
+                  <p className="mt-1 text-sm text-neutral-600">
+                    {application.coverLetter || t('coverLetterNone')}
+                  </p>
+                </div>
+              </Link>
               <Badge tone={STATUS_TONE[application.status]} className="shrink-0">
                 {t(`status.${application.status}`)}
               </Badge>

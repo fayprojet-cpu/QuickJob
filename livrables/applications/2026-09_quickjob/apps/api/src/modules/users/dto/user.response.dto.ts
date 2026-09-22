@@ -5,6 +5,7 @@ export class UserResponseDto {
   @ApiProperty() id!: string;
   @ApiPropertyOptional({ nullable: true }) email!: string | null;
   @ApiPropertyOptional({ nullable: true }) firstName!: string | null;
+  @ApiPropertyOptional({ nullable: true }) avatarUrl!: string | null;
   @ApiPropertyOptional({ nullable: true }) phone!: string | null;
   @ApiProperty({ enum: UserRole, isArray: true }) roles!: UserRole[];
   @ApiProperty({ enum: UserStatus }) status!: UserStatus;

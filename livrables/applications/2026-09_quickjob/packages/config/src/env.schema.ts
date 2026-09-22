@@ -52,6 +52,14 @@ export const envSchema = z
     // le vrai statut via l'API avec FEDAPAY_SECRET_KEY. Cette variable est
     // donc inerte pour l'instant, pas un filet de sécurité manquant.
     FEDAPAY_WEBHOOK_SECRET: z.string().optional(),
+
+    // Photo de profil — stockage via l'API Supabase Storage (même projet que
+    // DATABASE_URL, pas de nouveau fournisseur à configurer). Absent =
+    // StorageService refuse l'upload (503 explicite), le reste de l'app
+    // continue de fonctionner normalement.
+    SUPABASE_URL: z.url().optional(),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+    SUPABASE_STORAGE_BUCKET: z.string().default('avatars'),
   })
   .loose();
 

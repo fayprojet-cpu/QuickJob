@@ -30,6 +30,7 @@ export interface AuthUser {
   id: string;
   email: string | null;
   firstName: string | null;
+  avatarUrl: string | null;
   phone: string | null;
   roles: UserRole[];
   status: UserStatus;
@@ -102,7 +103,7 @@ export interface Application {
   createdAt: string;
   decidedAt: string | null;
   /** Présent uniquement sur la vue recruteur (GET /jobs/:jobId/applications). */
-  worker?: { id: string; email: string | null; firstName: string | null; phone: string | null };
+  worker?: { id: string; email: string | null; firstName: string | null; avatarUrl: string | null; phone: string | null };
   /** Présent sur la vue travailleur (GET /applications/mine) : la mission liée. */
   job?: { id: string; title: string; city: string | null; countryCode: string | null; status: JobStatus };
 }
@@ -157,7 +158,7 @@ export interface ConversationSummary {
   id: string;
   jobId: string | null;
   jobTitle: string | null;
-  otherParticipant: { id: string; email: string | null; displayName: string | null } | null;
+  otherParticipant: { id: string; email: string | null; displayName: string | null; avatarUrl: string | null } | null;
   lastMessage: { body: string | null; senderId: string; createdAt: string } | null;
   unreadCount: number;
 }
@@ -186,4 +187,14 @@ export interface AuthoredReview {
 export interface CreateReviewInput {
   rating: number;
   comment?: string;
+}
+
+/** Profil public d'un utilisateur — visible par tous, pas seulement ses interlocuteurs. */
+export interface UserProfile {
+  id: string;
+  firstName: string | null;
+  avatarUrl: string | null;
+  roles: UserRole[];
+  memberSince: string;
+  reviews: ReviewSummary;
 }

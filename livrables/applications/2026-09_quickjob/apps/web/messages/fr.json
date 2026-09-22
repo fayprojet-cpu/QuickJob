@@ -214,6 +214,8 @@
       "draftBadge": "Publier",
       "markCompleted": "Marquer terminée",
       "chat": "Discuter",
+      "noActiveJobs": "Aucune mission active en ce moment.",
+      "historyToggle": "{count, plural, one {# mission terminée} other {# missions terminées}}",
       "loginPrompt": "Connecte-toi avec un compte recruteur pour voir tes missions."
     }
   },
@@ -289,6 +291,17 @@
     "rateWorkerButton": "Noter le travailleur",
     "rateRecruiterButton": "Noter le recruteur",
     "thankYou": "Merci, avis envoyé"
+  },
+  "profile": {
+    "unknownUser": "Utilisateur",
+    "memberSince": "Membre depuis {year}",
+    "reviewCount": "{count, plural, one {# avis reçu} other {# avis reçus}}",
+    "noReviewsYet": "Pas encore d'avis",
+    "receivedReviews": "Avis reçus",
+    "reviewBy": "Avis de {name}",
+    "changePhoto": "Changer la photo",
+    "uploading": "Envoi…",
+    "uploadError": "Impossible d'envoyer la photo (jpg, png ou webp, 5 Mo max)."
   },
   "footer": {
     "tagline": "La plateforme universelle du travail temporaire.",

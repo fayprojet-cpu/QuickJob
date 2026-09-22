@@ -7,9 +7,11 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar } from '@/components/ui/avatar';
+import { Link } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { useConversationMessages, useMineConversations, useSendMessage } from '@/features/conversations/use-conversations';
-import { findConversationById, participantInitial, resolveParticipantName } from '@/features/conversations/format';
+import { findConversationById, resolveParticipantName } from '@/features/conversations/format';
 import { ReputationBadge } from '@/components/reviews/reputation-badge';
 
 function ThreadSkeleton() {
@@ -61,21 +63,19 @@ export function ConversationThread({ conversationId }: { conversationId: string 
 
   return (
     <div className="mt-4 flex h-[70vh] flex-col">
-      <div className="flex items-center gap-3 border-b border-neutral-200 pb-3">
-        <span
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700"
-          aria-hidden
-        >
-          {participantInitial(otherName)}
-        </span>
+      <Link
+        href={conversation?.otherParticipant?.id ? `/profile/${conversation.otherParticipant.id}` : '#'}
+        className="flex items-center gap-3 border-b border-neutral-200 pb-3"
+      >
+        <Avatar url={conversation?.otherParticipant?.avatarUrl} name={otherName} />
         <div className="min-w-0">
-          <p className="truncate font-semibold text-neutral-900">{otherName}</p>
+          <p className="truncate font-semibold text-neutral-900 hover:underline">{otherName}</p>
           {conversation?.jobTitle ? (
             <p className="truncate text-xs text-neutral-500">{conversation.jobTitle}</p>
           ) : null}
           <ReputationBadge userId={conversation?.otherParticipant?.id} />
         </div>
-      </div>
+      </Link>
 
       <div className="flex-1 space-y-3 overflow-y-auto pb-3 pr-1 pt-3">
         {messages.length === 0 ? (

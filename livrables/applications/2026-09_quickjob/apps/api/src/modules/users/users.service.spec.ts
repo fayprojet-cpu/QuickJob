@@ -1,6 +1,8 @@
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { UserRole, UserStatus } from '@prisma/client';
 import { PrismaService } from '../../infra/prisma/prisma.service';
+import { StorageService } from '../../infra/storage/storage.service';
+import { ReviewsService } from '../reviews/reviews.service';
 import { UsersService } from './users.service';
 
 function buildPrismaMock() {
@@ -12,14 +14,30 @@ function buildPrismaMock() {
   } as unknown as PrismaService;
 }
 
+function buildStorageMock() {
+  return {
+    isConfigured: jest.fn().mockReturnValue(true),
+    uploadAvatar: jest.fn(),
+  } as unknown as StorageService;
+}
+
+function buildReviewsMock() {
+  return {
+    findReceivedByUser: jest.fn(),
+  } as unknown as ReviewsService;
+}
+
 describe('UsersService', () => {
   let service: UsersService;
   let prisma: ReturnType<typeof buildPrismaMock>;
+  let storage: ReturnType<typeof buildStorageMock>;
+  let reviews: ReturnType<typeof buildReviewsMock>;
 
   const baseUser = {
     id: 'user-1',
     email: 'jane@example.com',
     firstName: 'Jane',
+    avatarUrl: null,
     phone: null,
     roles: [UserRole.WORKER],
     status: UserStatus.ACTIVE,
@@ -33,7 +51,9 @@ describe('UsersService', () => {
 
   beforeEach(() => {
     prisma = buildPrismaMock();
-    service = new UsersService(prisma);
+    storage = buildStorageMock();
+    reviews = buildReviewsMock();
+    service = new UsersService(prisma, storage, reviews);
   });
 
   describe('findSafeById', () => {
@@ -105,6 +125,74 @@ describe('UsersService', () => {
       await expect(service.addRole('ghost', UserRole.RECRUITER)).rejects.toBeInstanceOf(
         NotFoundException,
       );
+    });
+  });
+
+  describe('updateAvatar', () => {
+    const file = { buffer: Buffer.from('fake-image'), mimetype: 'image/png', size: 1024 };
+
+    it('uploads the file and saves the resulting URL', async () => {
+      (storage.uploadAvatar as jest.Mock).mockResolvedValue('https://storage.example.com/avatars/user-1.png');
+      (prisma.user.update as jest.Mock).mockResolvedValue({
+        ...baseUser,
+        avatarUrl: 'https://storage.example.com/avatars/user-1.png',
+      });
+
+      const result = await service.updateAvatar('user-1', file);
+
+      expect(storage.uploadAvatar).toHaveBeenCalledWith('user-1', file.buffer, 'image/png');
+      expect(prisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: { avatarUrl: 'https://storage.example.com/avatars/user-1.png' },
+        }),
+      );
+      expect(result.avatarUrl).toBe('https://storage.example.com/avatars/user-1.png');
+    });
+
+    it('throws ServiceUnavailableException when storage is not configured', async () => {
+      (storage.isConfigured as jest.Mock).mockReturnValue(false);
+
+      await expect(service.updateAvatar('user-1', file)).rejects.toBeInstanceOf(ServiceUnavailableException);
+      expect(storage.uploadAvatar).not.toHaveBeenCalled();
+    });
+
+    it('throws BadRequestException for an unsupported mime type', async () => {
+      await expect(
+        service.updateAvatar('user-1', { ...file, mimetype: 'application/pdf' }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(storage.uploadAvatar).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('findPublicProfile', () => {
+    it('combines the base identity with the review summary', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue({
+        id: 'user-1',
+        firstName: 'Jane',
+        avatarUrl: null,
+        roles: [UserRole.WORKER],
+        createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      });
+      (reviews.findReceivedByUser as jest.Mock).mockResolvedValue({ average: 4.5, count: 2, items: [] });
+
+      const result = await service.findPublicProfile('user-1');
+
+      expect(result).toEqual({
+        id: 'user-1',
+        firstName: 'Jane',
+        avatarUrl: null,
+        roles: [UserRole.WORKER],
+        memberSince: new Date('2026-01-01T00:00:00.000Z'),
+        reviews: { average: 4.5, count: 2, items: [] },
+      });
+    });
+
+    it('throws NotFoundException for a missing or soft-deleted user', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.findPublicProfile('ghost')).rejects.toBeInstanceOf(NotFoundException);
+      expect(reviews.findReceivedByUser).not.toHaveBeenCalled();
     });
   });
 });

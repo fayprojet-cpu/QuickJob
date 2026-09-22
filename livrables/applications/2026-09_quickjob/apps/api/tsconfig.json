@@ -7,7 +7,7 @@
     "declaration": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "types": ["node", "jest"],
+    "types": ["node", "jest", "multer"],
     "plugins": [{ "name": "@nestjs/swagger/plugin" }]
   },
   "include": ["src/**/*.ts"],

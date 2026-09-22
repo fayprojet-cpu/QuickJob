@@ -36,6 +36,7 @@ export class ConversationsService {
                     id: true,
                     email: true,
                     firstName: true,
+                    avatarUrl: true,
                     workerProfile: { select: { displayName: true } },
                     recruiterProfile: { select: { companyName: true } },
                   },
@@ -74,6 +75,7 @@ export class ConversationsService {
                   otherUser.workerProfile?.displayName ??
                   otherUser.recruiterProfile?.companyName ??
                   null,
+                avatarUrl: otherUser.avatarUrl,
               }
             : null,
           lastMessage: lastMessage

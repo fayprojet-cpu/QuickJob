@@ -4,6 +4,7 @@ class ConversationParticipantSummaryDto {
   @ApiProperty({ format: 'uuid' }) id!: string;
   @ApiPropertyOptional({ nullable: true }) email!: string | null;
   @ApiPropertyOptional({ nullable: true }) displayName!: string | null;
+  @ApiPropertyOptional({ nullable: true }) avatarUrl!: string | null;
 }
 
 class ConversationLastMessageDto {

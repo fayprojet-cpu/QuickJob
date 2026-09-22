@@ -14,7 +14,7 @@ export class ApplicationResponseDto {
   @ApiPropertyOptional({
     description: 'Présent uniquement sur GET /jobs/:jobId/applications (vue recruteur).',
   })
-  worker?: { id: string; email: string | null; firstName: string | null; phone: string | null };
+  worker?: { id: string; email: string | null; firstName: string | null; avatarUrl: string | null; phone: string | null };
 
   @ApiPropertyOptional({
     description: 'Présent sur GET /applications/mine (vue travailleur) : la mission liée.',

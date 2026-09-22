@@ -292,6 +292,9 @@ model User {
   // absent pour les comptes créés avant l'ajout de ce champ — l'app leur
   // demande de le renseigner plutôt que de casser leur session.
   firstName       String?
+  // URL publique de la photo de profil (stockage Supabase) — un seul avatar
+  // par personne, partagé entre son rôle travailleur et recruteur.
+  avatarUrl       String?
   roles           UserRole[] @default([WORKER])
   status          UserStatus @default(ACTIVE)
 

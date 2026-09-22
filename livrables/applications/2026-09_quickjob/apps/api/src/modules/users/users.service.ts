@@ -1,13 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { User, UserRole } from '@prisma/client';
+import { ALLOWED_AVATAR_MIME_TYPES, StorageService } from '../../infra/storage/storage.service';
 import { PrismaService } from '../../infra/prisma/prisma.service';
+import { ReviewsService } from '../reviews/reviews.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserProfileResponseDto } from './dto/user-profile.response.dto';
 import { UserResponseDto } from './dto/user.response.dto';
 
 const SAFE_USER_SELECT = {
   id: true,
   email: true,
   firstName: true,
+  avatarUrl: true,
   phone: true,
   roles: true,
   status: true,
@@ -23,7 +27,11 @@ type SafeUser = Pick<User, keyof typeof SAFE_USER_SELECT>;
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly storageService: StorageService,
+    private readonly reviewsService: ReviewsService,
+  ) {}
 
   async findSafeById(id: string): Promise<UserResponseDto> {
     const user = await this.prisma.user.findFirst({
@@ -77,6 +85,47 @@ export class UsersService {
       select: SAFE_USER_SELECT,
     });
     return this.toResponseDto(updated);
+  }
+
+  /** Remplace la photo de profil du compte connecté (unique, partagée entre ses rôles). */
+  async updateAvatar(id: string, file: { buffer: Buffer; mimetype: string; size: number }): Promise<UserResponseDto> {
+    if (!this.storageService.isConfigured()) {
+      throw new ServiceUnavailableException("L'upload de photo n'est pas encore configuré");
+    }
+    if (!ALLOWED_AVATAR_MIME_TYPES.includes(file.mimetype)) {
+      throw new BadRequestException('Format d\'image non supporté (jpg, png ou webp uniquement)');
+    }
+
+    const avatarUrl = await this.storageService.uploadAvatar(id, file.buffer, file.mimetype);
+
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: { avatarUrl },
+      select: SAFE_USER_SELECT,
+    });
+    return this.toResponseDto(user);
+  }
+
+  /** Profil public — visible sans authentification, réutilisé partout où une personne apparaît. */
+  async findPublicProfile(userId: string): Promise<UserProfileResponseDto> {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, deletedAt: null },
+      select: { id: true, firstName: true, avatarUrl: true, roles: true, createdAt: true },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const reviews = await this.reviewsService.findReceivedByUser(userId);
+
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      avatarUrl: user.avatarUrl,
+      roles: user.roles,
+      memberSince: user.createdAt,
+      reviews,
+    };
   }
 
   private toResponseDto(user: SafeUser): UserResponseDto {

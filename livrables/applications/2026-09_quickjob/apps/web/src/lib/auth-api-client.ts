@@ -68,3 +68,36 @@ export async function authApiFetch<T>(path: string, init: RequestInit = {}): Pro
   const body = (await response.json()) as ApiSuccessBody<T>;
   return body.data;
 }
+
+/**
+ * Variante multipart de authApiFetch (upload de fichier) — pas de
+ * Content-Type manuel : le navigateur doit fixer lui-même la frontière
+ * ("boundary") du FormData, sinon la requête est rejetée côté serveur.
+ */
+export async function authApiUpload<T>(path: string, formData: FormData): Promise<T> {
+  let accessToken = useAuthStore.getState().accessToken;
+
+  const send = (token: string) =>
+    fetch(`${getApiUrl()}${path}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+
+  let response = await send(accessToken ?? '');
+
+  if (response.status === 401) {
+    accessToken = await refreshSession();
+    if (!accessToken) {
+      throw new ApiError(401, 'Session expired');
+    }
+    response = await send(accessToken);
+  }
+
+  if (!response.ok) {
+    throw await toApiError(response);
+  }
+
+  const body = (await response.json()) as ApiSuccessBody<T>;
+  return body.data;
+}

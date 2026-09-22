@@ -1,9 +1,9 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth-store';
 import type { SelfServiceRole, UpdateUserInput } from '@/types/api';
-import { addRole, updateMe } from './api';
+import { addRole, fetchUserProfile, updateMe, uploadAvatar } from './api';
 
 /** Ajoute un rôle au compte connecté puis bascule dessus (mode actif). */
 export function useAddRole() {
@@ -29,4 +29,23 @@ export function useUpdateProfile() {
       setUser(user);
     },
   });
+}
+
+/** Change la photo de profil du compte connecté et rafraîchit sa page profil publique. */
+export function useUploadAvatar() {
+  const setUser = useAuthStore((state) => state.setUser);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (file: File) => uploadAvatar(file),
+    onSuccess: (user) => {
+      setUser(user);
+      queryClient.invalidateQueries({ queryKey: ['users', user.id, 'profile'] });
+    },
+  });
+}
+
+/** Profil public d'un utilisateur — nom, réputation, avis reçus. */
+export function useUserProfile(userId: string) {
+  return useQuery({ queryKey: ['users', userId, 'profile'], queryFn: () => fetchUserProfile(userId) });
 }
