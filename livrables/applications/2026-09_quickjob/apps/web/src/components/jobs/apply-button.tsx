@@ -74,7 +74,7 @@ export function ApplyButton({ jobId, recruiterId }: { jobId: string; recruiterId
       >
         {t('applyButton')}
       </Button>
-      {applyMutation.isError ? <p className="mt-2 text-xs text-red-600">{t('applyError')}</p> : null}
+      {applyMutation.isError ? <p className="mt-2 text-xs text-danger-600">{t('applyError')}</p> : null}
     </Card>
   );
 }

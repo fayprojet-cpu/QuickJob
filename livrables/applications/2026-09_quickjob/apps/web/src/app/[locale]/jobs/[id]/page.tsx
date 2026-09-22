@@ -43,7 +43,7 @@ export default async function JobDetailPage({
       <Card className="mt-4 p-6">
         <div className="flex items-start justify-between gap-3">
           <h1 className="text-xl font-bold text-neutral-900">{job.title}</h1>
-          <Badge tone={job.urgency === 'URGENT' ? 'urgent' : 'primary'} className="shrink-0">
+          <Badge tone={job.urgency === 'URGENT' ? 'danger' : 'primary'} className="shrink-0">
             {t(`urgency.${job.urgency}`)}
           </Badge>
         </div>

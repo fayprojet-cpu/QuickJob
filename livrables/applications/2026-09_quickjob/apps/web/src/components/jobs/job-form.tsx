@@ -142,81 +142,80 @@ export function JobForm() {
         </Select>
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-neutral-700">
-        <input
-          type="checkbox"
-          checked={negotiable}
-          onChange={(event) => setNegotiable(event.target.checked)}
-          className="h-4 w-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500"
-        />
-        {t('negotiableLabel')}
-      </label>
+      <div className="space-y-3 rounded-lg border border-neutral-200 bg-neutral-50 p-4">
+        <label className="flex items-center gap-2 text-sm text-neutral-700">
+          <input
+            type="checkbox"
+            checked={negotiable}
+            onChange={(event) => setNegotiable(event.target.checked)}
+            className="h-4 w-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500"
+          />
+          {t('negotiableLabel')}
+        </label>
 
-      {!negotiable ? (
-        <>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="salaryAmount">{t('salaryAmount')}</Label>
-              <Input
-                id="salaryAmount"
-                required
-                inputMode="decimal"
-                placeholder="1000"
-                value={salaryAmount}
-                onChange={(event) => setSalaryAmount(event.target.value)}
-              />
+        {!negotiable ? (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="salaryAmount">{t('salaryAmount')}</Label>
+                <Input
+                  id="salaryAmount"
+                  required
+                  inputMode="decimal"
+                  placeholder="1000"
+                  value={salaryAmount}
+                  onChange={(event) => setSalaryAmount(event.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="salaryCurrency">{t('salaryCurrency')}</Label>
+                <Select
+                  id="salaryCurrency"
+                  required
+                  value={salaryCurrency}
+                  onChange={(event) => setSalaryCurrency(event.target.value)}
+                >
+                  {currencyOptions.map((option) => (
+                    <option key={option.code} value={option.code}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
             </div>
+            <p className="-mt-1 text-xs text-neutral-500">{t('salaryAmountHint')}</p>
+
             <div>
-              <Label htmlFor="salaryCurrency">{t('salaryCurrency')}</Label>
+              <Label htmlFor="salaryType">{t('salaryType')}</Label>
               <Select
-                id="salaryCurrency"
-                required
-                value={salaryCurrency}
-                onChange={(event) => setSalaryCurrency(event.target.value)}
+                id="salaryType"
+                value={salaryType}
+                onChange={(event) => setSalaryType(event.target.value as SalaryType)}
               >
-                {currencyOptions.map((option) => (
-                  <option key={option.code} value={option.code}>
-                    {option.label}
+                {SALARY_TYPES.map((value) => (
+                  <option key={value} value={value}>
+                    {tJobs(`salaryType.${value}`)}
                   </option>
                 ))}
               </Select>
             </div>
-          </div>
-          <p className="-mt-2 text-xs text-neutral-500">{t('salaryAmountHint')}</p>
-        </>
-      ) : null}
-
-      <div className="grid grid-cols-2 gap-3">
-        {!negotiable ? (
-          <div>
-            <Label htmlFor="salaryType">{t('salaryType')}</Label>
-            <Select
-              id="salaryType"
-              value={salaryType}
-              onChange={(event) => setSalaryType(event.target.value as SalaryType)}
-            >
-              {SALARY_TYPES.map((value) => (
-                <option key={value} value={value}>
-                  {tJobs(`salaryType.${value}`)}
-                </option>
-              ))}
-            </Select>
-          </div>
+          </>
         ) : null}
-        <div>
-          <Label htmlFor="urgency">{t('urgencyLabel')}</Label>
-          <Select
-            id="urgency"
-            value={urgency}
-            onChange={(event) => setUrgency(event.target.value as JobUrgency)}
-          >
-            {URGENCIES.map((value) => (
-              <option key={value} value={value}>
-                {tJobs(`urgency.${value}`)}
-              </option>
-            ))}
-          </Select>
-        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="urgency">{t('urgencyLabel')}</Label>
+        <Select
+          id="urgency"
+          value={urgency}
+          onChange={(event) => setUrgency(event.target.value as JobUrgency)}
+        >
+          {URGENCIES.map((value) => (
+            <option key={value} value={value}>
+              {tJobs(`urgency.${value}`)}
+            </option>
+          ))}
+        </Select>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -250,19 +249,21 @@ export function JobForm() {
         />
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-neutral-700">
-        <input
-          type="checkbox"
-          checked={publishNow}
-          onChange={(event) => setPublishNow(event.target.checked)}
-          className="h-4 w-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500"
-        />
-        {t('publishAfterCreate')}
-      </label>
+      <div className="border-t border-neutral-200 pt-4">
+        <label className="flex items-center gap-2 text-sm text-neutral-700">
+          <input
+            type="checkbox"
+            checked={publishNow}
+            onChange={(event) => setPublishNow(event.target.checked)}
+            className="h-4 w-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500"
+          />
+          {t('publishAfterCreate')}
+        </label>
 
-      <Button type="submit" className="w-full" isLoading={submitMutation.isPending}>
-        {publishNow ? t('publishAfterCreate') : t('submit')}
-      </Button>
+        <Button type="submit" className="mt-4 w-full" isLoading={submitMutation.isPending}>
+          {publishNow ? t('publishAfterCreate') : t('submit')}
+        </Button>
+      </div>
     </form>
   );
 }

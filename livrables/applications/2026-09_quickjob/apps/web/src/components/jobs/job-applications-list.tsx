@@ -2,8 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   useAcceptApplication,
   useJobApplications,
@@ -11,23 +12,40 @@ import {
 } from '@/features/applications/use-applications';
 import type { ApplicationStatus } from '@/types/api';
 
-const STATUS_TONE: Record<ApplicationStatus, 'neutral' | 'primary' | 'urgent'> = {
-  PENDING: 'neutral',
-  ACCEPTED: 'primary',
-  REJECTED: 'urgent',
+const STATUS_TONE: Record<ApplicationStatus, NonNullable<BadgeProps['tone']>> = {
+  PENDING: 'warning',
+  ACCEPTED: 'success',
+  REJECTED: 'danger',
   WITHDRAWN: 'neutral',
 };
 
+function ApplicationsSkeleton() {
+  return (
+    <div className="mt-6 space-y-4">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <Card key={index} className="p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="w-full space-y-2">
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+            <Skeleton className="h-5 w-20 shrink-0 rounded-full" />
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
 export function JobApplicationsList({ jobId }: { jobId: string }) {
   const t = useTranslations('applications');
-  const tCommon = useTranslations('common');
   const tErrors = useTranslations('errors');
   const applicationsQuery = useJobApplications(jobId);
   const acceptMutation = useAcceptApplication(jobId);
   const rejectMutation = useRejectApplication(jobId);
 
   if (applicationsQuery.isLoading) {
-    return <p className="mt-8 text-center text-neutral-500">{tCommon('loading')}</p>;
+    return <ApplicationsSkeleton />;
   }
   if (applicationsQuery.isError) {
     return <p className="mt-8 text-center text-neutral-500">{tErrors('generic')}</p>;
@@ -81,7 +99,7 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
               </div>
             ) : null}
 
-            {decideFailed ? <p className="mt-2 text-xs text-red-600">{t('decideError')}</p> : null}
+            {decideFailed ? <p className="mt-2 text-xs text-danger-600">{t('decideError')}</p> : null}
           </Card>
         );
       })}

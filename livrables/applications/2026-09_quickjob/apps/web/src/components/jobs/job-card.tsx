@@ -17,7 +17,7 @@ export function JobCard({ job, category }: { job: Job; category?: Category }) {
       <Card className="flex h-full flex-col gap-3 p-4 transition-shadow hover:shadow-md">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-neutral-900">{job.title}</h3>
-          <Badge tone={job.urgency === 'URGENT' ? 'urgent' : 'primary'} className="shrink-0">
+          <Badge tone={job.urgency === 'URGENT' ? 'danger' : 'primary'} className="shrink-0">
             {t(`urgency.${job.urgency}`)}
           </Badge>
         </div>
