@@ -96,7 +96,9 @@
     "ctaBottomTitle": "Join QuickJob today",
     "ctaBottomBody": "Whether you're looking for work or hiring, get started in minutes.",
     "ctaBottomButtonWorker": "I'm looking for work",
-    "ctaBottomButtonEmployer": "I'm hiring"
+    "ctaBottomButtonEmployer": "I'm hiring",
+    "activeJobsCount": "{count, plural, one {active job right now} other {active jobs right now}}",
+    "liveTickerTitle": "Happening right now"
   },
   "auth": {
     "email": "Email",

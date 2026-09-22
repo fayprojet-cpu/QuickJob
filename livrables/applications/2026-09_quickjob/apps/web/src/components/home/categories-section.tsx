@@ -25,9 +25,9 @@ export async function CategoriesSection() {
             <Link
               key={key}
               href="/jobs"
-              className="flex flex-col items-center gap-3 rounded-xl border border-neutral-200 bg-white p-5 text-center transition-all hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-md"
+              className="group flex flex-col items-center gap-3 rounded-xl border border-neutral-200 bg-white p-5 text-center transition-all hover:-translate-y-1 hover:border-primary-300 hover:shadow-lg"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-100 text-primary-600">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
                 <Icon className="h-5 w-5" aria-hidden />
               </span>
               <span className="text-sm font-medium text-neutral-800">{tJobs(key)}</span>

@@ -21,3 +21,54 @@
     text-underline-offset: 3px;
   }
 }
+
+@layer utilities {
+  /* Révélation au scroll : un seul geste, appliqué partout — pas d'effets
+     dispersés. .reveal part invisible/légèrement décalé, .reveal-in est
+     ajouté par IntersectionObserver (voir src/hooks/use-reveal.ts). */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .animate-drift {
+    animation: drift 14s ease-in-out infinite;
+  }
+  .animate-drift-slow {
+    animation: drift 20s ease-in-out infinite reverse;
+  }
+  .animate-marquee {
+    animation: marquee 28s linear infinite;
+  }
+  .pause-on-hover:hover .animate-marquee {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3%, 4%) scale(1.05); }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animate-drift,
+  .animate-drift-slow,
+  .animate-marquee {
+    animation: none;
+  }
+}

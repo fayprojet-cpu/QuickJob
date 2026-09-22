@@ -1,9 +1,18 @@
 import type { Config } from 'tailwindcss';
 
 /**
- * Palette "primary" = Material Design Deep Orange, dont #FF5722 est la
- * teinte 500 — c'est la couleur de marque QuickJob demandée. Gammes 50→900
- * pour couvrir fonds clairs, hover, texte sur fond clair/foncé, etc.
+ * Palette "primary" — terracotta/brique profond, une évolution du orange
+ * Material Design de départ (#FF5722, "Deep Orange 500" — le orange
+ * générique de n'importe quel starter Material). Même famille de teinte
+ * (aucune rupture de marque), mais nettement plus sombre et plus riche —
+ * un ton terre/brique plutôt qu'un orange vif de signalétique, cohérent
+ * avec l'ancrage Afrique de l'Ouest/Centrale du projet.
+ *
+ * "neutral" est remappé sur des gris CHAUDS (teinte pierre) au lieu du gris
+ * froid par défaut : sans ça, un texte gris neutre "froid" jure visuellement
+ * à côté d'un orange aussi chaud. Un seul réglage ici change l'ambiance de
+ * chaque page (aucun fichier composant à toucher, tout passe déjà par les
+ * classes text-neutral-… / bg-neutral-…).
  */
 const config: Config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
@@ -11,16 +20,28 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          50: '#FBE9E7',
-          100: '#FFCCBC',
-          200: '#FFAB91',
-          300: '#FF8A65',
-          400: '#FF7043',
-          500: '#FF5722',
-          600: '#F4511E',
-          700: '#E64A19',
-          800: '#D84315',
-          900: '#BF360C',
+          50: '#FBE8DD',
+          100: '#F5CBAE',
+          200: '#EAA476',
+          300: '#DC7C47',
+          400: '#C85F2A',
+          500: '#A8451A',
+          600: '#8A3714',
+          700: '#6E2B10',
+          800: '#54210C',
+          900: '#3A1608',
+        },
+        neutral: {
+          50: '#FAFAF9',
+          100: '#F5F5F4',
+          200: '#E7E5E4',
+          300: '#D6D3D1',
+          400: '#A8A29E',
+          500: '#78716C',
+          600: '#57534E',
+          700: '#44403C',
+          800: '#292524',
+          900: '#1C1917',
         },
         /**
          * Tokens sémantiques de statut — un rôle par couleur, jamais utilisés

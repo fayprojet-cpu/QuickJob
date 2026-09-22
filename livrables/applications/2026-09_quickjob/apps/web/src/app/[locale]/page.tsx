@@ -1,13 +1,17 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { Search, ClipboardCheck, Wallet, ArrowRight } from 'lucide-react';
+import { Search, ClipboardCheck, Wallet, ArrowRight, Flame } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
+import { Reveal } from '@/components/ui/reveal';
+import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { ForWhomSection } from '@/components/home/for-whom-section';
 import { CategoriesSection } from '@/components/home/categories-section';
 import { TrustSection } from '@/components/home/trust-section';
 import { TestimonialsSection } from '@/components/home/testimonials-section';
 import { FaqSection } from '@/components/home/faq-section';
 import { CtaBanner } from '@/components/home/cta-banner';
+import { LiveTicker } from '@/components/home/live-ticker';
+import { fetchPublishedJobs } from '@/features/jobs/api';
 
 export default async function HomePage({
   params: { locale },
@@ -16,6 +20,16 @@ export default async function HomePage({
 }) {
   setRequestLocale(locale);
   const t = await getTranslations('home');
+
+  // Ne doit jamais faire échouer le build/rendu de la page d'accueil : si
+  // l'API est injoignable (build local sans API qui tourne, hoquet réseau),
+  // on retombe simplement sur "aucune activité récente" plutôt que planter.
+  const latestJobs = await fetchPublishedJobs({ page: 1, limit: 8 }).catch(() => ({
+    items: [],
+    total: 0,
+    page: 1,
+    limit: 8,
+  }));
 
   const steps = [
     { icon: Search, title: t('step1Title'), body: t('step1Body') },
@@ -29,7 +43,11 @@ export default async function HomePage({
       <section className="relative overflow-hidden bg-gradient-to-b from-primary-50 via-white to-white px-4 py-20 sm:py-28">
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-primary-200/40 blur-3xl sm:h-96 sm:w-96"
+          className="animate-drift pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-primary-200/40 blur-3xl sm:h-96 sm:w-96"
+        />
+        <div
+          aria-hidden
+          className="animate-drift-slow pointer-events-none absolute -bottom-32 right-[8%] h-64 w-64 rounded-full bg-primary-300/25 blur-3xl sm:h-80 sm:w-80"
         />
         <div className="relative mx-auto max-w-3xl text-center">
           <h1 className="text-balance whitespace-pre-line text-4xl font-extrabold tracking-tight text-neutral-900 sm:text-6xl">
@@ -40,26 +58,38 @@ export default async function HomePage({
           </p>
           <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
             <Link href="/jobs">
-              <Button size="lg" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full transition-transform hover:scale-[1.03] sm:w-auto">
                 {t('browseJobs')}
               </Button>
             </Link>
             <Link href="/jobs/new">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto">
+              <Button variant="outline" size="lg" className="w-full transition-transform hover:scale-[1.03] sm:w-auto">
                 {t('postAJob')}
               </Button>
             </Link>
           </div>
+
+          {latestJobs.total > 0 ? (
+            <p className="mt-6 flex items-center justify-center gap-1.5 text-sm font-medium text-primary-700">
+              <Flame className="h-4 w-4" aria-hidden />
+              <AnimatedCounter value={latestJobs.total} className="font-bold tabular-nums" />
+              <span>{t('activeJobsCount', { count: latestJobs.total })}</span>
+            </p>
+          ) : null}
         </div>
       </section>
 
+      <LiveTicker jobs={latestJobs.items} locale={locale} />
+
       {/* Comment ça marche */}
       <section id="how-it-works" className="mx-auto max-w-5xl scroll-mt-20 px-4 py-16">
-        <h2 className="text-balance text-center text-2xl font-bold text-neutral-900">{t('howItWorksTitle')}</h2>
+        <Reveal as="h2" className="text-balance text-center text-2xl font-bold text-neutral-900">
+          {t('howItWorksTitle')}
+        </Reveal>
         <div className="mt-10 grid gap-8 sm:grid-cols-3">
           {steps.map(({ icon: Icon, title, body }, index) => (
-            <div key={title} className="relative text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary-600">
+            <Reveal key={title} delay={index * 100} className="relative text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-transform duration-300 hover:scale-110 hover:rotate-6">
                 <Icon className="h-6 w-6" aria-hidden />
               </div>
               <h3 className="mt-4 font-semibold text-neutral-900">{title}</h3>
@@ -70,13 +100,13 @@ export default async function HomePage({
                   aria-hidden
                 />
               ) : null}
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
-      <ForWhomSection />
-      <CategoriesSection />
+      <Reveal><ForWhomSection /></Reveal>
+      <Reveal><CategoriesSection /></Reveal>
 
       <CtaBanner
         title={t('ctaMidTitle')}
@@ -84,9 +114,9 @@ export default async function HomePage({
         primary={{ label: t('ctaMidButton'), href: '/jobs' }}
       />
 
-      <TrustSection />
-      <TestimonialsSection />
-      <FaqSection />
+      <Reveal><TrustSection /></Reveal>
+      <Reveal><TestimonialsSection /></Reveal>
+      <Reveal><FaqSection /></Reveal>
 
       <CtaBanner
         tone="brand"

@@ -96,7 +96,9 @@
     "ctaBottomTitle": "Rejoins QuickJob dès aujourd'hui",
     "ctaBottomBody": "Que tu cherches du travail ou que tu recrutes, commence en quelques minutes.",
     "ctaBottomButtonWorker": "Je cherche du travail",
-    "ctaBottomButtonEmployer": "Je recrute"
+    "ctaBottomButtonEmployer": "Je recrute",
+    "activeJobsCount": "{count, plural, one {mission active en ce moment} other {missions actives en ce moment}}",
+    "liveTickerTitle": "Ça bouge en ce moment"
   },
   "auth": {
     "email": "Email",

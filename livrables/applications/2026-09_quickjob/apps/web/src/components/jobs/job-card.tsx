@@ -13,8 +13,8 @@ export function JobCard({ job, category }: { job: Job; category?: Category }) {
   const { salaryAmount, salaryCurrency } = job;
 
   return (
-    <Link href={`/jobs/${job.id}`}>
-      <Card className="flex h-full flex-col gap-3 p-4 transition-shadow hover:shadow-md">
+    <Link href={`/jobs/${job.id}`} className="group block">
+      <Card className="flex h-full flex-col gap-3 p-4 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg group-hover:border-primary-200">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-neutral-900">{job.title}</h3>
           <Badge tone={job.urgency === 'URGENT' ? 'danger' : 'primary'} className="shrink-0">
