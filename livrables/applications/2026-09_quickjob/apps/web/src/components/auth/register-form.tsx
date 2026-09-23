@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { ArrowLeft } from 'lucide-react';
 import { useRouter } from '@/i18n/navigation';
 import { useRegister } from '@/features/auth/use-auth';
 import { ApiError } from '@/lib/api-error';
@@ -9,12 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { FormError } from '@/components/ui/form-error';
-import { cn } from '@/lib/cn';
 
 type Role = 'WORKER' | 'RECRUITER';
 
-export function RegisterForm() {
+export function RegisterForm({ role, onBack }: { role: Role; onBack: () => void }) {
   const t = useTranslations('auth');
+  const tCommon = useTranslations('common');
   const tErrors = useTranslations('errors');
   const locale = useLocale();
   const router = useRouter();
@@ -23,7 +24,6 @@ export function RegisterForm() {
   const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<Role>('WORKER');
   const [countryCode, setCountryCode] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -53,30 +53,16 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <FormError message={error ?? undefined} />
+      <button
+        type="button"
+        onClick={onBack}
+        className="-ml-1 flex items-center gap-1 text-sm font-medium text-neutral-500 hover:text-neutral-700"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden />
+        {tCommon('back')}
+      </button>
 
-      <div>
-        <Label>{t('roleLabel')}</Label>
-        <div className="grid grid-cols-2 gap-2">
-          {(['WORKER', 'RECRUITER'] as const).map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => setRole(option)}
-              className={cn(
-                'rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                role === option
-                  ? 'border-primary-500 bg-primary-50 text-primary-700'
-                  : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50',
-              )}
-              aria-pressed={role === option}
-            >
-              {option === 'WORKER' ? t('roleWorker') : t('roleRecruiter')}
-            </button>
-          ))}
-        </div>
-        <p className="mt-1.5 text-xs text-neutral-500">{t('registerRoleNote')}</p>
-      </div>
+      <FormError message={error ?? undefined} />
 
       <div>
         <Label htmlFor="firstName">{t('firstName')}</Label>

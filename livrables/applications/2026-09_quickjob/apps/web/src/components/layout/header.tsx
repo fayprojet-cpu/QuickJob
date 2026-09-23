@@ -18,88 +18,42 @@ export function Header() {
   const user = useAuthStore((state) => state.user);
   const activeMode = useAuthStore((state) => state.activeMode);
   const logout = useLogout();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const currentMode = activeMode ?? (user ? getDefaultMode(user.roles) : null);
   const isRecruiterMode = currentMode === 'RECRUITER';
   const conversationsQuery = useMineConversations(Boolean(user));
   const unreadCount = conversationsQuery.data?.reduce((sum, c) => sum + c.unreadCount, 0) ?? 0;
 
-  function closeMobile() {
-    setMobileOpen(false);
+  function closeMenu() {
+    setMenuOpen(false);
   }
 
   return (
     <header className="sticky top-0 z-30 border-b border-neutral-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-3 px-4">
-        <Link href="/" className="flex items-center gap-2 text-lg font-extrabold tracking-tight">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500 text-white">
-            <Briefcase className="h-4 w-4" aria-hidden />
-          </span>
-          <span className="text-neutral-900">
-            Quick<span className="text-primary-600">Job</span>
-          </span>
-        </Link>
-
-        {/* Navigation desktop */}
-        <nav className="hidden items-center gap-2 sm:flex sm:gap-3">
-          <Link
-            href="/jobs"
-            className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+        {/* Logo + menu — regroupés à gauche, façon apps pro (menu toujours accessible, pas seulement sur mobile). */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-neutral-700 hover:bg-neutral-100"
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? t('closeMenu') : t('openMenu')}
+            onClick={() => setMenuOpen((open) => !open)}
           >
-            {t('jobs')}
+            {menuOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
+          </button>
+          <Link href="/" className="flex items-center gap-2 text-lg font-extrabold tracking-tight">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500 text-white">
+              <Briefcase className="h-4 w-4" aria-hidden />
+            </span>
+            <span className="text-neutral-900">
+              Quick<span className="text-primary-600">Job</span>
+            </span>
           </Link>
-          <Link
-            href="/about"
-            className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
-          >
-            {t('about')}
-          </Link>
+        </div>
 
-          {!user || isRecruiterMode ? (
-            <>
-              <Link href="/jobs/new">
-                <Button variant="outline" size="sm" className="gap-1.5">
-                  <Plus className="h-4 w-4" aria-hidden />
-                  {t('postJob')}
-                </Button>
-              </Link>
-              {user ? (
-                <Link
-                  href="/jobs/mine"
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
-                >
-                  {t('myJobs')}
-                </Link>
-              ) : null}
-            </>
-          ) : null}
-
-          {user && !isRecruiterMode ? (
-            <Link
-              href="/applications"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
-            >
-              {t('myApplications')}
-            </Link>
-          ) : null}
-
-          {user ? (
-            <Link
-              href="/messages"
-              className="relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
-            >
-              <MessageCircle className="h-4 w-4" aria-hidden />
-              {t('messages')}
-              {unreadCount > 0 ? (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger-500 px-1 text-[10px] font-bold text-white">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              ) : null}
-            </Link>
-          ) : null}
-
-          {user ? <ModeSwitcher /> : null}
-
+        {/* Toujours visible à droite : accès rapide au profil, ou incitation à s'inscrire. */}
+        <div className="flex items-center gap-2">
           {user ? (
             <Link
               href={`/profile/${user.id}`}
@@ -109,64 +63,35 @@ export function Header() {
             >
               <Avatar url={user.avatarUrl} name={user.firstName ?? t('myProfile')} size="sm" />
             </Link>
-          ) : null}
-
-          {user ? (
-            <button
-              type="button"
-              onClick={() => logout.mutate()}
-              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
-              title={t('logout')}
-            >
-              <LogOut className="h-4 w-4" aria-hidden />
-              {t('logout')}
-            </button>
           ) : (
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
-            >
-              <User className="h-4 w-4" aria-hidden />
-              {t('login')}
+            <Link href="/register">
+              <Button size="sm">{t('register')}</Button>
             </Link>
           )}
-
-          <LocaleSwitcher />
-        </nav>
-
-        {/* Bouton menu mobile */}
-        <button
-          type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-neutral-700 hover:bg-neutral-100 sm:hidden"
-          aria-expanded={mobileOpen}
-          aria-label={mobileOpen ? t('closeMenu') : t('openMenu')}
-          onClick={() => setMobileOpen((open) => !open)}
-        >
-          {mobileOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
-        </button>
+        </div>
       </div>
 
-      {/* Panneau de navigation mobile */}
-      {mobileOpen ? (
-        <nav className="border-t border-neutral-200 bg-white px-4 py-3 sm:hidden">
-          <div className="flex flex-col gap-1">
+      {/* Panneau de navigation — tout le reste (liens, mode, connexion) vit ici, ouvert depuis le menu à gauche. */}
+      {menuOpen ? (
+        <nav className="border-t border-neutral-200 bg-white px-4 py-3">
+          <div className="mx-auto flex max-w-5xl flex-col gap-1">
             <Link
               href="/jobs"
-              onClick={closeMobile}
+              onClick={closeMenu}
               className="rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
             >
               {t('jobs')}
             </Link>
             <Link
               href="/about"
-              onClick={closeMobile}
+              onClick={closeMenu}
               className="rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
             >
               {t('about')}
             </Link>
             {!user || isRecruiterMode ? (
               <>
-                <Link href="/jobs/new" onClick={closeMobile}>
+                <Link href="/jobs/new" onClick={closeMenu}>
                   <Button variant="outline" className="mt-1 w-full justify-center gap-1.5">
                     <Plus className="h-4 w-4" aria-hidden />
                     {t('postJob')}
@@ -175,7 +100,7 @@ export function Header() {
                 {user ? (
                   <Link
                     href="/jobs/mine"
-                    onClick={closeMobile}
+                    onClick={closeMenu}
                     className="rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
                   >
                     {t('myJobs')}
@@ -187,7 +112,7 @@ export function Header() {
             {user && !isRecruiterMode ? (
               <Link
                 href="/applications"
-                onClick={closeMobile}
+                onClick={closeMenu}
                 className="rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
               >
                 {t('myApplications')}
@@ -197,7 +122,7 @@ export function Header() {
             {user ? (
               <Link
                 href="/messages"
-                onClick={closeMobile}
+                onClick={closeMenu}
                 className="flex items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
               >
                 <MessageCircle className="h-4 w-4" aria-hidden />
@@ -211,24 +136,19 @@ export function Header() {
             ) : null}
 
             {user ? (
-              <Link
-                href={`/profile/${user.id}`}
-                onClick={closeMobile}
-                className="flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
-              >
-                <Avatar url={user.avatarUrl} name={user.firstName ?? t('myProfile')} size="sm" />
-                {t('myProfile')}
-              </Link>
+              <div className="px-3 py-2">
+                <ModeSwitcher />
+              </div>
             ) : null}
 
             {user ? (
               <button
                 type="button"
                 onClick={() => {
-                  closeMobile();
+                  closeMenu();
                   logout.mutate();
                 }}
-                className="mt-1 flex items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+                className="flex items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
               >
                 <LogOut className="h-4 w-4" aria-hidden />
                 {t('logout')}
@@ -236,8 +156,8 @@ export function Header() {
             ) : (
               <Link
                 href="/login"
-                onClick={closeMobile}
-                className="mt-1 flex items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+                onClick={closeMenu}
+                className="flex items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
               >
                 <User className="h-4 w-4" aria-hidden />
                 {t('login')}
