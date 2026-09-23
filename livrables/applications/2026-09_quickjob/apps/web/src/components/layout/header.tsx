@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useLogout } from '@/features/auth/use-auth';
 import { useMineConversations } from '@/features/conversations/use-conversations';
 import { Button } from '@/components/ui/button';
+import { Avatar } from '@/components/ui/avatar';
 import { LocaleSwitcher } from './locale-switcher';
 import { ModeSwitcher } from './mode-switcher';
 import { getDefaultMode } from '@/lib/mode';
@@ -98,6 +99,17 @@ export function Header() {
           ) : null}
 
           {user ? <ModeSwitcher /> : null}
+
+          {user ? (
+            <Link
+              href={`/profile/${user.id}`}
+              className="flex items-center rounded-full ring-offset-2 transition hover:ring-2 hover:ring-primary-300"
+              title={t('myProfile')}
+              aria-label={t('myProfile')}
+            >
+              <Avatar url={user.avatarUrl} name={user.firstName ?? t('myProfile')} size="sm" />
+            </Link>
+          ) : null}
 
           {user ? (
             <button
@@ -195,6 +207,17 @@ export function Header() {
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 ) : null}
+              </Link>
+            ) : null}
+
+            {user ? (
+              <Link
+                href={`/profile/${user.id}`}
+                onClick={closeMobile}
+                className="flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+              >
+                <Avatar url={user.avatarUrl} name={user.firstName ?? t('myProfile')} size="sm" />
+                {t('myProfile')}
               </Link>
             ) : null}
 
