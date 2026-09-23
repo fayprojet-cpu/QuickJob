@@ -180,6 +180,11 @@ export interface ReviewSummary {
   items: Review[];
 }
 
+export interface ReviewSummaryLite {
+  average: number | null;
+  count: number;
+}
+
 /** Un avis déjà déposé par le compte connecté — pour l'état des boutons "Noter". */
 export interface AuthoredReview {
   jobId: string;

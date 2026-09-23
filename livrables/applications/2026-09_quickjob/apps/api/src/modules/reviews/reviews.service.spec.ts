@@ -12,6 +12,7 @@ function buildPrismaMock() {
       findMany: jest.fn(),
       create: jest.fn(),
       aggregate: jest.fn(),
+      groupBy: jest.fn(),
     },
     user: { update: jest.fn() },
   } as unknown as PrismaService;
@@ -214,6 +215,31 @@ describe('ReviewsService', () => {
 
       expect(result.average).toBeNull();
       expect(result.count).toBe(0);
+    });
+  });
+
+  describe('findSummariesForUsers', () => {
+    it('returns one entry per requested id, defaulting to null/0 when there is no review', async () => {
+      (prisma.review.groupBy as jest.Mock).mockResolvedValue([
+        { targetId: 'user-1', _avg: { rating: 4.5 }, _count: 2 },
+      ]);
+
+      const result = await service.findSummariesForUsers(['user-1', 'user-2']);
+
+      expect(result).toEqual({
+        'user-1': { average: 4.5, count: 2 },
+        'user-2': { average: null, count: 0 },
+      });
+      expect(prisma.review.groupBy).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ targetId: { in: ['user-1', 'user-2'] } }) }),
+      );
+    });
+
+    it('returns an empty object without querying when no ids are given', async () => {
+      const result = await service.findSummariesForUsers([]);
+
+      expect(result).toEqual({});
+      expect(prisma.review.groupBy).not.toHaveBeenCalled();
     });
   });
 });

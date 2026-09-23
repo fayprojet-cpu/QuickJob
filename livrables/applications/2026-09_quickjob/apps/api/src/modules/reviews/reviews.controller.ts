@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -6,7 +6,13 @@ import { Public } from '../../common/decorators/public.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { AuthenticatedUser } from '../../common/types/authenticated-user';
 import { CreateReviewDto } from './dto/create-review.dto';
-import { AuthoredReviewDto, ReviewResponseDto, ReviewSummaryResponseDto } from './dto/review.response.dto';
+import { ReviewSummariesQueryDto } from './dto/review-summaries-query.dto';
+import {
+  AuthoredReviewDto,
+  ReviewResponseDto,
+  ReviewSummaryLiteDto,
+  ReviewSummaryResponseDto,
+} from './dto/review.response.dto';
 import { ReviewsService } from './reviews.service';
 
 /** Le recruteur note le travailleur accepté d'une mission terminée. */
@@ -60,6 +66,20 @@ export class MineReviewsController {
   @ApiOkResponse({ type: [AuthoredReviewDto] })
   findMine(@CurrentUser() user: AuthenticatedUser): Promise<AuthoredReviewDto[]> {
     return this.reviewsService.findAuthoredByUser(user.id);
+  }
+
+  @Public()
+  @Get('summaries')
+  @ApiOperation({
+    summary: 'Moyenne + nombre d\'avis pour plusieurs utilisateurs en une requête (ex. liste de candidats)',
+  })
+  @ApiOkResponse({ description: 'Map userId -> { average, count }', type: ReviewSummaryLiteDto })
+  findSummaries(@Query() query: ReviewSummariesQueryDto): Promise<Record<string, ReviewSummaryLiteDto>> {
+    const userIds = query.ids
+      .split(',')
+      .map((id) => id.trim())
+      .filter((id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id));
+    return this.reviewsService.findSummariesForUsers(userIds);
   }
 }
 

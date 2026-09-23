@@ -4,16 +4,41 @@ import { useTranslations } from 'next-intl';
 import { Star } from 'lucide-react';
 import { useUserReviews } from '@/features/reviews/use-reviews';
 
-/** Étoile + moyenne + nombre d'avis d'un utilisateur — silencieux tant que ça charge. */
-export function ReputationBadge({ userId, className }: { userId: string | null | undefined; className?: string }) {
-  const t = useTranslations('reviews');
-  const query = useUserReviews(userId);
+type Summary = { average: number | null; count: number };
 
-  if (!userId || query.isLoading || query.isError) {
+/**
+ * Étoile + moyenne + nombre d'avis d'un utilisateur — silencieux tant que ça
+ * charge. En mode `batched`, ne fait jamais sa propre requête : le parent
+ * doit fournir `summary` (issu d'un lot groupé pour toute une liste), même
+ * `undefined` pendant que ce lot charge — sinon chaque ligne d'une liste
+ * déclencherait sa propre requête individuelle en attendant le lot.
+ */
+export function ReputationBadge({
+  userId,
+  summary,
+  batched = false,
+  className,
+}: {
+  userId: string | null | undefined;
+  summary?: Summary;
+  batched?: boolean;
+  className?: string;
+}) {
+  const t = useTranslations('reviews');
+  const query = useUserReviews(batched ? undefined : userId);
+
+  if (!userId) {
+    return null;
+  }
+  if (batched) {
+    if (!summary) {
+      return null;
+    }
+  } else if (query.isLoading || query.isError) {
     return null;
   }
 
-  const { average, count } = query.data ?? { average: null, count: 0 };
+  const { average, count } = (batched ? summary : query.data) ?? { average: null, count: 0 };
   if (count === 0 || average === null) {
     return <span className={`text-xs text-neutral-400 ${className ?? ''}`}>{t('noReviewsYet')}</span>;
   }

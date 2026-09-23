@@ -162,4 +162,30 @@ export class ReviewsService {
       select: { jobId: true, targetId: true },
     });
   }
+
+  /**
+   * Moyenne + nombre d'avis pour plusieurs utilisateurs en une seule requête
+   * — évite qu'une liste de N candidats déclenche N requêtes séparées côté
+   * web (une par pastille de réputation affichée).
+   */
+  async findSummariesForUsers(userIds: string[]): Promise<Record<string, { average: number | null; count: number }>> {
+    const result: Record<string, { average: number | null; count: number }> = {};
+    for (const userId of userIds) {
+      result[userId] = { average: null, count: 0 };
+    }
+    if (userIds.length === 0) {
+      return result;
+    }
+
+    const grouped = await this.prisma.review.groupBy({
+      by: ['targetId'],
+      where: { targetId: { in: userIds }, status: ReviewStatus.VISIBLE },
+      _avg: { rating: true },
+      _count: true,
+    });
+    for (const row of grouped) {
+      result[row.targetId] = { average: row._avg.rating, count: row._count };
+    }
+    return result;
+  }
 }

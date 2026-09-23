@@ -15,6 +15,7 @@ import {
 } from '@/features/applications/use-applications';
 import { findConversationForJob, useMineConversations } from '@/features/conversations/use-conversations';
 import { ReputationBadge } from '@/components/reviews/reputation-badge';
+import { useUserReviewSummaries } from '@/features/reviews/use-reviews';
 import type { ApplicationStatus } from '@/types/api';
 
 const STATUS_TONE: Record<ApplicationStatus, NonNullable<BadgeProps['tone']>> = {
@@ -50,6 +51,8 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
   const rejectMutation = useRejectApplication(jobId);
   const conversationsQuery = useMineConversations();
   const conversation = findConversationForJob(conversationsQuery.data, jobId);
+  const applications = applicationsQuery.data ?? [];
+  const reviewSummariesQuery = useUserReviewSummaries(applications.map((application) => application.workerId));
 
   if (applicationsQuery.isLoading) {
     return <ApplicationsSkeleton />;
@@ -57,8 +60,6 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
   if (applicationsQuery.isError) {
     return <p className="mt-8 text-center text-neutral-500">{tErrors('generic')}</p>;
   }
-
-  const applications = applicationsQuery.data ?? [];
 
   if (applications.length === 0) {
     return <p className="mt-8 text-center text-neutral-500">{t('empty')}</p>;
@@ -86,7 +87,12 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
                 <Avatar url={application.worker?.avatarUrl} name={workerName} />
                 <div>
                   <p className="font-medium text-neutral-900 hover:underline">{workerName}</p>
-                  <ReputationBadge userId={application.workerId} className="mt-0.5" />
+                  <ReputationBadge
+                    userId={application.workerId}
+                    summary={reviewSummariesQuery.data?.[application.workerId]}
+                    batched
+                    className="mt-0.5"
+                  />
                   <p className="mt-1 text-sm text-neutral-600">
                     {application.coverLetter || t('coverLetterNone')}
                   </p>

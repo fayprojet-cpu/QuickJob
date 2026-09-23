@@ -5,6 +5,7 @@ import type { AuthoredReview, CreateReviewInput } from '@/types/api';
 import {
   fetchMineAuthoredReviews,
   fetchUserReviews,
+  fetchUserReviewSummaries,
   reviewRecruiterForApplication,
   reviewWorkerForJob,
 } from './api';
@@ -26,6 +27,20 @@ export function useUserReviews(userId: string | null | undefined) {
     queryKey: ['reviews', 'user', userId],
     queryFn: () => fetchUserReviews(userId as string),
     enabled: Boolean(userId),
+  });
+}
+
+/**
+ * Réputation de plusieurs personnes en une seule requête — pour une liste
+ * (candidats reçus, etc.) au lieu d'une requête par ligne. Clé de requête
+ * basée sur les ids triés+joints pour rester stable d'un rendu à l'autre.
+ */
+export function useUserReviewSummaries(userIds: string[]) {
+  const key = userIds.slice().sort().join(',');
+  return useQuery({
+    queryKey: ['reviews', 'summaries', key],
+    queryFn: () => fetchUserReviewSummaries(userIds),
+    enabled: userIds.length > 0,
   });
 }
 

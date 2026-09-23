@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/api-client';
 import { authApiFetch } from '@/lib/auth-api-client';
-import type { AuthoredReview, CreateReviewInput, Review, ReviewSummary } from '@/types/api';
+import type { AuthoredReview, CreateReviewInput, Review, ReviewSummary, ReviewSummaryLite } from '@/types/api';
 
 export function reviewWorkerForJob(jobId: string, input: CreateReviewInput): Promise<Review> {
   return authApiFetch<Review>(`/jobs/${jobId}/review`, {
@@ -23,4 +23,9 @@ export function fetchMineAuthoredReviews(): Promise<AuthoredReview[]> {
 /** Public — pas besoin d'être connecté pour voir la réputation d'un utilisateur. */
 export function fetchUserReviews(userId: string): Promise<ReviewSummary> {
   return apiFetch<ReviewSummary>(`/users/${userId}/reviews`);
+}
+
+/** Moyenne + nombre d'avis pour plusieurs utilisateurs en une requête (listes de candidats, etc.). */
+export function fetchUserReviewSummaries(userIds: string[]): Promise<Record<string, ReviewSummaryLite>> {
+  return apiFetch<Record<string, ReviewSummaryLite>>(`/reviews/summaries?ids=${userIds.join(',')}`);
 }

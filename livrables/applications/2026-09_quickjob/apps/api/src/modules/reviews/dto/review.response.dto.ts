@@ -19,3 +19,9 @@ export class AuthoredReviewDto {
   @ApiProperty({ format: 'uuid' }) jobId!: string;
   @ApiProperty({ format: 'uuid' }) targetId!: string;
 }
+
+export class ReviewSummaryLiteDto {
+  @ApiPropertyOptional({ nullable: true, description: 'Moyenne 1-5, null si aucun avis' })
+  average!: number | null;
+  @ApiProperty() count!: number;
+}
