@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { MessageCircle } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/link-button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAcceptInvite, useDeclineInvite, useMineApplications } from '@/features/applications/use-applications';
 import { findConversationForJob, useMineConversations } from '@/features/conversations/use-conversations';
@@ -66,9 +66,9 @@ export function MineApplicationsList() {
     return (
       <div className="mt-8 text-center">
         <p className="text-neutral-500">{tMine('empty')}</p>
-        <Link href="/jobs">
-          <Button className="mt-4">{tMine('emptyCta')}</Button>
-        </Link>
+        <LinkButton href="/jobs" className="mt-4">
+          {tMine('emptyCta')}
+        </LinkButton>
       </div>
     );
   }
@@ -109,7 +109,7 @@ export function MineApplicationsList() {
                     {application.job.countryCode ? `, ${application.job.countryCode}` : ''}
                   </p>
                 ) : null}
-                <p className="mt-1 text-xs text-neutral-400">
+                <p className="mt-1 text-xs text-neutral-500">
                   {tMine('appliedOn', { date: dateFmt.format(new Date(application.createdAt)) })}
                 </p>
               </div>
@@ -141,12 +141,10 @@ export function MineApplicationsList() {
 
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {conversation ? (
-                <Link href={`/messages/${conversation.id}`}>
-                  <Button size="sm" variant="outline" className="gap-1.5">
-                    <MessageCircle className="h-4 w-4" aria-hidden />
-                    {t('chatWithRecruiter')}
-                  </Button>
-                </Link>
+                <LinkButton href={`/messages/${conversation.id}`} size="sm" variant="outline" className="gap-1.5">
+                  <MessageCircle className="h-4 w-4" aria-hidden />
+                  {t('chatWithRecruiter')}
+                </LinkButton>
               ) : null}
               {canReview ? (
                 alreadyReviewed ? (

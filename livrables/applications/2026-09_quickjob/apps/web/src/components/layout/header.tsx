@@ -7,7 +7,7 @@ import { Link } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { useLogout } from '@/features/auth/use-auth';
 import { useMineConversations } from '@/features/conversations/use-conversations';
-import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/link-button';
 import { Avatar } from '@/components/ui/avatar';
 import { LocaleSwitcher } from './locale-switcher';
 import { ModeSwitcher } from './mode-switcher';
@@ -64,9 +64,9 @@ export function Header() {
               <Avatar url={user.avatarUrl} name={user.firstName ?? t('myProfile')} size="sm" />
             </Link>
           ) : (
-            <Link href="/register">
-              <Button size="sm">{t('register')}</Button>
-            </Link>
+            <LinkButton href="/register" size="sm">
+              {t('register')}
+            </LinkButton>
           )}
         </div>
       </div>
@@ -91,12 +91,15 @@ export function Header() {
             </Link>
             {!user || isRecruiterMode ? (
               <>
-                <Link href="/jobs/new" onClick={closeMenu}>
-                  <Button variant="outline" className="mt-1 w-full justify-center gap-1.5">
-                    <Plus className="h-4 w-4" aria-hidden />
-                    {t('postJob')}
-                  </Button>
-                </Link>
+                <LinkButton
+                  href="/jobs/new"
+                  onClick={closeMenu}
+                  variant="outline"
+                  className="mt-1 w-full justify-center gap-1.5"
+                >
+                  <Plus className="h-4 w-4" aria-hidden />
+                  {t('postJob')}
+                </LinkButton>
                 {user ? (
                   <Link
                     href="/jobs/mine"

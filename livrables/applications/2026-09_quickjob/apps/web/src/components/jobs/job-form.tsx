@@ -232,7 +232,7 @@ export function JobForm() {
         </div>
         <div>
           <Label htmlFor="city">
-            {t('cityLabel')} <span className="text-neutral-400">({tCommon('optional')})</span>
+            {t('cityLabel')} <span className="text-neutral-500">({tCommon('optional')})</span>
           </Label>
           <Input id="city" value={city} onChange={(event) => setCity(event.target.value)} />
         </div>

@@ -79,7 +79,7 @@ export function ConversationThread({ conversationId }: { conversationId: string 
 
       <div className="flex-1 space-y-3 overflow-y-auto pb-3 pr-1 pt-3">
         {messages.length === 0 ? (
-          <p className="mt-8 text-center text-sm text-neutral-400">{t('noMessagesYet')}</p>
+          <p className="mt-8 text-center text-sm text-neutral-500">{t('noMessagesYet')}</p>
         ) : (
           messages.map((message) => {
             const isMine = message.senderId === userId;
@@ -93,7 +93,7 @@ export function ConversationThread({ conversationId }: { conversationId: string 
                   }`}
                 >
                   <p className="whitespace-pre-wrap break-words">{message.body}</p>
-                  <p className={`mt-1 text-[10px] ${isMine ? 'text-white/70' : 'text-neutral-400'}`}>
+                  <p className={`mt-1 text-[10px] ${isMine ? 'text-white/85' : 'text-neutral-600'}`}>
                     {timeFmt.format(new Date(message.createdAt))}
                   </p>
                 </div>

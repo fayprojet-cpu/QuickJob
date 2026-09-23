@@ -36,7 +36,7 @@ function ActivityRow({ item, withInvite }: { item: ActivityItem; withInvite: boo
           <p className="mt-1 text-sm text-neutral-600">
             {item.amount && item.currency ? formatMoney(item.amount, item.currency, locale) : t('negotiable')}
           </p>
-          <p className="mt-1 text-xs text-neutral-400">{dateFmt.format(new Date(item.completedAt))}</p>
+          <p className="mt-1 text-xs text-neutral-500">{dateFmt.format(new Date(item.completedAt))}</p>
           {item.counterpart ? (
             <Link href={`/profile/${item.counterpart.id}`} className="mt-1 inline-block text-xs text-primary-600 hover:underline">
               {t('withPerson', { name: item.counterpart.firstName ?? t('unknownUser') })}

@@ -39,7 +39,7 @@ export async function LiveTicker({ jobs, locale }: { jobs: Job[]; locale: string
               >
                 <Zap className="h-3.5 w-3.5 shrink-0 text-primary-400" aria-hidden />
                 <span className="font-medium">{job.title}</span>
-                {job.city ? <span className="text-neutral-400">· {job.city}</span> : null}
+                {job.city ? <span className="text-neutral-500">· {job.city}</span> : null}
                 {job.salaryAmount && job.salaryCurrency ? (
                   <span className="text-primary-600">
                     · {formatMoney(job.salaryAmount, job.salaryCurrency, locale)}

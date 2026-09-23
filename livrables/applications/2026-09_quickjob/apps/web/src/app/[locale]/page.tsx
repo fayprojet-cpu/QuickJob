@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Search, ClipboardCheck, Wallet, ArrowRight, Flame } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
-import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/link-button';
 import { Reveal } from '@/components/ui/reveal';
 import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { ForWhomSection } from '@/components/home/for-whom-section';
@@ -57,16 +56,21 @@ export default async function HomePage({
             {t('heroSubtitle')}
           </p>
           <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link href="/jobs">
-              <Button size="lg" className="w-full transition-transform hover:scale-[1.03] sm:w-auto">
-                {t('browseJobs')}
-              </Button>
-            </Link>
-            <Link href="/jobs/new">
-              <Button variant="outline" size="lg" className="w-full transition-transform hover:scale-[1.03] sm:w-auto">
-                {t('postAJob')}
-              </Button>
-            </Link>
+            <LinkButton
+              href="/jobs"
+              size="lg"
+              className="w-full transition-transform hover:scale-[1.03] sm:w-auto"
+            >
+              {t('browseJobs')}
+            </LinkButton>
+            <LinkButton
+              href="/jobs/new"
+              variant="outline"
+              size="lg"
+              className="w-full transition-transform hover:scale-[1.03] sm:w-auto"
+            >
+              {t('postAJob')}
+            </LinkButton>
           </div>
 
           {latestJobs.total > 0 ? (

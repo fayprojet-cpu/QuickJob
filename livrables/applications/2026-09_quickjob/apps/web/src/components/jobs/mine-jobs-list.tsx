@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient, type UseMutationResult } from '@tanstack/react-query';
 import { useTranslations, useLocale } from 'next-intl';
 import { ChevronDown, MessageCircle } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/link-button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { completeJob, fetchMineJobs, publishJob } from '@/features/jobs/api';
 import { findConversationForJob, useMineConversations } from '@/features/conversations/use-conversations';
@@ -104,16 +104,12 @@ function JobCard({
       <div className="mt-auto flex flex-wrap items-center gap-2 pt-2">
         {job.status === 'PUBLISHED' ? (
           <>
-            <Link href={`/jobs/${job.id}`} className="flex-1">
-              <Button variant="outline" size="sm" className="w-full">
-                {t('new.viewJob')}
-              </Button>
-            </Link>
-            <Link href={`/jobs/${job.id}/applications`} className="flex-1">
-              <Button size="sm" className="w-full">
-                {tApplications('viewApplications')}
-              </Button>
-            </Link>
+            <LinkButton href={`/jobs/${job.id}`} variant="outline" size="sm" className="flex-1">
+              {t('new.viewJob')}
+            </LinkButton>
+            <LinkButton href={`/jobs/${job.id}/applications`} size="sm" className="flex-1">
+              {tApplications('viewApplications')}
+            </LinkButton>
           </>
         ) : null}
         {job.status === 'DRAFT' ? (
@@ -129,18 +125,19 @@ function JobCard({
         {job.status === 'IN_PROGRESS' ? (
           <div className="flex w-full flex-col gap-2">
             <div className="flex gap-2">
-              <Link href={`/jobs/${job.id}/applications`} className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  {tApplications('viewApplications')}
-                </Button>
-              </Link>
+              <LinkButton href={`/jobs/${job.id}/applications`} variant="outline" size="sm" className="flex-1">
+                {tApplications('viewApplications')}
+              </LinkButton>
               {conversation ? (
-                <Link href={`/messages/${conversation.id}`} className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full gap-1.5">
-                    <MessageCircle className="h-4 w-4 shrink-0" aria-hidden />
-                    {tMine('chat')}
-                  </Button>
-                </Link>
+                <LinkButton
+                  href={`/messages/${conversation.id}`}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 gap-1.5"
+                >
+                  <MessageCircle className="h-4 w-4 shrink-0" aria-hidden />
+                  {tMine('chat')}
+                </LinkButton>
               ) : null}
             </div>
             <Button
@@ -156,11 +153,9 @@ function JobCard({
         {job.status === 'COMPLETED' ? (
           <div className="flex w-full flex-col gap-2">
             <div className="flex gap-2">
-              <Link href={`/jobs/${job.id}/applications`} className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  {tApplications('viewApplications')}
-                </Button>
-              </Link>
+              <LinkButton href={`/jobs/${job.id}/applications`} variant="outline" size="sm" className="flex-1">
+                {tApplications('viewApplications')}
+              </LinkButton>
               {alreadyReviewed ? (
                 <span className="flex flex-1 items-center justify-center text-xs text-neutral-500">
                   {tReviews('thankYou')}
@@ -222,9 +217,9 @@ export function MineJobsList() {
     return (
       <div className="mt-8 text-center">
         <p className="text-neutral-500">{tMine('empty')}</p>
-        <Link href="/jobs/new">
-          <Button className="mt-4">{tMine('emptyCta')}</Button>
-        </Link>
+        <LinkButton href="/jobs/new" className="mt-4">
+          {tMine('emptyCta')}
+        </LinkButton>
       </div>
     );
   }

@@ -1,11 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAddRole } from '@/features/users/use-users';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/link-button';
 import { JobForm } from '@/components/jobs/job-form';
 
 export default function NewJobPage() {
@@ -40,12 +40,10 @@ export default function NewJobPage() {
             <p className="mt-2 text-sm text-neutral-600">{t('forbiddenBody')}</p>
             <p className="mt-1 text-sm text-neutral-600">{t('signInPrompt')}</p>
             <div className="mt-4 flex justify-center gap-3">
-              <Link href="/login">
-                <Button variant="outline">{tAuth('loginSubmit')}</Button>
-              </Link>
-              <Link href="/register">
-                <Button>{tAuth('registerSubmit')}</Button>
-              </Link>
+              <LinkButton href="/login" variant="outline">
+                {tAuth('loginSubmit')}
+              </LinkButton>
+              <LinkButton href="/register">{tAuth('registerSubmit')}</LinkButton>
             </div>
           </div>
         )}

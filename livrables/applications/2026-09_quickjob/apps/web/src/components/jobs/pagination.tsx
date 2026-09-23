@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
-import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/link-button';
 
 export async function Pagination({
   page,
@@ -23,11 +23,9 @@ export async function Pagination({
   return (
     <div className="mt-8 flex items-center justify-center gap-4">
       {hasPrevious ? (
-        <Link href={buildHref(page - 1)}>
-          <Button variant="outline" size="sm">
-            {t('previous')}
-          </Button>
-        </Link>
+        <LinkButton href={buildHref(page - 1)} variant="outline" size="sm">
+          {t('previous')}
+        </LinkButton>
       ) : (
         <Button variant="outline" size="sm" disabled>
           {t('previous')}
@@ -35,11 +33,9 @@ export async function Pagination({
       )}
       <span className="text-sm text-neutral-600">{t('page', { page, total: totalPages })}</span>
       {hasNext ? (
-        <Link href={buildHref(page + 1)}>
-          <Button variant="outline" size="sm">
-            {t('next')}
-          </Button>
-        </Link>
+        <LinkButton href={buildHref(page + 1)} variant="outline" size="sm">
+          {t('next')}
+        </LinkButton>
       ) : (
         <Button variant="outline" size="sm" disabled>
           {t('next')}

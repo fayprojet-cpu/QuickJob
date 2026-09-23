@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
-import { Link } from '@/i18n/navigation';
-import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/link-button';
 
 interface CtaAction {
   label: string;
@@ -40,29 +39,27 @@ export function CtaBanner({
           </p>
         ) : null}
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link href={primary.href}>
-            <Button
-              size="lg"
-              variant={isBrand ? 'outline' : 'primary'}
-              className={isBrand ? 'w-full border-white bg-white text-primary-600 hover:bg-primary-50 sm:w-auto' : 'w-full sm:w-auto'}
-            >
-              {primary.label}
-            </Button>
-          </Link>
+          <LinkButton
+            href={primary.href}
+            size="lg"
+            variant={isBrand ? 'outline' : 'primary'}
+            className={isBrand ? 'w-full border-white bg-white text-primary-600 hover:bg-primary-50 sm:w-auto' : 'w-full sm:w-auto'}
+          >
+            {primary.label}
+          </LinkButton>
           {secondary ? (
-            <Link href={secondary.href}>
-              <Button
-                size="lg"
-                variant="outline"
-                className={
-                  isBrand
-                    ? 'w-full border-white text-white hover:bg-white/10 sm:w-auto'
-                    : 'w-full sm:w-auto'
-                }
-              >
-                {secondary.label}
-              </Button>
-            </Link>
+            <LinkButton
+              href={secondary.href}
+              size="lg"
+              variant="outline"
+              className={
+                isBrand
+                  ? 'w-full border-white text-white hover:bg-white/10 sm:w-auto'
+                  : 'w-full sm:w-auto'
+              }
+            >
+              {secondary.label}
+            </LinkButton>
           ) : null}
         </div>
       </div>

@@ -1,10 +1,9 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/link-button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar } from '@/components/ui/avatar';
 import { StarRatingDisplay } from '@/components/reviews/star-rating-display';
@@ -13,7 +12,6 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useUserProfile } from '@/features/users/use-users';
 import { getDefaultMode } from '@/lib/mode';
 import { cn } from '@/lib/cn';
-import type { UserRole } from '@/types/api';
 
 function ProfileSkeleton() {
   return (
@@ -119,11 +117,9 @@ export function ProfileView({ userId }: { userId: string }) {
       </Card>
 
       {isOwnProfile ? (
-        <Link href="/activity">
-          <Button variant="outline" size="sm" className="w-full">
-            {t('viewMyActivity')}
-          </Button>
-        </Link>
+        <LinkButton href="/activity" variant="outline" size="sm" className="w-full">
+          {t('viewMyActivity')}
+        </LinkButton>
       ) : null}
 
       {profile.reviews.items.length > 0 ? (
@@ -134,7 +130,7 @@ export function ProfileView({ userId }: { userId: string }) {
               <Card key={review.id} className="p-4">
                 <div className="flex items-center justify-between gap-2">
                   <StarRatingDisplay rating={review.rating} />
-                  <span className="text-xs text-neutral-400">
+                  <span className="text-xs text-neutral-500">
                     {new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(review.createdAt))}
                   </span>
                 </div>

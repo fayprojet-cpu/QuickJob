@@ -1,10 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/link-button';
 import { MineApplicationsList } from '@/components/applications/mine-applications-list';
 
 export default function MineApplicationsPage() {
@@ -24,12 +23,10 @@ export default function MineApplicationsPage() {
         <Card className="mt-6 p-6 text-center">
           <p className="text-sm text-neutral-600">{t('loginPrompt')}</p>
           <div className="mt-4 flex justify-center gap-3">
-            <Link href="/login">
-              <Button variant="outline">{tAuth('loginSubmit')}</Button>
-            </Link>
-            <Link href="/jobs">
-              <Button>{t('emptyCta')}</Button>
-            </Link>
+            <LinkButton href="/login" variant="outline">
+              {tAuth('loginSubmit')}
+            </LinkButton>
+            <LinkButton href="/jobs">{t('emptyCta')}</LinkButton>
           </div>
         </Card>
       )}

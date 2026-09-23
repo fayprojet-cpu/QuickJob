@@ -40,7 +40,7 @@ export function ReputationBadge({
 
   const { average, count } = (batched ? summary : query.data) ?? { average: null, count: 0 };
   if (count === 0 || average === null) {
-    return <span className={`text-xs text-neutral-400 ${className ?? ''}`}>{t('noReviewsYet')}</span>;
+    return <span className={`text-xs text-neutral-500 ${className ?? ''}`}>{t('noReviewsYet')}</span>;
   }
 
   return (

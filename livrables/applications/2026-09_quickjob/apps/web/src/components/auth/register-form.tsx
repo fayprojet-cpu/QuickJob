@@ -105,7 +105,7 @@ export function RegisterForm({ role, onBack }: { role: Role; onBack: () => void 
 
       <div>
         <Label htmlFor="countryCode">
-          {t('countryCode')} <span className="text-neutral-400">({t('countryCodeHint')})</span>
+          {t('countryCode')} <span className="text-neutral-500">({t('countryCodeHint')})</span>
         </Label>
         <Input
           id="countryCode"

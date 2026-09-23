@@ -68,7 +68,7 @@ export function ConversationsList() {
                     ) : null}
                   </div>
                   {conversation.lastMessage ? (
-                    <span className="shrink-0 text-xs text-neutral-400">
+                    <span className="shrink-0 text-xs text-neutral-500">
                       {dateFmt.format(new Date(conversation.lastMessage.createdAt))}
                     </span>
                   ) : null}
@@ -79,7 +79,7 @@ export function ConversationsList() {
                 {conversation.lastMessage ? (
                   <p className="mt-1 truncate text-sm text-neutral-600">{conversation.lastMessage.body}</p>
                 ) : (
-                  <p className="mt-1 text-sm text-neutral-400">{t('noMessagesYet')}</p>
+                  <p className="mt-1 text-sm text-neutral-500">{t('noMessagesYet')}</p>
                 )}
               </div>
             </Card>

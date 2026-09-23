@@ -6,6 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/link-button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar } from '@/components/ui/avatar';
 import {
@@ -120,12 +121,15 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
             ) : null}
 
             {application.status === 'ACCEPTED' && conversation ? (
-              <Link href={`/messages/${conversation.id}`} className="mt-3 inline-block">
-                <Button size="sm" variant="outline" className="gap-1.5">
-                  <MessageCircle className="h-4 w-4" aria-hidden />
-                  {t('chatWithWorker')}
-                </Button>
-              </Link>
+              <LinkButton
+                href={`/messages/${conversation.id}`}
+                size="sm"
+                variant="outline"
+                className="mt-3 gap-1.5"
+              >
+                <MessageCircle className="h-4 w-4" aria-hidden />
+                {t('chatWithWorker')}
+              </LinkButton>
             ) : null}
 
             {decideFailed ? <p className="mt-2 text-xs text-danger-600">{t('decideError')}</p> : null}

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/link-button';
 import { ConversationThread } from '@/components/messages/conversation-thread';
 
 export default function ConversationPage({ params }: { params: { id: string } }) {
@@ -24,9 +24,9 @@ export default function ConversationPage({ params }: { params: { id: string } })
         <Card className="mt-6 p-6 text-center">
           <p className="text-sm text-neutral-600">{t('loginPrompt')}</p>
           <div className="mt-4 flex justify-center gap-3">
-            <Link href="/login">
-              <Button variant="outline">{tAuth('loginSubmit')}</Button>
-            </Link>
+            <LinkButton href="/login" variant="outline">
+              {tAuth('loginSubmit')}
+            </LinkButton>
           </div>
         </Card>
       )}
