@@ -247,7 +247,11 @@
       "emptyCta": "Browse jobs",
       "loginPrompt": "Log in with a worker account to see your applications.",
       "appliedOn": "Applied on {date}",
-      "missionFallback": "Job"
+      "missionFallback": "Job",
+      "invitedLabel": "You've been invited!",
+      "acceptInvite": "Accept invitation",
+      "declineInvite": "Decline",
+      "inviteResponseError": "Couldn't respond to the invitation. Try again."
     },
     "status": {
       "PENDING": "Pending",
@@ -305,7 +309,27 @@
     "reviewBy": "Review from {name}",
     "changePhoto": "Change photo",
     "uploading": "Uploading…",
-    "uploadError": "Couldn't upload the photo (jpg, png or webp, 5 MB max)."
+    "uploadError": "Couldn't upload the photo (jpg, png or webp, 5 MB max).",
+    "completedAsWorker": "{count, plural, one {# job completed} other {# jobs completed}}",
+    "completedAsRecruiter": "{count, plural, one {# job posted and completed} other {# jobs posted and completed}}",
+    "viewMyActivity": "View my full activity"
+  },
+  "activity": {
+    "title": "My activity",
+    "subtitle": "The complete history of your jobs — visible only to you.",
+    "loginPrompt": "Log in to see your activity.",
+    "empty": "No completed jobs yet.",
+    "asWorkerTitle": "As a worker",
+    "asRecruiterTitle": "As a recruiter",
+    "withPerson": "With {name}",
+    "unknownUser": "User",
+    "negotiable": "Negotiable",
+    "reinvite": "Invite again",
+    "pickJob": "Pick a job",
+    "sendInvite": "Send invitation",
+    "cancel": "Cancel",
+    "inviteError": "Couldn't send the invitation. Try again.",
+    "noInvitableJobs": "You have no open job to offer right now. Post or create a job first."
   },
   "footer": {
     "tagline": "The universal platform for temporary work.",

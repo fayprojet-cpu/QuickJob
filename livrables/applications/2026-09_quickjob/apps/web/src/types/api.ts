@@ -102,6 +102,8 @@ export interface Application {
   decisionMessage: string | null;
   createdAt: string;
   decidedAt: string | null;
+  /** true si créée par le recruteur (réinvitation) plutôt que par le travailleur. */
+  invitedByRecruiter: boolean;
   /** Présent uniquement sur la vue recruteur (GET /jobs/:jobId/applications). */
   worker?: { id: string; email: string | null; firstName: string | null; avatarUrl: string | null; phone: string | null };
   /** Présent sur la vue travailleur (GET /applications/mine) : la mission liée. */
@@ -197,4 +199,21 @@ export interface UserProfile {
   roles: UserRole[];
   memberSince: string;
   reviews: ReviewSummary;
+  completedAsWorker: number;
+  completedAsRecruiter: number;
+}
+
+export interface ActivityItem {
+  jobId: string;
+  jobTitle: string;
+  amount: string | null;
+  currency: string | null;
+  completedAt: string;
+  counterpart: { id: string; firstName: string | null } | null;
+}
+
+/** Historique privé complet du compte connecté — jamais exposé publiquement. */
+export interface Activity {
+  asWorker: ActivityItem[];
+  asRecruiter: ActivityItem[];
 }

@@ -691,6 +691,10 @@ model Application {
   proposedRateCurrency String?
   matchScore          Float?            // score IA visible par le recruteur
   decisionMessage     String?
+  // true si créée par le recruteur (réinvitation d'un travailleur déjà
+  // connu) plutôt que par le travailleur qui postule — inverse qui doit
+  // accepter/refuser (le travailleur, pas le recruteur).
+  invitedByRecruiter  Boolean           @default(false)
   createdAt           DateTime          @default(now())
   decidedAt           DateTime?
 

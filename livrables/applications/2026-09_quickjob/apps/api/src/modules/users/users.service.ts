@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
-import { User, UserRole } from '@prisma/client';
+import { ApplicationStatus, JobStatus, User, UserRole } from '@prisma/client';
 import { ALLOWED_AVATAR_MIME_TYPES, StorageService } from '../../infra/storage/storage.service';
 import { PrismaService } from '../../infra/prisma/prisma.service';
 import { ReviewsService } from '../reviews/reviews.service';
+import { ActivityItemDto, ActivityResponseDto } from './dto/activity.response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfileResponseDto } from './dto/user-profile.response.dto';
 import { UserResponseDto } from './dto/user.response.dto';
@@ -116,7 +117,13 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    const reviews = await this.reviewsService.findReceivedByUser(userId);
+    const [reviews, completedAsWorker, completedAsRecruiter] = await Promise.all([
+      this.reviewsService.findReceivedByUser(userId),
+      this.prisma.application.count({
+        where: { workerId: userId, status: ApplicationStatus.ACCEPTED, job: { status: JobStatus.COMPLETED } },
+      }),
+      this.prisma.job.count({ where: { recruiterId: userId, status: JobStatus.COMPLETED } }),
+    ]);
 
     return {
       id: user.id,
@@ -125,7 +132,73 @@ export class UsersService {
       roles: user.roles,
       memberSince: user.createdAt,
       reviews,
+      completedAsWorker,
+      completedAsRecruiter,
     };
+  }
+
+  /**
+   * Historique complet (missions, prix, dates) du compte connecté — jamais
+   * exposé publiquement, uniquement à la personne elle-même (voir revue de
+   * conception profil : le détail chiffré reste privé, seuls les chiffres
+   * globaux apparaissent sur le profil public).
+   */
+  async findMyActivity(userId: string): Promise<ActivityResponseDto> {
+    const [asWorkerApplications, asRecruiterJobs] = await Promise.all([
+      this.prisma.application.findMany({
+        where: { workerId: userId, status: ApplicationStatus.ACCEPTED, job: { status: JobStatus.COMPLETED } },
+        include: {
+          job: {
+            select: {
+              id: true,
+              title: true,
+              salaryAmount: true,
+              salaryCurrency: true,
+              updatedAt: true,
+              recruiter: { select: { id: true, firstName: true } },
+            },
+          },
+        },
+      }),
+      this.prisma.job.findMany({
+        where: { recruiterId: userId, status: JobStatus.COMPLETED },
+        select: {
+          id: true,
+          title: true,
+          salaryAmount: true,
+          salaryCurrency: true,
+          updatedAt: true,
+          applications: {
+            where: { status: ApplicationStatus.ACCEPTED },
+            select: { worker: { select: { id: true, firstName: true } } },
+            take: 1,
+          },
+        },
+      }),
+    ]);
+
+    const asWorker: ActivityItemDto[] = asWorkerApplications.map((application) => ({
+      jobId: application.job.id,
+      jobTitle: application.job.title,
+      amount: application.job.salaryAmount?.toString() ?? null,
+      currency: application.job.salaryCurrency,
+      completedAt: application.job.updatedAt,
+      counterpart: application.job.recruiter,
+    }));
+
+    const asRecruiter: ActivityItemDto[] = asRecruiterJobs.map((job) => ({
+      jobId: job.id,
+      jobTitle: job.title,
+      amount: job.salaryAmount?.toString() ?? null,
+      currency: job.salaryCurrency,
+      completedAt: job.updatedAt,
+      counterpart: job.applications[0]?.worker ?? null,
+    }));
+
+    const byDateDesc = (a: ActivityItemDto, b: ActivityItemDto) =>
+      new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime();
+
+    return { asWorker: asWorker.sort(byDateDesc), asRecruiter: asRecruiter.sort(byDateDesc) };
   }
 
   private toResponseDto(user: SafeUser): UserResponseDto {

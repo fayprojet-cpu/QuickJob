@@ -1,14 +1,19 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar } from '@/components/ui/avatar';
 import { StarRatingDisplay } from '@/components/reviews/star-rating-display';
 import { AvatarUploader } from '@/components/profile/avatar-uploader';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUserProfile } from '@/features/users/use-users';
+import { getDefaultMode } from '@/lib/mode';
+import { cn } from '@/lib/cn';
+import type { UserRole } from '@/types/api';
 
 function ProfileSkeleton() {
   return (
@@ -31,6 +36,7 @@ export function ProfileView({ userId }: { userId: string }) {
   const tErrors = useTranslations('errors');
   const locale = useLocale();
   const currentUser = useAuthStore((state) => state.user);
+  const activeMode = useAuthStore((state) => state.activeMode);
   const query = useUserProfile(userId);
 
   if (query.isLoading) {
@@ -48,9 +54,11 @@ export function ProfileView({ userId }: { userId: string }) {
   const isOwnProfile = currentUser?.id === userId;
   const name = profile.firstName ?? t('unknownUser');
   const memberSinceYear = new Date(profile.memberSince).getFullYear();
-  const roleLabels = profile.roles
-    .filter((role) => role === 'WORKER' || role === 'RECRUITER')
-    .map((role) => (role === 'WORKER' ? tNav('modeWorker') : tNav('modeRecruiter')));
+  // Le "mode actif" n'a de sens que sur son propre profil : c'est un état
+  // local à l'appareil de la personne connectée, pas une donnée publique
+  // qu'on peut connaître pour quelqu'un d'autre.
+  const currentMode = isOwnProfile ? (activeMode ?? getDefaultMode(currentUser?.roles ?? [])) : null;
+  const roles = profile.roles.filter((role): role is 'WORKER' | 'RECRUITER' => role === 'WORKER' || role === 'RECRUITER');
 
   return (
     <div className="mt-6 space-y-6">
@@ -66,11 +74,18 @@ export function ProfileView({ userId }: { userId: string }) {
         <div>
           <h1 className="text-xl font-bold text-neutral-900">{name}</h1>
           <div className="mt-1 flex flex-wrap gap-1.5">
-            {roleLabels.map((label) => (
-              <Badge key={label} tone="neutral">
-                {label}
-              </Badge>
-            ))}
+            {roles.map((role) => {
+              const isActive = currentMode === role;
+              return (
+                <Badge
+                  key={role}
+                  tone={isActive ? 'primary' : 'neutral'}
+                  className={cn(!isActive && currentMode ? 'opacity-60' : '')}
+                >
+                  {role === 'WORKER' ? tNav('modeWorker') : tNav('modeRecruiter')}
+                </Badge>
+              );
+            })}
           </div>
           <p className="mt-1 text-sm text-neutral-500">{t('memberSince', { year: memberSinceYear })}</p>
         </div>
@@ -90,7 +105,26 @@ export function ProfileView({ userId }: { userId: string }) {
             <p className="text-sm text-neutral-500">{t('noReviewsYet')}</p>
           )}
         </div>
+
+        {profile.completedAsWorker > 0 || profile.completedAsRecruiter > 0 ? (
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-neutral-100 pt-3 text-sm text-neutral-600">
+            {profile.completedAsWorker > 0 ? (
+              <span>{t('completedAsWorker', { count: profile.completedAsWorker })}</span>
+            ) : null}
+            {profile.completedAsRecruiter > 0 ? (
+              <span>{t('completedAsRecruiter', { count: profile.completedAsRecruiter })}</span>
+            ) : null}
+          </div>
+        ) : null}
       </Card>
+
+      {isOwnProfile ? (
+        <Link href="/activity">
+          <Button variant="outline" size="sm" className="w-full">
+            {t('viewMyActivity')}
+          </Button>
+        </Link>
+      ) : null}
 
       {profile.reviews.items.length > 0 ? (
         <div>

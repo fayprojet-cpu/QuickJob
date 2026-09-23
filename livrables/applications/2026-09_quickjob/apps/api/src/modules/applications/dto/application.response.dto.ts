@@ -10,6 +10,8 @@ export class ApplicationResponseDto {
   @ApiPropertyOptional({ nullable: true }) decisionMessage!: string | null;
   @ApiProperty() createdAt!: Date;
   @ApiPropertyOptional({ nullable: true }) decidedAt!: Date | null;
+  @ApiProperty({ description: 'true si créée par le recruteur (réinvitation) plutôt que par une candidature' })
+  invitedByRecruiter!: boolean;
 
   @ApiPropertyOptional({
     description: 'Présent uniquement sur GET /jobs/:jobId/applications (vue recruteur).',

@@ -10,4 +10,6 @@ export class UserProfileResponseDto {
   @ApiProperty({ enum: UserRole, isArray: true }) roles!: UserRole[];
   @ApiProperty() memberSince!: Date;
   @ApiProperty({ type: ReviewSummaryResponseDto }) reviews!: ReviewSummaryResponseDto;
+  @ApiProperty() completedAsWorker!: number;
+  @ApiProperty() completedAsRecruiter!: number;
 }

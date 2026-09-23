@@ -159,7 +159,7 @@ describe('ApplicationsService', () => {
       );
       // Accepter démarre la mission (PUBLISHED -> IN_PROGRESS).
       expect(prisma.job.updateMany).toHaveBeenCalledWith({
-        where: { id: 'job-1', status: JobStatus.PUBLISHED },
+        where: { id: 'job-1', status: { in: [JobStatus.PUBLISHED] } },
         data: { status: JobStatus.IN_PROGRESS },
       });
       // Ouvre (ou réutilise, idempotent) la conversation liée à la mission.
@@ -244,6 +244,116 @@ describe('ApplicationsService', () => {
         'Livraison de colis',
         false,
         'http://localhost:3000/applications',
+      );
+    });
+  });
+
+  describe('invite', () => {
+    it('creates an invited application when the recruiter already worked with the worker', async () => {
+      (prisma.job.findFirst as jest.Mock).mockResolvedValue({ id: 'job-2', recruiterId: 'recruiter-1', status: JobStatus.DRAFT });
+      (prisma.application.findFirst as jest.Mock).mockResolvedValue({ id: 'past-app', status: ApplicationStatus.ACCEPTED });
+      (prisma.application.findUnique as jest.Mock).mockResolvedValue(null);
+      (prisma.application.create as jest.Mock).mockResolvedValue({
+        id: 'invite-1',
+        jobId: 'job-2',
+        workerId: 'worker-1',
+        invitedByRecruiter: true,
+        status: ApplicationStatus.PENDING,
+      });
+
+      const result = await service.invite('job-2', 'recruiter-1', 'worker-1');
+
+      expect(result.invitedByRecruiter).toBe(true);
+      expect(prisma.application.create).toHaveBeenCalledWith({
+        data: { jobId: 'job-2', workerId: 'worker-1', invitedByRecruiter: true },
+      });
+    });
+
+    it('throws NotFoundException when the job is not owned by the recruiter or already active', async () => {
+      (prisma.job.findFirst as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.invite('job-2', 'recruiter-1', 'worker-1')).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it('throws ForbiddenException when the recruiter never worked with this worker before', async () => {
+      (prisma.job.findFirst as jest.Mock).mockResolvedValue({ id: 'job-2', recruiterId: 'recruiter-1', status: JobStatus.DRAFT });
+      (prisma.application.findFirst as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.invite('job-2', 'recruiter-1', 'worker-1')).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.application.create).not.toHaveBeenCalled();
+    });
+
+    it('throws ConflictException when the worker already has an application on this job', async () => {
+      (prisma.job.findFirst as jest.Mock).mockResolvedValue({ id: 'job-2', recruiterId: 'recruiter-1', status: JobStatus.DRAFT });
+      (prisma.application.findFirst as jest.Mock).mockResolvedValue({ id: 'past-app', status: ApplicationStatus.ACCEPTED });
+      (prisma.application.findUnique as jest.Mock).mockResolvedValue({ id: 'existing-app' });
+
+      await expect(service.invite('job-2', 'recruiter-1', 'worker-1')).rejects.toBeInstanceOf(ConflictException);
+      expect(prisma.application.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('respondToInvite', () => {
+    const invitedApplication = {
+      id: 'invite-1',
+      jobId: 'job-2',
+      workerId: 'worker-1',
+      status: ApplicationStatus.PENDING,
+      invitedByRecruiter: true,
+      job: { id: 'job-2', recruiterId: 'recruiter-1' },
+    };
+
+    it('activates the mission and opens the conversation when the worker accepts', async () => {
+      (prisma.application.findFirst as jest.Mock).mockResolvedValue(invitedApplication);
+      (prisma.application.update as jest.Mock).mockResolvedValue({
+        ...invitedApplication,
+        status: ApplicationStatus.ACCEPTED,
+      });
+
+      const result = await service.respondToInvite('invite-1', 'worker-1', true);
+
+      expect(result.status).toBe(ApplicationStatus.ACCEPTED);
+      // Accepte même si la mission est restée en DRAFT (jamais publiée).
+      expect(prisma.job.updateMany).toHaveBeenCalledWith({
+        where: { id: 'job-2', status: { in: [JobStatus.DRAFT, JobStatus.PUBLISHED] } },
+        data: { status: JobStatus.IN_PROGRESS },
+      });
+      expect(prisma.conversation.upsert).toHaveBeenCalledWith({
+        where: { jobId: 'job-2' },
+        create: { jobId: 'job-2' },
+        update: {},
+      });
+    });
+
+    it('marks the invitation REJECTED without touching the job when the worker declines', async () => {
+      (prisma.application.findFirst as jest.Mock).mockResolvedValue(invitedApplication);
+      (prisma.application.update as jest.Mock).mockResolvedValue({
+        ...invitedApplication,
+        status: ApplicationStatus.REJECTED,
+      });
+
+      const result = await service.respondToInvite('invite-1', 'worker-1', false);
+
+      expect(result.status).toBe(ApplicationStatus.REJECTED);
+      expect(prisma.job.updateMany).not.toHaveBeenCalled();
+    });
+
+    it('throws NotFoundException when there is no matching invitation for this worker', async () => {
+      (prisma.application.findFirst as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.respondToInvite('invite-1', 'someone-else', true)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+
+    it('throws BadRequestException when the invitation was already decided', async () => {
+      (prisma.application.findFirst as jest.Mock).mockResolvedValue({
+        ...invitedApplication,
+        status: ApplicationStatus.ACCEPTED,
+      });
+
+      await expect(service.respondToInvite('invite-1', 'worker-1', true)).rejects.toBeInstanceOf(
+        BadRequestException,
       );
     });
   });

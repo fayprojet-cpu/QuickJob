@@ -247,7 +247,11 @@
       "emptyCta": "Voir les missions",
       "loginPrompt": "Connecte-toi avec un compte travailleur pour voir tes candidatures.",
       "appliedOn": "Postulé le {date}",
-      "missionFallback": "Mission"
+      "missionFallback": "Mission",
+      "invitedLabel": "Tu as été invité(e) !",
+      "acceptInvite": "Accepter l'invitation",
+      "declineInvite": "Refuser",
+      "inviteResponseError": "Impossible de répondre à l'invitation. Réessaie."
     },
     "status": {
       "PENDING": "En attente",
@@ -305,7 +309,27 @@
     "reviewBy": "Avis de {name}",
     "changePhoto": "Changer la photo",
     "uploading": "Envoi…",
-    "uploadError": "Impossible d'envoyer la photo (jpg, png ou webp, 5 Mo max)."
+    "uploadError": "Impossible d'envoyer la photo (jpg, png ou webp, 5 Mo max).",
+    "completedAsWorker": "{count, plural, one {# mission effectuée} other {# missions effectuées}}",
+    "completedAsRecruiter": "{count, plural, one {# mission publiée et terminée} other {# missions publiées et terminées}}",
+    "viewMyActivity": "Voir mon activité complète"
+  },
+  "activity": {
+    "title": "Mon activité",
+    "subtitle": "L'historique complet de tes missions — visible seulement par toi.",
+    "loginPrompt": "Connecte-toi pour voir ton activité.",
+    "empty": "Aucune mission terminée pour le moment.",
+    "asWorkerTitle": "En tant que travailleur",
+    "asRecruiterTitle": "En tant que recruteur",
+    "withPerson": "Avec {name}",
+    "unknownUser": "Utilisateur",
+    "negotiable": "À négocier",
+    "reinvite": "Réinviter",
+    "pickJob": "Choisir une mission",
+    "sendInvite": "Envoyer l'invitation",
+    "cancel": "Annuler",
+    "inviteError": "Impossible d'envoyer l'invitation. Réessaie.",
+    "noInvitableJobs": "Tu n'as aucune mission ouverte à proposer pour l'instant. Publie ou crée une mission d'abord."
   },
   "footer": {
     "tagline": "La plateforme universelle du travail temporaire.",

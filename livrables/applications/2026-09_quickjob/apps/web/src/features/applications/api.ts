@@ -23,3 +23,19 @@ export function acceptApplication(id: string): Promise<Application> {
 export function rejectApplication(id: string): Promise<Application> {
   return authApiFetch<Application>(`/applications/${id}/reject`, { method: 'PATCH' });
 }
+
+/** Invite directement un travailleur déjà connu sur une mission — pas d'attente de candidatures. */
+export function inviteWorker(jobId: string, workerId: string): Promise<Application> {
+  return authApiFetch<Application>(`/jobs/${jobId}/invite`, {
+    method: 'POST',
+    body: JSON.stringify({ workerId }),
+  });
+}
+
+export function acceptInvite(id: string): Promise<Application> {
+  return authApiFetch<Application>(`/applications/${id}/accept-invite`, { method: 'PATCH' });
+}
+
+export function declineInvite(id: string): Promise<Application> {
+  return authApiFetch<Application>(`/applications/${id}/decline-invite`, { method: 'PATCH' });
+}

@@ -6,11 +6,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Application, ApplicationStatus, JobStatus } from '@prisma/client';
+import { Application, ApplicationStatus, JobStatus, Prisma } from '@prisma/client';
 import { Env } from '@quickjob/config';
 import { MailService } from '../../infra/mail/mail.service';
 import { PrismaService } from '../../infra/prisma/prisma.service';
 import { ApplyToJobDto } from './dto/apply-to-job.dto';
+
+type PrismaTx = Prisma.TransactionClient;
 
 @Injectable()
 export class ApplicationsService {
@@ -109,47 +111,21 @@ export class ApplicationsService {
       throw new BadRequestException(`This application has already been decided (${application.status})`);
     }
 
-    let updated: Application;
-    // Accepter un candidat démarre la mission (PUBLISHED -> IN_PROGRESS) et
-    // ouvre la conversation recruteur/travailleur, dans la même transaction.
-    // updateMany conditionnel : sans effet si la mission est déjà en cours
-    // (cas de plusieurs travailleurs recherchés). Conversation liée 1:1 à la
-    // mission (jobId unique) -> upsert idempotent, pas de doublon si un autre
-    // travailleur est aussi accepté sur la même mission.
-    if (status === ApplicationStatus.ACCEPTED) {
-      updated = await this.prisma.$transaction(async (tx) => {
-        const [result] = await Promise.all([
-          tx.application.update({ where: { id }, data: { status, decidedAt: new Date() } }),
-          tx.job.updateMany({
-            where: { id: application.jobId, status: JobStatus.PUBLISHED },
-            data: { status: JobStatus.IN_PROGRESS },
-          }),
-        ]);
-
-        const conversation = await tx.conversation.upsert({
-          where: { jobId: application.jobId },
-          create: { jobId: application.jobId },
-          update: {},
-        });
-
-        await Promise.all(
-          [recruiterId, application.workerId].map((userId) =>
-            tx.conversationParticipant.upsert({
-              where: { conversationId_userId: { conversationId: conversation.id, userId } },
-              create: { conversationId: conversation.id, userId },
-              update: {},
+    const updated =
+      status === ApplicationStatus.ACCEPTED
+        ? await this.prisma.$transaction((tx) =>
+            this.activateMission(tx, {
+              applicationId: id,
+              jobId: application.jobId,
+              recruiterId,
+              workerId: application.workerId,
+              fromJobStatuses: [JobStatus.PUBLISHED],
             }),
-          ),
-        );
-
-        return result;
-      });
-    } else {
-      updated = await this.prisma.application.update({
-        where: { id },
-        data: { status, decidedAt: new Date() },
-      });
-    }
+          )
+        : await this.prisma.application.update({
+            where: { id },
+            data: { status, decidedAt: new Date() },
+          });
 
     if (application.worker.email) {
       const webUrl = this.configService.get('WEB_URL', { infer: true });
@@ -165,6 +141,120 @@ export class ApplicationsService {
         )
         .catch(() => {});
     }
+
+    return updated;
+  }
+
+  /**
+   * Le recruteur invite directement un travailleur avec qui il a déjà
+   * travaillé (mission déjà terminée entre eux), sur une nouvelle mission —
+   * sans attendre de candidatures publiques. La mission peut rester en
+   * brouillon (jamais publiée) le temps que le travailleur réponde.
+   */
+  async invite(jobId: string, recruiterId: string, workerId: string): Promise<Application> {
+    const job = await this.prisma.job.findFirst({
+      where: { id: jobId, recruiterId, status: { in: [JobStatus.DRAFT, JobStatus.PUBLISHED] } },
+    });
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    const hasWorkedTogether = await this.prisma.application.findFirst({
+      where: {
+        workerId,
+        status: ApplicationStatus.ACCEPTED,
+        job: { recruiterId, status: JobStatus.COMPLETED },
+      },
+    });
+    if (!hasWorkedTogether) {
+      throw new ForbiddenException('You can only invite someone you have already worked with');
+    }
+
+    const existing = await this.prisma.application.findUnique({ where: { jobId_workerId: { jobId, workerId } } });
+    if (existing) {
+      throw new ConflictException('This worker has already applied or been invited to this job');
+    }
+
+    return this.prisma.application.create({
+      data: { jobId, workerId, invitedByRecruiter: true },
+    });
+  }
+
+  /**
+   * Le travailleur répond à une invitation directe — c'est lui, pas le
+   * recruteur, qui accepte/refuse ici (inverse du flux normal de
+   * candidature), puisque c'est le recruteur qui a pris l'initiative.
+   */
+  async respondToInvite(id: string, workerId: string, accept: boolean): Promise<Application> {
+    const application = await this.prisma.application.findFirst({
+      where: { id, workerId, invitedByRecruiter: true },
+      include: { job: { select: { id: true, recruiterId: true } } },
+    });
+    if (!application) {
+      throw new NotFoundException('Invitation not found');
+    }
+    if (application.status !== ApplicationStatus.PENDING) {
+      throw new BadRequestException(`This invitation has already been decided (${application.status})`);
+    }
+
+    if (!accept) {
+      return this.prisma.application.update({
+        where: { id },
+        data: { status: ApplicationStatus.REJECTED, decidedAt: new Date() },
+      });
+    }
+
+    return this.prisma.$transaction((tx) =>
+      this.activateMission(tx, {
+        applicationId: id,
+        jobId: application.jobId,
+        recruiterId: application.job.recruiterId,
+        workerId,
+        fromJobStatuses: [JobStatus.DRAFT, JobStatus.PUBLISHED],
+      }),
+    );
+  }
+
+  /**
+   * Marque une candidature ACCEPTÉE, démarre la mission et ouvre la
+   * conversation recruteur/travailleur — partagé entre l'acceptation
+   * normale (recruteur choisit un candidat) et l'acceptation d'une
+   * invitation (travailleur accepte une invitation directe).
+   */
+  private async activateMission(
+    tx: PrismaTx,
+    input: { applicationId: string; jobId: string; recruiterId: string; workerId: string; fromJobStatuses: JobStatus[] },
+  ): Promise<Application> {
+    const [updated] = await Promise.all([
+      tx.application.update({
+        where: { id: input.applicationId },
+        data: { status: ApplicationStatus.ACCEPTED, decidedAt: new Date() },
+      }),
+      // updateMany conditionnel : sans effet si la mission est déjà en cours
+      // (cas de plusieurs travailleurs recherchés, ou double appel concurrent).
+      tx.job.updateMany({
+        where: { id: input.jobId, status: { in: input.fromJobStatuses } },
+        data: { status: JobStatus.IN_PROGRESS },
+      }),
+    ]);
+
+    // Conversation liée 1:1 à la mission (jobId unique) -> upsert idempotent,
+    // pas de doublon si un autre travailleur est aussi accepté sur la même mission.
+    const conversation = await tx.conversation.upsert({
+      where: { jobId: input.jobId },
+      create: { jobId: input.jobId },
+      update: {},
+    });
+
+    await Promise.all(
+      [input.recruiterId, input.workerId].map((userId) =>
+        tx.conversationParticipant.upsert({
+          where: { conversationId_userId: { conversationId: conversation.id, userId } },
+          create: { conversationId: conversation.id, userId },
+          update: {},
+        }),
+      ),
+    );
 
     return updated;
   }

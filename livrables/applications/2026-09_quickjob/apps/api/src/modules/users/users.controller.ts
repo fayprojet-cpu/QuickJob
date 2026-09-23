@@ -17,6 +17,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTa
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
 import { AuthenticatedUser } from '../../common/types/authenticated-user';
+import { ActivityResponseDto } from './dto/activity.response.dto';
 import { AddRoleDto } from './dto/add-role.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfileResponseDto } from './dto/user-profile.response.dto';
@@ -77,6 +78,13 @@ export class UsersController {
       throw new BadRequestException('No file uploaded');
     }
     return this.usersService.updateAvatar(user.id, file);
+  }
+
+  @Get('me/activity')
+  @ApiOperation({ summary: 'Historique complet et privé (missions, prix, dates) du compte connecté' })
+  @ApiOkResponse({ type: ActivityResponseDto })
+  getMyActivity(@CurrentUser() user: AuthenticatedUser): Promise<ActivityResponseDto> {
+    return this.usersService.findMyActivity(user.id);
   }
 
   @Public()

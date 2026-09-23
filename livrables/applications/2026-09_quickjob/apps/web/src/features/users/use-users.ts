@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth-store';
 import type { SelfServiceRole, UpdateUserInput } from '@/types/api';
-import { addRole, fetchUserProfile, updateMe, uploadAvatar } from './api';
+import { addRole, fetchMyActivity, fetchUserProfile, updateMe, uploadAvatar } from './api';
 
 /** Ajoute un rôle au compte connecté puis bascule dessus (mode actif). */
 export function useAddRole() {
@@ -48,4 +48,9 @@ export function useUploadAvatar() {
 /** Profil public d'un utilisateur — nom, réputation, avis reçus. */
 export function useUserProfile(userId: string) {
   return useQuery({ queryKey: ['users', userId, 'profile'], queryFn: () => fetchUserProfile(userId) });
+}
+
+/** Historique privé complet du compte connecté (missions, prix, dates). */
+export function useMyActivity() {
+  return useQuery({ queryKey: ['users', 'me', 'activity'], queryFn: fetchMyActivity });
 }

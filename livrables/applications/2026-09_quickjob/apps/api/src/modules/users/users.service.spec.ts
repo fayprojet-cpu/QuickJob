@@ -11,6 +11,12 @@ function buildPrismaMock() {
       findFirst: jest.fn(),
       update: jest.fn(),
     },
+    application: {
+      count: jest.fn().mockResolvedValue(0),
+    },
+    job: {
+      count: jest.fn().mockResolvedValue(0),
+    },
   } as unknown as PrismaService;
 }
 
@@ -175,6 +181,8 @@ describe('UsersService', () => {
         createdAt: new Date('2026-01-01T00:00:00.000Z'),
       });
       (reviews.findReceivedByUser as jest.Mock).mockResolvedValue({ average: 4.5, count: 2, items: [] });
+      (prisma.application.count as jest.Mock).mockResolvedValue(3);
+      (prisma.job.count as jest.Mock).mockResolvedValue(0);
 
       const result = await service.findPublicProfile('user-1');
 
@@ -185,6 +193,8 @@ describe('UsersService', () => {
         roles: [UserRole.WORKER],
         memberSince: new Date('2026-01-01T00:00:00.000Z'),
         reviews: { average: 4.5, count: 2, items: [] },
+        completedAsWorker: 3,
+        completedAsRecruiter: 0,
       });
     });
 

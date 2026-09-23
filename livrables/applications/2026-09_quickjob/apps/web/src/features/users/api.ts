@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/api-client';
 import { authApiFetch, authApiUpload } from '@/lib/auth-api-client';
-import type { AuthUser, SelfServiceRole, UpdateUserInput, UserProfile } from '@/types/api';
+import type { Activity, AuthUser, SelfServiceRole, UpdateUserInput, UserProfile } from '@/types/api';
 
 export function addRole(role: SelfServiceRole): Promise<AuthUser> {
   return authApiFetch<AuthUser>('/users/me/roles', {
@@ -25,4 +25,9 @@ export function uploadAvatar(file: File): Promise<AuthUser> {
 /** Public — pas besoin d'être connecté pour voir le profil d'un utilisateur. */
 export function fetchUserProfile(userId: string): Promise<UserProfile> {
   return apiFetch<UserProfile>(`/users/${userId}/profile`);
+}
+
+/** Privé — historique complet (missions, prix, dates) du compte connecté. */
+export function fetchMyActivity(): Promise<Activity> {
+  return authApiFetch<Activity>('/users/me/activity');
 }

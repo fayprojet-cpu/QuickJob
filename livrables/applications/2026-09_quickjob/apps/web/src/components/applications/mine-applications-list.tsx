@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useMineApplications } from '@/features/applications/use-applications';
+import { useAcceptInvite, useDeclineInvite, useMineApplications } from '@/features/applications/use-applications';
 import { findConversationForJob, useMineConversations } from '@/features/conversations/use-conversations';
 import { hasReviewedJob, useMineAuthoredReviews, useReviewRecruiterForApplication } from '@/features/reviews/use-reviews';
 import { RatingForm } from '@/components/reviews/rating-form';
@@ -49,6 +49,8 @@ export function MineApplicationsList() {
   const conversationsQuery = useMineConversations();
   const authoredReviewsQuery = useMineAuthoredReviews();
   const reviewRecruiterMutation = useReviewRecruiterForApplication();
+  const acceptInviteMutation = useAcceptInvite();
+  const declineInviteMutation = useDeclineInvite();
   const [openRatingAppId, setOpenRatingAppId] = useState<string | null>(null);
 
   if (query.isLoading) {
@@ -86,11 +88,18 @@ export function MineApplicationsList() {
           reviewRecruiterMutation.isPending && reviewRecruiterMutation.variables?.applicationId === application.id;
         const ratingFailedForThisApp =
           reviewRecruiterMutation.isError && reviewRecruiterMutation.variables?.applicationId === application.id;
+        const isInvite = application.invitedByRecruiter && application.status === 'PENDING';
+        const isAcceptingInvite = acceptInviteMutation.isPending && acceptInviteMutation.variables === application.id;
+        const isDecliningInvite = declineInviteMutation.isPending && declineInviteMutation.variables === application.id;
+        const inviteFailed =
+          (acceptInviteMutation.isError && acceptInviteMutation.variables === application.id) ||
+          (declineInviteMutation.isError && declineInviteMutation.variables === application.id);
 
         return (
-          <Card key={application.id} className="p-4">
+          <Card key={application.id} className={isInvite ? 'border-primary-200 bg-primary-50/40 p-4' : 'p-4'}>
             <div className="flex items-start justify-between gap-3">
               <div>
+                {isInvite ? <p className="text-xs font-semibold text-primary-600">{tMine('invitedLabel')}</p> : null}
                 <p className="font-medium text-neutral-900">
                   {application.job?.title ?? tMine('missionFallback')}
                 </p>
@@ -108,6 +117,27 @@ export function MineApplicationsList() {
                 {t(`status.${application.status}`)}
               </Badge>
             </div>
+
+            {isInvite ? (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <Button
+                  size="sm"
+                  isLoading={isAcceptingInvite}
+                  onClick={() => acceptInviteMutation.mutate(application.id)}
+                >
+                  {tMine('acceptInvite')}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  isLoading={isDecliningInvite}
+                  onClick={() => declineInviteMutation.mutate(application.id)}
+                >
+                  {tMine('declineInvite')}
+                </Button>
+              </div>
+            ) : null}
+            {inviteFailed ? <p className="mt-2 text-xs text-danger-600">{tMine('inviteResponseError')}</p> : null}
 
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {conversation ? (

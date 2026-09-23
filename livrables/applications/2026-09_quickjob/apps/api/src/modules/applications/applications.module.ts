@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { MailModule } from '../../infra/mail/mail.module';
-import { ApplicationsController, JobApplicationsController } from './applications.controller';
+import { ApplicationsController, JobApplicationsController, JobInviteController } from './applications.controller';
 import { ApplicationsService } from './applications.service';
 
 @Module({
   imports: [MailModule],
-  controllers: [JobApplicationsController, ApplicationsController],
+  controllers: [JobApplicationsController, JobInviteController, ApplicationsController],
   providers: [ApplicationsService],
   exports: [ApplicationsService],
 })
