@@ -45,6 +45,24 @@ export function JobForm() {
   const [countryCode, setCountryCode] = useState(user?.countryCode ?? '');
   const [publishNow, setPublishNow] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [geoStatus, setGeoStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  function handleUseLocation() {
+    if (!navigator.geolocation) {
+      setGeoStatus('error');
+      return;
+    }
+    setGeoStatus('loading');
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCoords({ latitude: position.coords.latitude, longitude: position.coords.longitude });
+        setGeoStatus('success');
+      },
+      () => setGeoStatus('error'),
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  }
 
   const currencyOptions = useMemo(() => {
     const codes = CURRENCY_CODES.includes(salaryCurrency)
@@ -70,6 +88,7 @@ export function JobForm() {
         workersNeeded: Number(workersNeeded),
         city: city || undefined,
         countryCode: countryCode ? countryCode.toUpperCase() : undefined,
+        ...(coords ? { latitude: coords.latitude, longitude: coords.longitude } : {}),
       });
       if (publishNow) {
         return publishJob(job.id);
@@ -247,6 +266,24 @@ export function JobForm() {
           value={countryCode}
           onChange={(event) => setCountryCode(event.target.value)}
         />
+      </div>
+
+      <div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleUseLocation}
+          isLoading={geoStatus === 'loading'}
+        >
+          {t('useLocation')}
+        </Button>
+        {geoStatus === 'success' ? (
+          <p className="mt-1 text-xs text-primary-600">{t('locationAdded')}</p>
+        ) : null}
+        {geoStatus === 'error' ? (
+          <p className="mt-1 text-xs text-neutral-500">{t('locationError')}</p>
+        ) : null}
       </div>
 
       <div className="border-t border-neutral-200 pt-4">

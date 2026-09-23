@@ -9,6 +9,7 @@ import { categoryTranslationKey } from '@/features/jobs/category-label';
 import { formatMoney } from '@/lib/money';
 import { ApiError } from '@/lib/api-error';
 import { ApplyButton } from '@/components/jobs/apply-button';
+import { WhatsAppShareButton } from '@/components/jobs/whatsapp-share-button';
 
 export default async function JobDetailPage({
   params: { locale, id },
@@ -98,6 +99,10 @@ export default async function JobDetailPage({
           </p>
         </div>
       </Card>
+
+      <div className="mt-4 flex justify-end">
+        <WhatsAppShareButton job={job} />
+      </div>
 
       <ApplyButton jobId={job.id} recruiterId={job.recruiterId} />
     </div>

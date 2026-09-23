@@ -143,6 +143,8 @@ export interface CreateJobInput {
   workersNeeded?: number;
   city?: string;
   countryCode?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export type MessageType = 'TEXT' | 'IMAGE' | 'FILE' | 'LOCATION' | 'SYSTEM';

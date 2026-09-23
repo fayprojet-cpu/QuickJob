@@ -158,6 +158,18 @@
     "page": "Page {page} sur {total}",
     "previous": "Précédent",
     "next": "Suivant",
+    "viewList": "Liste",
+    "viewMap": "Carte",
+    "map": {
+      "nearMe": "Près de moi",
+      "locating": "Localisation…",
+      "locationDenied": "Position indisponible. Autorise la géolocalisation dans ton navigateur pour voir les missions proches de toi.",
+      "distanceKm": "à {distance} km",
+      "noCoordinates": "Aucune mission géolocalisée pour le moment.",
+      "viewJob": "Voir la mission",
+      "nearestTitle": "Missions les plus proches",
+      "youAreHere": "Toi"
+    },
     "urgency": {
       "FLEXIBLE": "Flexible",
       "THIS_WEEK": "Cette semaine",
@@ -183,6 +195,7 @@
     "category_events": "Événementiel",
     "category_handyman": "Petit bricolage",
     "negotiable": "À négocier",
+    "shareWhatsApp": "Partager sur WhatsApp",
     "new": {
       "title": "Publier une mission",
       "subtitle": "D'abord en brouillon — tu la relis et la publies à l'étape suivante.",
@@ -200,6 +213,10 @@
       "workersNeededLabel": "Personnes recherchées",
       "cityLabel": "Ville",
       "countryCodeLabel": "Code pays",
+      "useLocation": "Utiliser ma position actuelle",
+      "locationAdded": "Position ajoutée ✓",
+      "locationLoading": "Localisation en cours…",
+      "locationError": "Impossible d'obtenir ta position. Tu peux publier sans, ou entrer la ville manuellement.",
       "submit": "Créer le brouillon",
       "publishAfterCreate": "Publier maintenant",
       "createdSuccess": "Mission créée en brouillon.",

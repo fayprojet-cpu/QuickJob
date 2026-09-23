@@ -158,6 +158,18 @@
     "page": "Page {page} of {total}",
     "previous": "Previous",
     "next": "Next",
+    "viewList": "List",
+    "viewMap": "Map",
+    "map": {
+      "nearMe": "Near me",
+      "locating": "Locating…",
+      "locationDenied": "Location unavailable. Allow geolocation in your browser to see jobs near you.",
+      "distanceKm": "{distance} km away",
+      "noCoordinates": "No located jobs right now.",
+      "viewJob": "View job",
+      "nearestTitle": "Nearest jobs",
+      "youAreHere": "You"
+    },
     "urgency": {
       "FLEXIBLE": "Flexible",
       "THIS_WEEK": "This week",
@@ -183,6 +195,7 @@
     "category_events": "Events staffing",
     "category_handyman": "Handyman",
     "negotiable": "Negotiable",
+    "shareWhatsApp": "Share on WhatsApp",
     "new": {
       "title": "Post a job",
       "subtitle": "Draft first — you'll review and publish it on the next step.",
@@ -200,6 +213,10 @@
       "workersNeededLabel": "Workers needed",
       "cityLabel": "City",
       "countryCodeLabel": "Country code",
+      "useLocation": "Use my current location",
+      "locationAdded": "Location added ✓",
+      "locationLoading": "Locating…",
+      "locationError": "Couldn't get your location. You can still publish without it, or enter the city manually.",
       "submit": "Create draft",
       "publishAfterCreate": "Publish now",
       "createdSuccess": "Job created as a draft.",
