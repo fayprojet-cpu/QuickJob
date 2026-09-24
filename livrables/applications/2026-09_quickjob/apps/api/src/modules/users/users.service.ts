@@ -7,6 +7,8 @@ import { ActivityItemDto, ActivityResponseDto } from './dto/activity.response.dt
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfileResponseDto } from './dto/user-profile.response.dto';
 import { UserResponseDto } from './dto/user.response.dto';
+import { WorkerSettingsDto } from './dto/worker-settings.dto';
+import { WorkerSettingsResponseDto } from './dto/worker-settings.response.dto';
 
 const SAFE_USER_SELECT = {
   id: true,
@@ -199,6 +201,76 @@ export class UsersService {
       new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime();
 
     return { asWorker: asWorker.sort(byDateDesc), asRecruiter: asRecruiter.sort(byDateDesc) };
+  }
+
+  /**
+   * Profil polyvalent (compétences, missions simples acceptées,
+   * disponibilité, zone) — réservé au compte connecté. La localisation
+   * précise (latitude/longitude) n'apparaît que dans cette réponse-ci,
+   * jamais dans le profil public (voir findPublicProfile).
+   */
+  async findMyWorkerSettings(userId: string): Promise<WorkerSettingsResponseDto> {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, deletedAt: null },
+      select: {
+        canDoGeneral: true,
+        acceptedCategoryKeys: true,
+        availableNow: true,
+        city: true,
+        latitude: true,
+        longitude: true,
+        travelRadiusKm: true,
+        skills: { select: { skill: true } },
+      },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      skills: user.skills.map(({ skill }) => skill),
+      canDoGeneral: user.canDoGeneral,
+      acceptedCategoryKeys: user.acceptedCategoryKeys,
+      availableNow: user.availableNow,
+      city: user.city,
+      latitude: user.latitude,
+      longitude: user.longitude,
+      travelRadiusKm: user.travelRadiusKm,
+    };
+  }
+
+  async updateMyWorkerSettings(
+    userId: string,
+    dto: WorkerSettingsDto,
+  ): Promise<WorkerSettingsResponseDto> {
+    await this.prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          ...(dto.canDoGeneral !== undefined ? { canDoGeneral: dto.canDoGeneral } : {}),
+          ...(dto.acceptedCategoryKeys !== undefined
+            ? { acceptedCategoryKeys: dto.acceptedCategoryKeys }
+            : {}),
+          ...(dto.availableNow !== undefined ? { availableNow: dto.availableNow } : {}),
+          ...(dto.city !== undefined ? { city: dto.city } : {}),
+          ...(dto.latitude !== undefined ? { latitude: dto.latitude } : {}),
+          ...(dto.longitude !== undefined ? { longitude: dto.longitude } : {}),
+          ...(dto.travelRadiusKm !== undefined ? { travelRadiusKm: dto.travelRadiusKm } : {}),
+        },
+      });
+
+      if (dto.skillIds !== undefined) {
+        await tx.userSkill.deleteMany({ where: { userId } });
+        if (dto.skillIds.length > 0) {
+          await tx.userSkill.createMany({
+            data: dto.skillIds.map((skillId) => ({ userId, skillId })),
+            skipDuplicates: true,
+          });
+        }
+      }
+    });
+
+    return this.findMyWorkerSettings(userId);
   }
 
   private toResponseDto(user: SafeUser): UserResponseDto {

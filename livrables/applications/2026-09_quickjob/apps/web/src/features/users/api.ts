@@ -1,6 +1,15 @@
 import { apiFetch } from '@/lib/api-client';
 import { authApiFetch, authApiUpload } from '@/lib/auth-api-client';
-import type { Activity, AuthUser, SelfServiceRole, UpdateUserInput, UserProfile } from '@/types/api';
+import type {
+  Activity,
+  AuthUser,
+  SelfServiceRole,
+  Skill,
+  UpdateUserInput,
+  UpdateWorkerSettingsInput,
+  UserProfile,
+  WorkerSettings,
+} from '@/types/api';
 
 export function addRole(role: SelfServiceRole): Promise<AuthUser> {
   return authApiFetch<AuthUser>('/users/me/roles', {
@@ -30,4 +39,21 @@ export function fetchUserProfile(userId: string): Promise<UserProfile> {
 /** Privé — historique complet (missions, prix, dates) du compte connecté. */
 export function fetchMyActivity(): Promise<Activity> {
   return authApiFetch<Activity>('/users/me/activity');
+}
+
+/** Public — catalogue des compétences (métiers) actives. */
+export function fetchSkillsCatalog(): Promise<Skill[]> {
+  return apiFetch<Skill[]>('/skills', {}, { revalidate: 300 });
+}
+
+/** Privé — profil polyvalent (compétences, missions simples, disponibilité, zone). */
+export function fetchMyWorkerSettings(): Promise<WorkerSettings> {
+  return authApiFetch<WorkerSettings>('/users/me/worker-settings');
+}
+
+export function updateMyWorkerSettings(input: UpdateWorkerSettingsInput): Promise<WorkerSettings> {
+  return authApiFetch<WorkerSettings>('/users/me/worker-settings', {
+    method: 'PATCH',
+    body: JSON.stringify(input),
+  });
 }

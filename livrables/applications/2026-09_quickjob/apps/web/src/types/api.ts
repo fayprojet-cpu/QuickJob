@@ -235,3 +235,37 @@ export interface Activity {
   asWorker: ActivityItem[];
   asRecruiter: ActivityItem[];
 }
+
+/** Catalogue de compétences (métiers) — public. */
+export interface Skill {
+  id: string;
+  key: string;
+  labelKey: string;
+}
+
+/**
+ * Profil polyvalent du compte connecté — réservé à soi-même. latitude/
+ * longitude n'apparaissent JAMAIS dans une réponse publique (voir
+ * UserProfile), seulement ici pour ré-afficher le formulaire d'édition.
+ */
+export interface WorkerSettings {
+  skills: Skill[];
+  canDoGeneral: boolean;
+  acceptedCategoryKeys: string[];
+  availableNow: boolean;
+  city: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  travelRadiusKm: number | null;
+}
+
+export interface UpdateWorkerSettingsInput {
+  skillIds?: string[];
+  canDoGeneral?: boolean;
+  acceptedCategoryKeys?: string[];
+  availableNow?: boolean;
+  city?: string;
+  latitude?: number;
+  longitude?: number;
+  travelRadiusKm?: number;
+}

@@ -22,6 +22,8 @@ import { AddRoleDto } from './dto/add-role.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfileResponseDto } from './dto/user-profile.response.dto';
 import { UserResponseDto } from './dto/user.response.dto';
+import { WorkerSettingsDto } from './dto/worker-settings.dto';
+import { WorkerSettingsResponseDto } from './dto/worker-settings.response.dto';
 import { UsersService } from './users.service';
 
 const MAX_AVATAR_SIZE_BYTES = 5 * 1024 * 1024;
@@ -85,6 +87,25 @@ export class UsersController {
   @ApiOkResponse({ type: ActivityResponseDto })
   getMyActivity(@CurrentUser() user: AuthenticatedUser): Promise<ActivityResponseDto> {
     return this.usersService.findMyActivity(user.id);
+  }
+
+  @Get('me/worker-settings')
+  @ApiOperation({
+    summary: 'Profil polyvalent du compte connecté (compétences, missions simples, disponibilité, zone)',
+  })
+  @ApiOkResponse({ type: WorkerSettingsResponseDto })
+  getMyWorkerSettings(@CurrentUser() user: AuthenticatedUser): Promise<WorkerSettingsResponseDto> {
+    return this.usersService.findMyWorkerSettings(user.id);
+  }
+
+  @Patch('me/worker-settings')
+  @ApiOperation({ summary: 'Met à jour le profil polyvalent du compte connecté' })
+  @ApiOkResponse({ type: WorkerSettingsResponseDto })
+  updateMyWorkerSettings(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: WorkerSettingsDto,
+  ): Promise<WorkerSettingsResponseDto> {
+    return this.usersService.updateMyWorkerSettings(user.id, dto);
   }
 
   @Public()

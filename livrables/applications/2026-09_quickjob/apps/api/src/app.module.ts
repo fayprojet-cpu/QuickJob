@@ -18,6 +18,7 @@ import { ConversationsModule } from './modules/conversations/conversations.modul
 import { JobsModule } from './modules/jobs/jobs.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { SkillsModule } from './modules/skills/skills.module';
 import { UsersModule } from './modules/users/users.module';
 import { HealthModule } from './health/health.module';
 
@@ -45,6 +46,7 @@ import { HealthModule } from './health/health.module';
     CategoriesModule,
     ConversationsModule,
     ReviewsModule,
+    SkillsModule,
     HealthModule,
   ],
   providers: [

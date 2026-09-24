@@ -309,11 +309,31 @@ model User {
 
   trustScore      Int        @default(0) // 0-100, recalculé après chaque mission
 
+  // Profil polyvalent (côté travailleur) — ce que la personne accepte de
+  // faire en plus de ses compétences (voir UserSkill) : petits boulots
+  // simples, sans lien avec un métier précis.
+  canDoGeneral         Boolean  @default(false)
+  // Sous-ensemble de JobCategory.key acceptés comme "mission simple"
+  // (ex. "category.delivery") — réutilise le catalogue de catégories des
+  // missions plutôt qu'une liste séparée.
+  acceptedCategoryKeys String[] @default([])
+  availableNow         Boolean  @default(false)
+
+  // Zone de la personne. IMPORTANT (vie privée) : city est le seul champ de
+  // localisation exposable publiquement — latitude/longitude ne doivent
+  // jamais apparaître dans une réponse API publique (uniquement pour la
+  // personne elle-même, ex. pour ré-afficher le formulaire d'édition).
+  city           String?
+  latitude       Decimal? @db.Decimal(9, 6)
+  longitude      Decimal? @db.Decimal(9, 6)
+  travelRadiusKm Int?
+
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
   deletedAt       DateTime?  // soft delete RGPD
 
   // Relations
+  skills                  UserSkill[]
   oauthAccounts           OAuthAccount[]
   refreshTokens           RefreshToken[]
   passwordResetTokens     PasswordResetToken[]
@@ -474,6 +494,7 @@ model Skill {
 
   workers WorkerSkill[]
   jobs    JobSkill[]
+  users   UserSkill[]
 
   @@map("skills")
 }
@@ -488,6 +509,20 @@ model WorkerSkill {
   @@id([workerProfileId, skillId])
   @@index([skillId])
   @@map("worker_skills")
+}
+
+/// Compétences directement rattachées à User (profil polyvalent) — distinct
+/// de WorkerSkill/WorkerProfile, qui restent non utilisés par l'app.
+model UserSkill {
+  userId  String @db.Uuid
+  skillId String @db.Uuid
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([userId, skillId])
+  @@index([skillId])
+  @@map("user_skills")
 }
 
 model Experience {

@@ -2,8 +2,17 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth-store';
-import type { SelfServiceRole, UpdateUserInput } from '@/types/api';
-import { addRole, fetchMyActivity, fetchUserProfile, updateMe, uploadAvatar } from './api';
+import type { SelfServiceRole, UpdateUserInput, UpdateWorkerSettingsInput } from '@/types/api';
+import {
+  addRole,
+  fetchMyActivity,
+  fetchMyWorkerSettings,
+  fetchSkillsCatalog,
+  fetchUserProfile,
+  updateMe,
+  updateMyWorkerSettings,
+  uploadAvatar,
+} from './api';
 
 /** Ajoute un rôle au compte connecté puis bascule dessus (mode actif). */
 export function useAddRole() {
@@ -53,4 +62,24 @@ export function useUserProfile(userId: string) {
 /** Historique privé complet du compte connecté (missions, prix, dates). */
 export function useMyActivity() {
   return useQuery({ queryKey: ['users', 'me', 'activity'], queryFn: fetchMyActivity });
+}
+
+/** Catalogue public des compétences (métiers) disponibles. */
+export function useSkillsCatalog() {
+  return useQuery({ queryKey: ['skills'], queryFn: fetchSkillsCatalog });
+}
+
+/** Profil polyvalent (compétences, missions simples, disponibilité, zone) du compte connecté. */
+export function useMyWorkerSettings() {
+  return useQuery({ queryKey: ['users', 'me', 'worker-settings'], queryFn: fetchMyWorkerSettings });
+}
+
+export function useUpdateWorkerSettings() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: UpdateWorkerSettingsInput) => updateMyWorkerSettings(input),
+    onSuccess: (settings) => {
+      queryClient.setQueryData(['users', 'me', 'worker-settings'], settings);
+    },
+  });
 }

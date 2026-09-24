@@ -117,9 +117,14 @@ export function ProfileView({ userId }: { userId: string }) {
       </Card>
 
       {isOwnProfile ? (
-        <LinkButton href="/activity" variant="outline" size="sm" className="w-full">
-          {t('viewMyActivity')}
-        </LinkButton>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <LinkButton href="/worker-settings" variant="outline" size="sm" className="w-full">
+            {t('editWorkerSettings')}
+          </LinkButton>
+          <LinkButton href="/activity" variant="outline" size="sm" className="w-full">
+            {t('viewMyActivity')}
+          </LinkButton>
+        </div>
       ) : null}
 
       {profile.reviews.items.length > 0 ? (

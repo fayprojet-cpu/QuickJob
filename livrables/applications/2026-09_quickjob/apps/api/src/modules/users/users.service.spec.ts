@@ -5,19 +5,31 @@ import { StorageService } from '../../infra/storage/storage.service';
 import { ReviewsService } from '../reviews/reviews.service';
 import { UsersService } from './users.service';
 
+interface TxMock {
+  user: { update: jest.Mock };
+  userSkill: { deleteMany: jest.Mock; createMany: jest.Mock };
+}
+
 function buildPrismaMock() {
+  const tx: TxMock = {
+    user: { update: jest.fn() },
+    userSkill: { deleteMany: jest.fn(), createMany: jest.fn() },
+  };
   return {
     user: {
       findFirst: jest.fn(),
       update: jest.fn(),
     },
+    userSkill: { deleteMany: jest.fn(), createMany: jest.fn() },
     application: {
       count: jest.fn().mockResolvedValue(0),
     },
     job: {
       count: jest.fn().mockResolvedValue(0),
     },
-  } as unknown as PrismaService;
+    $transaction: jest.fn(async (callback: (tx: TxMock) => Promise<unknown>) => callback(tx)),
+    __tx: tx,
+  } as unknown as PrismaService & { __tx: TxMock };
 }
 
 function buildStorageMock() {
@@ -203,6 +215,92 @@ describe('UsersService', () => {
 
       await expect(service.findPublicProfile('ghost')).rejects.toBeInstanceOf(NotFoundException);
       expect(reviews.findReceivedByUser).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('findMyWorkerSettings', () => {
+    it('never exposes worker settings for someone else (self only, via userId param)', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue({
+        canDoGeneral: true,
+        acceptedCategoryKeys: ['category.delivery'],
+        availableNow: false,
+        city: 'Cotonou',
+        latitude: '6.400000',
+        longitude: '2.500000',
+        travelRadiusKm: 10,
+        skills: [{ skill: { id: 'skill-1', key: 'skill.plumbing', labelKey: 'skill.plumbing.label' } }],
+      });
+
+      const result = await service.findMyWorkerSettings('user-1');
+
+      expect(prisma.user.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: 'user-1', deletedAt: null } }),
+      );
+      expect(result.skills).toEqual([{ id: 'skill-1', key: 'skill.plumbing', labelKey: 'skill.plumbing.label' }]);
+      expect(result.city).toBe('Cotonou');
+    });
+
+    it('throws NotFoundException for a missing or soft-deleted user', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.findMyWorkerSettings('ghost')).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+
+  describe('updateMyWorkerSettings', () => {
+    it('replaces the skill set and updates the flat fields in one transaction', async () => {
+      const tx = (prisma as unknown as { __tx: TxMock }).__tx;
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue({
+        canDoGeneral: true,
+        acceptedCategoryKeys: [],
+        availableNow: true,
+        city: 'Cotonou',
+        latitude: null,
+        longitude: null,
+        travelRadiusKm: null,
+        skills: [],
+      });
+
+      await service.updateMyWorkerSettings('user-1', {
+        skillIds: ['skill-1', 'skill-2'],
+        canDoGeneral: true,
+        availableNow: true,
+        city: 'Cotonou',
+      });
+
+      expect(tx.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: { canDoGeneral: true, availableNow: true, city: 'Cotonou' },
+        }),
+      );
+      expect(tx.userSkill.deleteMany).toHaveBeenCalledWith({ where: { userId: 'user-1' } });
+      expect(tx.userSkill.createMany).toHaveBeenCalledWith({
+        data: [
+          { userId: 'user-1', skillId: 'skill-1' },
+          { userId: 'user-1', skillId: 'skill-2' },
+        ],
+        skipDuplicates: true,
+      });
+    });
+
+    it('leaves the skill set untouched when skillIds is not provided', async () => {
+      const tx = (prisma as unknown as { __tx: TxMock }).__tx;
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue({
+        canDoGeneral: false,
+        acceptedCategoryKeys: [],
+        availableNow: false,
+        city: null,
+        latitude: null,
+        longitude: null,
+        travelRadiusKm: null,
+        skills: [],
+      });
+
+      await service.updateMyWorkerSettings('user-1', { availableNow: false });
+
+      expect(tx.userSkill.deleteMany).not.toHaveBeenCalled();
+      expect(tx.userSkill.createMany).not.toHaveBeenCalled();
     });
   });
 });
