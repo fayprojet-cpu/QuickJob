@@ -382,8 +382,21 @@
     "locationAdded": "Position ajoutée ✓",
     "locationLoading": "Localisation en cours…",
     "locationError": "Impossible d'obtenir ta position. Tu peux continuer sans, ou renseigner juste la ville.",
-    "radiusLabel": "Rayon de déplacement (km)",
-    "radiusEmpty": "Non renseigné"
+    "availableNowQuickLabel": "Statut",
+    "availableNowOn": "Disponible",
+    "availableNowOff": "Indisponible",
+    "skillGroups": {
+      "construction": "Bâtiment & Réparation",
+      "home": "Maison & Services à domicile",
+      "transport": "Transport",
+      "beauty": "Beauté & Bien-être",
+      "food": "Cuisine & Restauration",
+      "events": "Événementiel & Création",
+      "digital": "Technologie & Digital",
+      "admin": "Administratif & Éducation",
+      "otherTrades": "Autres métiers",
+      "other": "Autre"
+    }
   },
   "skills": {
     "driving_license": "Permis de conduire",

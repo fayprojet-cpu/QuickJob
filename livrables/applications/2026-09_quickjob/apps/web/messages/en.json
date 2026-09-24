@@ -382,8 +382,21 @@
     "locationAdded": "Location added ✓",
     "locationLoading": "Locating…",
     "locationError": "Couldn't get your location. You can continue without it, or just enter your city.",
-    "radiusLabel": "Travel radius (km)",
-    "radiusEmpty": "Not set"
+    "availableNowQuickLabel": "Status",
+    "availableNowOn": "Available",
+    "availableNowOff": "Unavailable",
+    "skillGroups": {
+      "construction": "Construction & Repair",
+      "home": "Home & Domestic Services",
+      "transport": "Transport",
+      "beauty": "Beauty & Wellness",
+      "food": "Cooking & Catering",
+      "events": "Events & Creative",
+      "digital": "Technology & Digital",
+      "admin": "Admin & Education",
+      "otherTrades": "Other trades",
+      "other": "Other"
+    }
   },
   "skills": {
     "driving_license": "Driving license",

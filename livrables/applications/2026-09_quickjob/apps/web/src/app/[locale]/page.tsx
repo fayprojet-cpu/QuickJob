@@ -39,14 +39,14 @@ export default async function HomePage({
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary-50 via-white to-white px-4 py-20 sm:py-28">
+      <section className="relative overflow-hidden bg-gradient-to-b from-accent-50 via-white to-white px-4 py-20 sm:py-28">
         <div
           aria-hidden
-          className="animate-drift pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-primary-200/40 blur-3xl sm:h-96 sm:w-96"
+          className="animate-drift pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-accent-200/40 blur-3xl sm:h-96 sm:w-96"
         />
         <div
           aria-hidden
-          className="animate-drift-slow pointer-events-none absolute -bottom-32 right-[8%] h-64 w-64 rounded-full bg-primary-300/25 blur-3xl sm:h-80 sm:w-80"
+          className="animate-drift-slow pointer-events-none absolute -bottom-32 right-[8%] h-64 w-64 rounded-full bg-accent-300/25 blur-3xl sm:h-80 sm:w-80"
         />
         <div className="relative mx-auto max-w-3xl text-center">
           <h1 className="text-balance whitespace-pre-line text-4xl font-extrabold tracking-tight text-neutral-900 sm:text-6xl">
@@ -74,7 +74,7 @@ export default async function HomePage({
           </div>
 
           {latestJobs.total > 0 ? (
-            <p className="mt-6 flex items-center justify-center gap-1.5 text-sm font-medium text-primary-700">
+            <p className="mt-6 flex items-center justify-center gap-1.5 text-sm font-medium text-accent-700">
               <Flame className="h-4 w-4" aria-hidden />
               <AnimatedCounter value={latestJobs.total} className="font-bold tabular-nums" />
               <span>{t('activeJobsCount', { count: latestJobs.total })}</span>
@@ -93,14 +93,14 @@ export default async function HomePage({
         <div className="mt-10 grid gap-8 sm:grid-cols-3">
           {steps.map(({ icon: Icon, title, body }, index) => (
             <Reveal key={title} delay={index * 100} className="relative text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-transform duration-300 hover:scale-110 hover:rotate-6">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent-100 text-accent-700 transition-transform duration-300 hover:scale-110 hover:rotate-6">
                 <Icon className="h-6 w-6" aria-hidden />
               </div>
               <h3 className="mt-4 font-semibold text-neutral-900">{title}</h3>
               <p className="mt-2 text-sm text-neutral-600">{body}</p>
               {index < steps.length - 1 ? (
                 <ArrowRight
-                  className="absolute right-[-1.25rem] top-6 hidden h-5 w-5 text-primary-200 sm:block"
+                  className="absolute right-[-1.25rem] top-6 hidden h-5 w-5 text-accent-300 sm:block"
                   aria-hidden
                 />
               ) : null}

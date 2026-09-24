@@ -18,7 +18,7 @@ export async function Footer() {
                 <Briefcase className="h-3.5 w-3.5" aria-hidden />
               </span>
               <span className="text-neutral-900">
-                Quick<span className="text-primary-600">Job</span>
+                Quick<span className="text-accent-700">Job</span>
               </span>
             </div>
             <p className="mt-3 max-w-xs text-sm text-neutral-500">{t('tagline')}</p>

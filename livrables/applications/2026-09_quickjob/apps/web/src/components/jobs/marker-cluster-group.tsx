@@ -10,7 +10,7 @@ import type { Job } from '@/types/api';
 
 const JOB_ICON = L.divIcon({
   className: '',
-  html: '<span style="display:block;width:16px;height:16px;border-radius:50% 50% 50% 0;background:#c2410c;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4);transform:rotate(-45deg);"></span>',
+  html: '<span style="display:block;width:16px;height:16px;border-radius:50% 50% 50% 0;background:#2F6B3F;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4);transform:rotate(-45deg);"></span>',
   iconSize: [16, 16],
   iconAnchor: [8, 16],
 });

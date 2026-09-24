@@ -1,18 +1,15 @@
 import type { Config } from 'tailwindcss';
 
 /**
- * Palette "primary" — terracotta/brique profond, une évolution du orange
- * Material Design de départ (#FF5722, "Deep Orange 500" — le orange
- * générique de n'importe quel starter Material). Même famille de teinte
- * (aucune rupture de marque), mais nettement plus sombre et plus riche —
- * un ton terre/brique plutôt qu'un orange vif de signalétique, cohérent
- * avec l'ancrage Afrique de l'Ouest/Centrale du projet.
+ * Identité visuelle : blanc dominant, boutons principaux en noir profond
+ * ("primary" — c'est le token que tous les composants boutons/liens/badges
+ * utilisent déjà, donc le changer ici suffit à retourner tout le site sans
+ * toucher aux fichiers composants), vert forêt réservé aux touches d'accent
+ * (jamais le fond d'un bouton plein) — remplace l'ancienne identité
+ * terracotta, jugée trop douce.
  *
- * "neutral" est remappé sur des gris CHAUDS (teinte pierre) au lieu du gris
- * froid par défaut : sans ça, un texte gris neutre "froid" jure visuellement
- * à côté d'un orange aussi chaud. Un seul réglage ici change l'ambiance de
- * chaque page (aucun fichier composant à toucher, tout passe déjà par les
- * classes text-neutral-… / bg-neutral-…).
+ * "neutral" reste sur des gris chauds (teinte pierre) : un noir pur marie
+ * mal avec un gris froid, un gris chaud garde la page cohérente.
  */
 const config: Config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
@@ -20,16 +17,29 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          50: '#FBE8DD',
-          100: '#F5CBAE',
-          200: '#EAA476',
-          300: '#DC7C47',
-          400: '#C85F2A',
-          500: '#A8451A',
-          600: '#8A3714',
-          700: '#6E2B10',
-          800: '#54210C',
-          900: '#3A1608',
+          50: '#F2F2F2',
+          100: '#D9D9D9',
+          200: '#B3B3B3',
+          300: '#8C8C8C',
+          400: '#4D4D4D',
+          500: '#1A1A1A',
+          600: '#111111',
+          700: '#0A0A0A',
+          800: '#050505',
+          900: '#000000',
+        },
+        /** Vert forêt — accent, jamais le fond d'un bouton principal. */
+        accent: {
+          50: '#E8F0EA',
+          100: '#C6DBCC',
+          200: '#9CC2A6',
+          300: '#6FA67D',
+          400: '#4C8F5C',
+          500: '#2F6B3F',
+          600: '#255530',
+          700: '#1D4326',
+          800: '#15331C',
+          900: '#0D2012',
         },
         neutral: {
           50: '#FAFAF9',

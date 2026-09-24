@@ -47,7 +47,7 @@ export function Header() {
               <Briefcase className="h-4 w-4" aria-hidden />
             </span>
             <span className="text-neutral-900">
-              Quick<span className="text-primary-600">Job</span>
+              Quick<span className="text-accent-700">Job</span>
             </span>
           </Link>
         </div>

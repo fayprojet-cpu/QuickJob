@@ -17,7 +17,7 @@ import type { Job, MapBounds } from '@/types/api';
 
 const USER_ICON = L.divIcon({
   className: '',
-  html: '<span style="display:block;width:16px;height:16px;border-radius:50%;background:#2563eb;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4);"></span>',
+  html: '<span style="display:block;width:16px;height:16px;border-radius:50%;background:#1A1A1A;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4);"></span>',
   iconSize: [16, 16],
   iconAnchor: [8, 8],
 });
