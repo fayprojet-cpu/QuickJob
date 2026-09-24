@@ -50,9 +50,10 @@ export function JobsMap({ jobs }: { jobs: Job[] }) {
 
   const geoJobs = useMemo(
     () =>
-      jobs.filter(
-        (job): job is GeoJob => job.latitude != null && job.longitude != null,
-      ),
+      jobs.filter((job): job is GeoJob => {
+        if (job.latitude == null || job.longitude == null) return false;
+        return Number.isFinite(Number(job.latitude)) && Number.isFinite(Number(job.longitude));
+      }),
     [jobs],
   );
 
