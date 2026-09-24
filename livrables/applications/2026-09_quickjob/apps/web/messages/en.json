@@ -161,14 +161,21 @@
     "viewList": "List",
     "viewMap": "Map",
     "map": {
-      "nearMe": "Near me",
-      "locating": "Locating…",
+      "nearMe": "Center on my location",
       "locationDenied": "Location unavailable. Allow geolocation in your browser to see jobs near you.",
       "distanceKm": "{distance} km away",
-      "noCoordinates": "No located jobs right now.",
+      "noCoordinates": "No located jobs in this area.",
       "viewJob": "View job",
-      "nearestTitle": "Nearest jobs",
-      "youAreHere": "You"
+      "loading": "Loading…",
+      "sheet": {
+        "close": "Close",
+        "itinerary": "Directions",
+        "apply": "Apply",
+        "applySuccess": "Application sent!",
+        "applyError": "Couldn't send your application. Try again.",
+        "routeSummary": "{distance} km · about {duration} min by car",
+        "routeError": "Directions unavailable right now. Try again."
+      }
     },
     "urgency": {
       "FLEXIBLE": "Flexible",

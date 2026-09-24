@@ -125,6 +125,17 @@ export interface QueryJobsInput {
   city?: string;
   urgency?: JobUrgency;
   search?: string;
+  minLat?: number;
+  maxLat?: number;
+  minLng?: number;
+  maxLng?: number;
+}
+
+export interface MapBounds {
+  minLat: number;
+  maxLat: number;
+  minLng: number;
+  maxLng: number;
 }
 
 export interface UpdateUserInput {

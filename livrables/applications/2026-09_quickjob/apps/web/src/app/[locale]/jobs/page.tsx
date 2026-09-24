@@ -44,8 +44,8 @@ export default async function JobsPage({
     return query ? `/jobs?${query}` : '/jobs';
   }
 
-  return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+  const header = (
+    <>
       <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
 
       {/* Filtres repliables : les missions restent l'élément principal de la page. */}
@@ -62,16 +62,26 @@ export default async function JobsPage({
           />
         </div>
       </details>
+    </>
+  );
 
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-8">
       {jobsResult.items.length === 0 ? (
-        <p className="mt-12 text-center text-neutral-500">
-          {hasFilters ? t('noResults') : t('noJobsYet')}
-        </p>
+        <>
+          {header}
+          <p className="mt-12 text-center text-neutral-500">
+            {hasFilters ? t('noResults') : t('noJobsYet')}
+          </p>
+        </>
       ) : (
-        <JobsViewToggle jobs={jobsResult.items} categoryById={categoryById} />
+        <JobsViewToggle
+          jobs={jobsResult.items}
+          categoryById={categoryById}
+          header={header}
+          pagination={<Pagination page={page} totalPages={totalPages} buildHref={buildHref} />}
+        />
       )}
-
-      <Pagination page={page} totalPages={totalPages} buildHref={buildHref} />
     </div>
   );
 }

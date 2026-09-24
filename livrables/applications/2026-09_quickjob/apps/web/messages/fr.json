@@ -161,14 +161,21 @@
     "viewList": "Liste",
     "viewMap": "Carte",
     "map": {
-      "nearMe": "Près de moi",
-      "locating": "Localisation…",
+      "nearMe": "Centrer sur ma position",
       "locationDenied": "Position indisponible. Autorise la géolocalisation dans ton navigateur pour voir les missions proches de toi.",
       "distanceKm": "à {distance} km",
-      "noCoordinates": "Aucune mission géolocalisée pour le moment.",
+      "noCoordinates": "Aucune mission géolocalisée dans cette zone.",
       "viewJob": "Voir la mission",
-      "nearestTitle": "Missions les plus proches",
-      "youAreHere": "Toi"
+      "loading": "Chargement…",
+      "sheet": {
+        "close": "Fermer",
+        "itinerary": "Itinéraire",
+        "apply": "Postuler",
+        "applySuccess": "Candidature envoyée !",
+        "applyError": "Impossible d'envoyer ta candidature. Réessaie.",
+        "routeSummary": "{distance} km · environ {duration} min en voiture",
+        "routeError": "Itinéraire indisponible pour le moment. Réessaie."
+      }
     },
     "urgency": {
       "FLEXIBLE": "Flexible",

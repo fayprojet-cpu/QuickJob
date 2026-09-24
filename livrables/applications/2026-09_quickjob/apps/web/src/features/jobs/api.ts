@@ -1,6 +1,13 @@
 import { apiFetch, toQueryString } from '@/lib/api-client';
 import { authApiFetch } from '@/lib/auth-api-client';
-import type { Category, CreateJobInput, Job, PaginatedResult, QueryJobsInput } from '@/types/api';
+import type {
+  Category,
+  CreateJobInput,
+  Job,
+  MapBounds,
+  PaginatedResult,
+  QueryJobsInput,
+} from '@/types/api';
 
 export function fetchPublishedJobs(query: QueryJobsInput): Promise<PaginatedResult<Job>> {
   return apiFetch<PaginatedResult<Job>>(
@@ -16,6 +23,19 @@ export function fetchPublishedJobs(query: QueryJobsInput): Promise<PaginatedResu
     {},
     { revalidate: 30 },
   );
+}
+
+/** Missions publiées dans une zone géographique — pour la carte, toujours à jour (pas de cache ISR). */
+export function fetchJobsInBounds(bounds: MapBounds): Promise<Job[]> {
+  return apiFetch<PaginatedResult<Job>>(
+    `/jobs${toQueryString({
+      limit: 100,
+      minLat: bounds.minLat,
+      maxLat: bounds.maxLat,
+      minLng: bounds.minLng,
+      maxLng: bounds.maxLng,
+    })}`,
+  ).then((result) => result.items);
 }
 
 export function fetchJob(id: string): Promise<Job> {

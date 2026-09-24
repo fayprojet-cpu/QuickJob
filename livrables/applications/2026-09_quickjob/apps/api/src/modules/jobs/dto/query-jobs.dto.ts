@@ -5,6 +5,8 @@ import {
   IsEnum,
   IsISO31661Alpha2,
   IsInt,
+  IsLatitude,
+  IsLongitude,
   IsOptional,
   IsString,
   IsUUID,
@@ -55,4 +57,28 @@ export class QueryJobsDto {
   @IsString()
   @MaxLength(150)
   search?: string;
+
+  @ApiPropertyOptional({ description: 'Borne géographique (carte) : latitude minimale' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsLatitude()
+  minLat?: number;
+
+  @ApiPropertyOptional({ description: 'Borne géographique (carte) : latitude maximale' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsLatitude()
+  maxLat?: number;
+
+  @ApiPropertyOptional({ description: 'Borne géographique (carte) : longitude minimale' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsLongitude()
+  minLng?: number;
+
+  @ApiPropertyOptional({ description: 'Borne géographique (carte) : longitude maximale' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsLongitude()
+  maxLng?: number;
 }

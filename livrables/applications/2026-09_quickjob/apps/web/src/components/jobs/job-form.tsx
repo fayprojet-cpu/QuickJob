@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth-store';
+import { useGeolocation } from '@/hooks/use-geolocation';
 import { createJob, fetchCategories, publishJob } from '@/features/jobs/api';
 import { categoryTranslationKey } from '@/features/jobs/category-label';
 import { toMinorUnits } from '@/lib/money';
@@ -45,24 +46,7 @@ export function JobForm() {
   const [countryCode, setCountryCode] = useState(user?.countryCode ?? '');
   const [publishNow, setPublishNow] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [geoStatus, setGeoStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-
-  function handleUseLocation() {
-    if (!navigator.geolocation) {
-      setGeoStatus('error');
-      return;
-    }
-    setGeoStatus('loading');
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setCoords({ latitude: position.coords.latitude, longitude: position.coords.longitude });
-        setGeoStatus('success');
-      },
-      () => setGeoStatus('error'),
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
-  }
+  const { position: coords, status: geoStatus, request: handleUseLocation } = useGeolocation();
 
   const currencyOptions = useMemo(() => {
     const codes = CURRENCY_CODES.includes(salaryCurrency)
