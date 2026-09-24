@@ -1,9 +1,9 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Search } from 'lucide-react';
 import { fetchCategories, fetchPublishedJobs } from '@/features/jobs/api';
+import { JobCard } from '@/components/jobs/job-card';
 import { JobFilters } from '@/components/jobs/job-filters';
 import { Pagination } from '@/components/jobs/pagination';
-import { JobsViewToggle } from '@/components/jobs/jobs-view-toggle';
 import type { JobUrgency } from '@/types/api';
 
 const PAGE_SIZE = 12;
@@ -44,8 +44,8 @@ export default async function JobsPage({
     return query ? `/jobs?${query}` : '/jobs';
   }
 
-  const header = (
-    <>
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-8">
       <h1 className="text-2xl font-bold text-neutral-900">{t('title')}</h1>
 
       {/* Filtres repliables : les missions restent l'élément principal de la page. */}
@@ -62,26 +62,20 @@ export default async function JobsPage({
           />
         </div>
       </details>
-    </>
-  );
 
-  return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
       {jobsResult.items.length === 0 ? (
-        <>
-          {header}
-          <p className="mt-12 text-center text-neutral-500">
-            {hasFilters ? t('noResults') : t('noJobsYet')}
-          </p>
-        </>
+        <p className="mt-12 text-center text-neutral-500">
+          {hasFilters ? t('noResults') : t('noJobsYet')}
+        </p>
       ) : (
-        <JobsViewToggle
-          jobs={jobsResult.items}
-          categoryById={categoryById}
-          header={header}
-          pagination={<Pagination page={page} totalPages={totalPages} buildHref={buildHref} />}
-        />
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {jobsResult.items.map((job) => (
+            <JobCard key={job.id} job={job} category={categoryById.get(job.categoryId)} />
+          ))}
+        </div>
       )}
+
+      <Pagination page={page} totalPages={totalPages} buildHref={buildHref} />
     </div>
   );
 }

@@ -121,40 +121,6 @@ describe('JobsService', () => {
         }),
       );
     });
-
-    it('filtre par zone géographique (carte) quand les 4 bornes sont fournies', async () => {
-      (prisma.job.findMany as jest.Mock).mockResolvedValue([baseJob]);
-      (prisma.job.count as jest.Mock).mockResolvedValue(1);
-
-      await service.findPublished({
-        page: 1,
-        limit: 100,
-        minLat: 6.3,
-        maxLat: 6.5,
-        minLng: 2.3,
-        maxLng: 2.5,
-      });
-
-      expect(prisma.job.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            latitude: { gte: 6.3, lte: 6.5 },
-            longitude: { gte: 2.3, lte: 2.5 },
-          }),
-        }),
-      );
-    });
-
-    it("n'applique aucun filtre géographique quand les bornes sont absentes", async () => {
-      (prisma.job.findMany as jest.Mock).mockResolvedValue([baseJob]);
-      (prisma.job.count as jest.Mock).mockResolvedValue(1);
-
-      await service.findPublished({ page: 1, limit: 10 });
-
-      const call = (prisma.job.findMany as jest.Mock).mock.calls[0][0];
-      expect(call.where.latitude).toBeUndefined();
-      expect(call.where.longitude).toBeUndefined();
-    });
   });
 
   describe('update', () => {

@@ -13,6 +13,7 @@
   },
   "nav": {
     "jobs": "Jobs",
+    "browse": "Browse",
     "postJob": "Post a job",
     "about": "About",
     "login": "Log in",
@@ -34,7 +35,7 @@
     "modeSwitchAria": "Switch mode"
   },
   "home": {
-    "heroTitle": "Apply. Work. Get paid.",
+    "heroTitle": "Someone can do it.",
     "heroSubtitle": "Find a job or post one — no waiting around.",
     "browseJobs": "Find a job",
     "postAJob": "Post a job",
@@ -158,25 +159,6 @@
     "page": "Page {page} of {total}",
     "previous": "Previous",
     "next": "Next",
-    "viewList": "List",
-    "viewMap": "Map",
-    "map": {
-      "nearMe": "Center on my location",
-      "locationDenied": "Location unavailable. Allow geolocation in your browser to see jobs near you.",
-      "distanceKm": "{distance} km away",
-      "noCoordinates": "No located jobs in this area.",
-      "viewJob": "View job",
-      "loading": "Loading…",
-      "sheet": {
-        "close": "Close",
-        "itinerary": "Directions",
-        "apply": "Apply",
-        "applySuccess": "Application sent!",
-        "applyError": "Couldn't send your application. Try again.",
-        "routeSummary": "{distance} km · about {duration} min by car",
-        "routeError": "Directions unavailable right now. Try again."
-      }
-    },
     "urgency": {
       "FLEXIBLE": "Flexible",
       "THIS_WEEK": "This week",
@@ -275,7 +257,8 @@
       "invitedLabel": "You've been invited!",
       "acceptInvite": "Accept invitation",
       "declineInvite": "Decline",
-      "inviteResponseError": "Couldn't respond to the invitation. Try again."
+      "inviteResponseError": "Couldn't respond to the invitation. Try again.",
+      "getDirections": "Directions"
     },
     "status": {
       "PENDING": "Pending",
@@ -355,6 +338,13 @@
     "cancel": "Cancel",
     "inviteError": "Couldn't send the invitation. Try again.",
     "noInvitableJobs": "You have no open job to offer right now. Post or create a job first."
+  },
+  "browse": {
+    "title": "Browse",
+    "subtitle": "Search by specific trade, or by simple everyday task.",
+    "professionalTitle": "Professional trades",
+    "simpleTitle": "Simple jobs",
+    "simpleHint": "No specific trade needed — errands, cleaning, moving help, event support…"
   },
   "workerSettings": {
     "title": "My Worker Profile",

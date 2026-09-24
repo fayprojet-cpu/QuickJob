@@ -107,7 +107,15 @@ export interface Application {
   /** Présent uniquement sur la vue recruteur (GET /jobs/:jobId/applications). */
   worker?: { id: string; email: string | null; firstName: string | null; avatarUrl: string | null; phone: string | null };
   /** Présent sur la vue travailleur (GET /applications/mine) : la mission liée. */
-  job?: { id: string; title: string; city: string | null; countryCode: string | null; status: JobStatus };
+  job?: {
+    id: string;
+    title: string;
+    city: string | null;
+    countryCode: string | null;
+    status: JobStatus;
+    latitude: string | null;
+    longitude: string | null;
+  };
 }
 
 export interface PaginatedResult<T> {

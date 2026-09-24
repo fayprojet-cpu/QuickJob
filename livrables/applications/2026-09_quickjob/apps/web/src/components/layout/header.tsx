@@ -83,6 +83,13 @@ export function Header() {
               {t('jobs')}
             </Link>
             <Link
+              href="/browse"
+              onClick={closeMenu}
+              className="rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+            >
+              {t('browse')}
+            </Link>
+            <Link
               href="/about"
               onClick={closeMenu}
               className="rounded-lg px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-100"

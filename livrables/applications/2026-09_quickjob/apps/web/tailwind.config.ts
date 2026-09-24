@@ -8,6 +8,12 @@ import type { Config } from 'tailwindcss';
  * (jamais le fond d'un bouton plein) — remplace l'ancienne identité
  * terracotta, jugée trop douce.
  *
+ * "primary" n'est volontairement PAS un noir neutre plat (#000/#111, "le
+ * noir que tout le monde met") : chaque teinte a une pointe de vert forêt
+ * dedans (un noir désaturé vers le vert, pas vers le bleu ou le violet) —
+ * il reste noir au premier coup d'œil, mais tire discrètement vers
+ * l'identité de la marque plutôt que d'être un gris générique.
+ *
  * "neutral" reste sur des gris chauds (teinte pierre) : un noir pur marie
  * mal avec un gris froid, un gris chaud garde la page cohérente.
  */
@@ -17,16 +23,16 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          50: '#F2F2F2',
-          100: '#D9D9D9',
-          200: '#B3B3B3',
-          300: '#8C8C8C',
-          400: '#4D4D4D',
-          500: '#1A1A1A',
-          600: '#111111',
-          700: '#0A0A0A',
-          800: '#050505',
-          900: '#000000',
+          50: '#EEF0EE',
+          100: '#D2D8D3',
+          200: '#A6B0A8',
+          300: '#78867B',
+          400: '#3E4A40',
+          500: '#161D17',
+          600: '#10150F',
+          700: '#0B0F0A',
+          800: '#070A06',
+          900: '#030403',
         },
         /** Vert forêt — accent, jamais le fond d'un bouton principal. */
         accent: {

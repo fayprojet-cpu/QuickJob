@@ -13,6 +13,7 @@
   },
   "nav": {
     "jobs": "Missions",
+    "browse": "Explorer",
     "postJob": "Publier une mission",
     "about": "À propos",
     "login": "Connexion",
@@ -34,7 +35,7 @@
     "modeSwitchAria": "Changer de mode"
   },
   "home": {
-    "heroTitle": "Postule. Travaille. Sois payé.",
+    "heroTitle": "Quelqu'un peut le faire.",
     "heroSubtitle": "Trouve une mission ou publie-en une — sans attendre.",
     "browseJobs": "Trouver un job",
     "postAJob": "Publier une mission",
@@ -158,25 +159,6 @@
     "page": "Page {page} sur {total}",
     "previous": "Précédent",
     "next": "Suivant",
-    "viewList": "Liste",
-    "viewMap": "Carte",
-    "map": {
-      "nearMe": "Centrer sur ma position",
-      "locationDenied": "Position indisponible. Autorise la géolocalisation dans ton navigateur pour voir les missions proches de toi.",
-      "distanceKm": "à {distance} km",
-      "noCoordinates": "Aucune mission géolocalisée dans cette zone.",
-      "viewJob": "Voir la mission",
-      "loading": "Chargement…",
-      "sheet": {
-        "close": "Fermer",
-        "itinerary": "Itinéraire",
-        "apply": "Postuler",
-        "applySuccess": "Candidature envoyée !",
-        "applyError": "Impossible d'envoyer ta candidature. Réessaie.",
-        "routeSummary": "{distance} km · environ {duration} min en voiture",
-        "routeError": "Itinéraire indisponible pour le moment. Réessaie."
-      }
-    },
     "urgency": {
       "FLEXIBLE": "Flexible",
       "THIS_WEEK": "Cette semaine",
@@ -275,7 +257,8 @@
       "invitedLabel": "Tu as été invité(e) !",
       "acceptInvite": "Accepter l'invitation",
       "declineInvite": "Refuser",
-      "inviteResponseError": "Impossible de répondre à l'invitation. Réessaie."
+      "inviteResponseError": "Impossible de répondre à l'invitation. Réessaie.",
+      "getDirections": "Itinéraire"
     },
     "status": {
       "PENDING": "En attente",
@@ -355,6 +338,13 @@
     "cancel": "Annuler",
     "inviteError": "Impossible d'envoyer l'invitation. Réessaie.",
     "noInvitableJobs": "Tu n'as aucune mission ouverte à proposer pour l'instant. Publie ou crée une mission d'abord."
+  },
+  "browse": {
+    "title": "Explorer",
+    "subtitle": "Cherche par métier précis, ou par petit boulot simple.",
+    "professionalTitle": "Métiers professionnels",
+    "simpleTitle": "Missions simples",
+    "simpleHint": "Pas besoin d'un métier précis — courses, ménage, manutention, aide événementielle…"
   },
   "workerSettings": {
     "title": "Mon profil Travailleur",

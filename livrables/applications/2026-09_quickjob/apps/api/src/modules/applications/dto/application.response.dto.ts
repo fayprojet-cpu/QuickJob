@@ -21,5 +21,13 @@ export class ApplicationResponseDto {
   @ApiPropertyOptional({
     description: 'Présent sur GET /applications/mine (vue travailleur) : la mission liée.',
   })
-  job?: { id: string; title: string; city: string | null; countryCode: string | null; status: JobStatus };
+  job?: {
+    id: string;
+    title: string;
+    city: string | null;
+    countryCode: string | null;
+    status: JobStatus;
+    latitude: unknown;
+    longitude: unknown;
+  };
 }

@@ -38,12 +38,6 @@ export class JobsService {
   }
 
   async findPublished(query: QueryJobsDto): Promise<PaginatedJobsResponseDto> {
-    const hasBounds =
-      query.minLat !== undefined &&
-      query.maxLat !== undefined &&
-      query.minLng !== undefined &&
-      query.maxLng !== undefined;
-
     const where: Prisma.JobWhereInput = {
       status: JobStatus.PUBLISHED,
       ...(query.categoryId ? { categoryId: query.categoryId } : {}),
@@ -51,12 +45,6 @@ export class JobsService {
       ...(query.city ? { city: { equals: query.city, mode: 'insensitive' } } : {}),
       ...(query.urgency ? { urgency: query.urgency } : {}),
       ...(query.search ? { title: { contains: query.search, mode: 'insensitive' } } : {}),
-      ...(hasBounds
-        ? {
-            latitude: { gte: query.minLat, lte: query.maxLat },
-            longitude: { gte: query.minLng, lte: query.maxLng },
-          }
-        : {}),
     };
 
     return this.paginate(where, query, { publishedAt: 'desc' });

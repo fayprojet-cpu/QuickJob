@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Navigation } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -145,6 +145,17 @@ export function MineApplicationsList() {
                   <MessageCircle className="h-4 w-4" aria-hidden />
                   {t('chatWithRecruiter')}
                 </LinkButton>
+              ) : null}
+              {application.status === 'ACCEPTED' && application.job?.latitude && application.job.longitude ? (
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${application.job.latitude},${application.job.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-primary-500 px-3 py-1.5 text-sm font-medium text-primary-600 transition-colors hover:bg-primary-50"
+                >
+                  <Navigation className="h-4 w-4" aria-hidden />
+                  {tMine('getDirections')}
+                </a>
               ) : null}
               {canReview ? (
                 alreadyReviewed ? (
